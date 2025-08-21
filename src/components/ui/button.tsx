@@ -51,7 +51,7 @@ const baseClasses =
 
 function isLinkProps(props: ButtonProps): props is ButtonAsLink {
   // Treat as Link if Next.js Link is provided via `as` or if `href` exists
-  return (props as ButtonAsLink).as === Link || ("href" in (props as any) && typeof (props as any).href !== "undefined");
+  return (props as ButtonAsLink).as === Link || "href" in props;
 }
 
 const Button: React.FC<ButtonProps> = (props) => {
@@ -62,13 +62,13 @@ const Button: React.FC<ButtonProps> = (props) => {
     className = "",
     disabled,
     ...rest
-  } = props as ButtonProps;
+  } = props;
 
   const classes = cn(baseClasses, sizeClasses[size], variantClasses[variant], className);
 
   if (isLinkProps(props)) {
-    const { as: _as, ...linkProps } = rest as ButtonAsLink;
-    const href = (linkProps as any).href as LinkProps["href"]; // ensure href presence
+    const { as: _unusedAs, href, ...linkProps } = rest as ButtonAsLink;
+    void _unusedAs; // explicitly ignore custom `as` prop
 
     if (disabled) {
       return (
@@ -79,7 +79,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     }
 
     return (
-      <Link className={classes} {...(linkProps as Omit<LinkProps, "className" | "children">)} href={href}>
+      <Link className={classes} {...(linkProps as Omit<LinkProps, "className" | "children" | "href">)} href={href}>
         {children}
       </Link>
     );
