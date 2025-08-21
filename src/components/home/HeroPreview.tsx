@@ -26,7 +26,7 @@ import { TOKENS, useReducedMotionPref } from '../tokens';
 const PARTICLE_COUNT = 150;
 const FLOATING_ELEMENTS = 12;
 const NEURAL_NODES = 8;
-const STORAGE_KEY = 'hero_preview_settings_v2';
+const STORAGE_KEY = 'hero_preview_settings_v3';
 
 type PreviewMode = 'showcase' | 'code' | 'data' | 'neural' | 'hologram' | 'matrix';
 
@@ -43,6 +43,9 @@ type Settings = {
   speed: number;
   depth: number;
   paused: boolean;
+  // Auto-performance gating
+  autoDisabled: boolean; // set true when we detect low FPS for a while
+  manualOverride: boolean; // if true, user forced enable; don't auto-disable again in this session
 };
 
 const defaultSettings: Settings = {
@@ -58,6 +61,8 @@ const defaultSettings: Settings = {
   speed: 1,
   depth: 30,
   paused: false,
+  autoDisabled: false,
+  manualOverride: false,
 };
 
 // Particle system
@@ -106,10 +111,11 @@ const HeroPreview: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [currentMode, setCurrentMode] = useState<PreviewMode>(settings.mode);
   
-  // Animation state
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [neuralNodes, setNeuralNodes] = useState<NeuralNode[]>([]);
-  const [time, setTime] = useState(0);
+  // Animation data (refs to avoid per-frame re-render)
+  const particlesRef = useRef<Particle[]>([]);
+  const neuralNodesRef = useRef<NeuralNode[]>([]);
+  const timeRef = useRef(0);
+  const [fps, setFps] = useState<number>(60);
   
   const settingsPanelId = useId();
   
@@ -137,10 +143,57 @@ const HeroPreview: React.FC = () => {
     }
   }, [settings]);
   
+  // Performance monitoring and auto-disable
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let rafId: number;
+    let last = performance.now();
+    let accum = 0;
+    let frames = 0;
+    // thresholds
+    const MIN_FPS = 45; // target stable FPS
+    const CHECK_INTERVAL_MS = 1000; // compute average each second
+    let lowFpsDuration = 0;
+
+    const loop = (now: number) => {
+      const delta = now - last;
+      last = now;
+      accum += delta;
+      frames += 1;
+      if (accum >= CHECK_INTERVAL_MS) {
+        const currentFps = Math.min(120, Math.round((frames * 1000) / accum));
+        setFps(currentFps);
+        // if user hasn't manually overridden, evaluate auto-disable
+        if (!settings.manualOverride) {
+          if (currentFps < MIN_FPS) {
+            lowFpsDuration += accum;
+          } else {
+            lowFpsDuration = 0;
+          }
+          // if low FPS persisted for 3s, auto-disable heavy effects and pause
+          if (lowFpsDuration >= 3000 && !settings.autoDisabled) {
+            setSettings(prev => ({
+              ...prev,
+              autoDisabled: true,
+              paused: true,
+              particles: false,
+              neural: false,
+              hologram: false,
+            }));
+          }
+        }
+        accum = 0;
+        frames = 0;
+      }
+      rafId = requestAnimationFrame(loop);
+    };
+    rafId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafId);
+  }, [settings.manualOverride, settings.autoDisabled]);
+
   // Initialize particles
   useEffect(() => {
     if (!settings.particles) return;
-    
     const newParticles: Particle[] = [];
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       newParticles.push({
@@ -158,7 +211,7 @@ const HeroPreview: React.FC = () => {
         type: ['spark', 'data', 'neural', 'energy'][Math.floor(Math.random() * 4)] as Particle['type']
       });
     }
-    setParticles(newParticles);
+    particlesRef.current = newParticles;
   }, [settings.particles, settings.colorScheme]);
   
   // Initialize neural network
@@ -190,7 +243,7 @@ const HeroPreview: React.FC = () => {
       }
     });
     
-    setNeuralNodes(nodes);
+    neuralNodesRef.current = nodes;
   }, [settings.neural]);
   
   // Get particle color based on scheme
@@ -211,208 +264,214 @@ const HeroPreview: React.FC = () => {
       cyan: {
         primary: 'from-cyan-400 via-blue-500 to-purple-600',
         secondary: 'from-cyan-500/20 to-blue-600/20',
-        accent: 'text-cyan-400',
+        accent: 'text-cyan-300',
         glow: 'shadow-cyan-500/25'
       },
       purple: {
         primary: 'from-purple-400 via-pink-500 to-red-500',
         secondary: 'from-purple-500/20 to-pink-600/20',
-        accent: 'text-purple-400',
+        accent: 'text-purple-300',
         glow: 'shadow-purple-500/25'
       },
       orange: {
         primary: 'from-orange-400 via-red-500 to-pink-500',
         secondary: 'from-orange-500/20 to-red-600/20',
-        accent: 'text-orange-400',
+        accent: 'text-orange-300',
         glow: 'shadow-orange-500/25'
       },
       rainbow: {
         primary: 'from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400',
         secondary: 'from-red-500/10 via-blue-500/10 to-purple-500/10',
-        accent: 'text-pink-400',
+        accent: 'text-pink-300',
         glow: 'shadow-pink-500/25'
       }
     };
     return schemes[settings.colorScheme];
   };
   
-  const colorScheme = getColorScheme();
+  // Memoize color scheme
+  const colorScheme = React.useMemo(getColorScheme, [settings.colorScheme]);
+ 
+  // Unified gate for visual effects and UI animations
+  const effectsDisabled = settings.paused || (settings.autoDisabled && !settings.manualOverride);
   
-  // Animation loop
+  // Animation loop (updates refs only; no React re-render)
   useEffect(() => {
-    if (settings.paused || reduce) return;
-    
+    if (reduce || effectsDisabled) return;
     let animationId: number;
-    
     const animate = () => {
-      setTime(prev => prev + settings.speed);
-      
-      // Update particles
-      if (settings.particles) {
-        setParticles(prev => prev.map(particle => {
-          const newLife = particle.life + 1;
-          if (newLife > particle.maxLife) {
-            return {
-              ...particle,
+      // advance time in ref
+      timeRef.current += settings.speed;
+      // Update particles (in ref only)
+      if (settings.particles && particlesRef.current.length) {
+        const arr = particlesRef.current;
+        for (let i = 0; i < arr.length; i++) {
+          const p = arr[i]! as Particle;
+          const newLife = p.life + 1;
+          if (newLife > p.maxLife) {
+            arr[i] = {
+              ...p,
               x: Math.random() * 800 - 400,
               y: Math.random() * 600 - 300,
               z: Math.random() * 200 - 100,
               life: 0,
               color: getParticleColor(settings.colorScheme)
-            };
+            } as Particle;
+          } else {
+            const gravity = currentMode === 'data' ? -0.1 : 0.05;
+            const newVy = p.vy + gravity;
+            arr[i] = {
+              ...p,
+              x: p.x + p.vx * settings.intensity,
+              y: p.y + newVy * settings.intensity,
+              z: p.z + p.vz * settings.intensity,
+              vy: newVy,
+              life: newLife
+            } as Particle;
           }
-          
-          const gravity = currentMode === 'data' ? -0.1 : 0.05;
-          const newVy = particle.vy + gravity;
-          
-          return {
-            ...particle,
-            x: particle.x + particle.vx * settings.intensity,
-            y: particle.y + newVy * settings.intensity,
-            z: particle.z + particle.vz * settings.intensity,
-            vy: newVy,
-            life: newLife
-          };
-        }));
+        }
       }
-      
-      // Update neural nodes
-      if (settings.neural) {
-        setNeuralNodes(prev => prev.map(node => ({
-          ...node,
-          activity: Math.sin(time * 0.01 + node.id) * 0.5 + 0.5,
-          pulse: Math.sin(time * 0.02 + node.id * 0.5) * 0.3 + 0.7
-        })));
+      // Update neural nodes (in ref only)
+      if (settings.neural && neuralNodesRef.current.length) {
+        const t = timeRef.current;
+        const nodes = neuralNodesRef.current;
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i]! as NeuralNode;
+          nodes[i] = {
+            ...n,
+            activity: Math.sin(t * 0.01 + n.id) * 0.5 + 0.5,
+            pulse: Math.sin(t * 0.02 + n.id * 0.5) * 0.3 + 0.7
+          } as NeuralNode;
+        }
       }
-      
       animationId = requestAnimationFrame(animate);
     };
-    
     animationId = requestAnimationFrame(animate);
-    
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-    };
-  }, [settings, reduce, currentMode, time]);
-  
-  // Mouse interaction
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current || reduce || settings.paused) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-    
-    mouseX.set(x);
-    mouseY.set(y);
-  }, [mouseX, mouseY, reduce, settings.paused]);
-  
-  const handleMouseLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
-  }, [mouseX, mouseY]);
-  
-  // Canvas rendering for particles and neural network
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || (!settings.particles && !settings.neural)) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Render particles
-      if (settings.particles) {
-        particles.forEach(particle => {
-          const alpha = 1 - (particle.life / particle.maxLife);
-          const size = particle.size * alpha;
-          
+    return () => cancelAnimationFrame(animationId);
+  }, [reduce, effectsDisabled, settings.speed, settings.particles, settings.neural, settings.intensity, settings.colorScheme, currentMode]);
+
+// Mouse interaction
+const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  if (!containerRef.current || reduce || effectsDisabled) return;
+
+  const rect = containerRef.current.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  const x = (e.clientX - centerX) / (rect.width / 2);
+  const y = (e.clientY - centerY) / (rect.height / 2);
+
+  mouseX.set(x);
+  mouseY.set(y);
+}, [mouseX, mouseY, reduce, effectsDisabled]);
+
+const handleMouseLeave = useCallback(() => {
+  mouseX.set(0);
+  mouseY.set(0);
+}, [mouseX, mouseY]);
+
+// Canvas rendering for particles and neural network
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas || (!settings.particles && !settings.neural)) return;
+  if (reduce || effectsDisabled) return;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const render = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Render particles
+    if (settings.particles) {
+      particlesRef.current.forEach(particle => {
+        const alpha = 1 - (particle.life / particle.maxLife);
+        const size = particle.size * alpha;
+
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.fillStyle = particle.color;
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = size * 2;
+
+        ctx.beginPath();
+        ctx.arc(
+          particle.x + canvas.width / 2,
+          particle.y + canvas.height / 2,
+          size,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    // Render neural network
+    if (settings.neural) {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      // Draw connections
+      neuralNodesRef.current.forEach(node => {
+        node.connections.forEach(connectionId => {
+          const target = neuralNodesRef.current[connectionId];
+          if (!target) return;
+
           ctx.save();
-          ctx.globalAlpha = alpha * 0.8;
-          ctx.fillStyle = particle.color;
-          ctx.shadowColor = particle.color;
-          ctx.shadowBlur = size * 2;
-          
-          ctx.beginPath();
-          ctx.arc(
-            particle.x + canvas.width / 2,
-            particle.y + canvas.height / 2,
-            size,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-          ctx.restore();
-        });
-      }
-      
-      // Render neural network
-      if (settings.neural) {
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        
-        // Draw connections
-        neuralNodes.forEach(node => {
-          node.connections.forEach(connectionId => {
-            const target = neuralNodes[connectionId];
-            if (!target) return;
-            
-            ctx.save();
-            ctx.globalAlpha = (node.activity + target.activity) * 0.3;
-            ctx.strokeStyle = colorScheme.accent.replace('text-', '#');
-            ctx.lineWidth = 2;
-            ctx.shadowColor = colorScheme.accent.replace('text-', '#');
-            ctx.shadowBlur = 4;
-            
-            ctx.beginPath();
-            ctx.moveTo(node.x + centerX, node.y + centerY);
-            ctx.lineTo(target.x + centerX, target.y + centerY);
-            ctx.stroke();
-            ctx.restore();
-          });
-        });
-        
-        // Draw nodes
-        neuralNodes.forEach(node => {
-          ctx.save();
-          ctx.globalAlpha = node.activity;
-          ctx.fillStyle = colorScheme.accent.replace('text-', '#');
+          ctx.globalAlpha = (node.activity + target.activity) * 0.3;
+          ctx.strokeStyle = colorScheme.accent.replace('text-', '#');
+          ctx.lineWidth = 2;
           ctx.shadowColor = colorScheme.accent.replace('text-', '#');
-          ctx.shadowBlur = 10 * node.pulse;
-          
+          ctx.shadowBlur = 4;
+
           ctx.beginPath();
-          ctx.arc(
-            node.x + centerX,
-            node.y + centerY,
-            5 * node.pulse,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
+          ctx.moveTo(node.x + centerX, node.y + centerY);
+          ctx.lineTo(target.x + centerX, target.y + centerY);
+          ctx.stroke();
           ctx.restore();
         });
-      }
-      
-      if (!settings.paused && !reduce) {
-        requestAnimationFrame(render);
-      }
-    };
-    
-    render();
-  }, [particles, neuralNodes, settings, colorScheme, reduce]);
+      });
+
+      // Draw nodes
+      neuralNodesRef.current.forEach(node => {
+        ctx.save();
+        ctx.globalAlpha = node.activity;
+        ctx.fillStyle = colorScheme.accent.replace('text-', '#');
+        ctx.shadowColor = colorScheme.accent.replace('text-', '#');
+        ctx.shadowBlur = 10 * node.pulse;
+
+        ctx.beginPath();
+        ctx.arc(
+          node.x + centerX,
+          node.y + centerY,
+          5 * node.pulse,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    if (!reduce && !effectsDisabled) {
+      requestAnimationFrame(render);
+    }
+  };
+
+  render();
+}, [settings.particles, settings.neural, colorScheme, reduce, effectsDisabled]);
   
   // Mode-specific content
   const getModeContent = () => {
     const iconClass = `h-8 w-8 ${colorScheme.accent}`;
     
-    const contents = {
+    const contents: Record<PreviewMode, {
+      icon: React.ReactNode;
+      title: string;
+      subtitle: string;
+      description: string;
+    }> = {
       showcase: {
         icon: <Sparkles className={iconClass} />,
         title: "AI-Powered Development",
@@ -453,15 +512,30 @@ const HeroPreview: React.FC = () => {
     
     return contents[currentMode];
   };
+
+  // When effects are disabled, immediately clear canvas and reset mouse springs
+  useEffect(() => {
+    if (!effectsDisabled) return;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    // Reset rotation springs to zero for a static pose
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [effectsDisabled, mouseX, mouseY]);
   
-  const modeContent = getModeContent();
+  const modeContent = React.useMemo(getModeContent, [currentMode, colorScheme.accent]);
   
-  // Glitch effect
-  const glitchStyle = settings.glitch ? {
+  // Glitch effect (gated when effects are disabled)
+  const glitchStyle = settings.glitch && !effectsDisabled ? {
     animation: 'glitch 2s infinite',
     filter: 'hue-rotate(90deg) saturate(150%)'
   } : {};
-  
+
   return (
     <div className="relative w-full max-w-4xl mx-auto">
       {/* Main Preview Container */}
@@ -483,7 +557,7 @@ const HeroPreview: React.FC = () => {
         <div className={`absolute inset-0 bg-gradient-to-br ${colorScheme.primary} opacity-10`} />
         
         {/* Hologram effect */}
-        {settings.hologram && (
+        {settings.hologram && !effectsDisabled && (
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -505,19 +579,41 @@ const HeroPreview: React.FC = () => {
         <div className="absolute top-4 right-4 z-50 flex gap-2">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="p-2 rounded-lg bg-black/20 backdrop-blur border border-white/10 hover:bg-black/30 transition-colors"
+            className="p-2 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 hover:bg-black/60 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-white/40"
             aria-label="Toggle settings"
           >
-            {showSettings ? <X className="h-4 w-4" /> : <Settings2 className="h-4 w-4" />}
+            {showSettings 
+              ? <X className="h-4 w-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" /> 
+              : <Settings2 className="h-4 w-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />}
           </button>
           
           <button
             onClick={() => setSettings(prev => ({ ...prev, paused: !prev.paused }))}
-            className="p-2 rounded-lg bg-black/20 backdrop-blur border border-white/10 hover:bg-black/30 transition-colors"
+            className="p-2 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 hover:bg-black/60 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-white/40"
             aria-label={settings.paused ? "Play" : "Pause"}
           >
-            {settings.paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            {settings.paused 
+              ? <Play className="h-4 w-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" /> 
+              : <Pause className="h-4 w-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />}
           </button>
+          {settings.autoDisabled && (
+            <button
+              onClick={() => setSettings(prev => ({
+                ...prev,
+                autoDisabled: false,
+                manualOverride: true,
+                paused: false,
+                // user can re-enable individual effects in panel; default to lighter config
+                particles: true,
+                neural: true,
+                hologram: false,
+              }))}
+              className="px-2 py-1 rounded-lg bg-yellow-500/20 text-yellow-200 text-xs border border-yellow-300/30 hover:bg-yellow-500/30"
+              title="Enable visual effects despite low FPS"
+            >
+              Enable effects anyway
+            </button>
+          )}
         </div>
         
         {/* Settings Panel */}
@@ -627,8 +723,8 @@ const HeroPreview: React.FC = () => {
         <motion.div
           className="relative h-96 md:h-[480px]"
           style={{
-            rotateX,
-            rotateY,
+            rotateX: effectsDisabled ? 0 : rotateX,
+            rotateY: effectsDisabled ? 0 : rotateY,
             transformStyle: 'preserve-3d'
           }}
         >
@@ -649,10 +745,7 @@ const HeroPreview: React.FC = () => {
             {/* Mode Icon */}
             <motion.div
               className="mb-6"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                rotate: settings.autoRotate ? [0, 360] : 0
-              }}
+              animate={effectsDisabled ? { scale: 1, rotate: 0 } : { scale: [1, 1.1, 1], rotate: settings.autoRotate ? [0, 360] : 0 }}
               transition={{ 
                 scale: { duration: 2, repeat: Infinity },
                 rotate: { duration: 20, repeat: Infinity, ease: "linear" }
@@ -664,7 +757,7 @@ const HeroPreview: React.FC = () => {
             {/* Title */}
             <motion.h2 
               className="text-3xl md:text-4xl font-bold text-white mb-2"
-              animate={{ opacity: [0.8, 1, 0.8] }}
+              animate={effectsDisabled ? { opacity: 1 } : { opacity: [0.8, 1, 0.8] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
               {modeContent.title}
@@ -673,7 +766,7 @@ const HeroPreview: React.FC = () => {
             {/* Subtitle */}
             <motion.p 
               className={`text-lg ${colorScheme.accent} mb-4`}
-              animate={{ y: [0, -5, 0] }}
+              animate={effectsDisabled ? { y: 0 } : { y: [0, -5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               {modeContent.subtitle}
@@ -687,18 +780,38 @@ const HeroPreview: React.FC = () => {
             {/* Status Indicators */}
             <div className="absolute bottom-4 left-4 flex space-x-2">
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <div className={`w-2 h-2 bg-green-400 rounded-full ${effectsDisabled ? '' : 'animate-pulse'}`} />
                 <span className="text-xs text-gray-400">Online</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                <div className={`w-2 h-2 bg-blue-400 rounded-full ${effectsDisabled ? '' : 'animate-pulse'}`} />
                 <span className="text-xs text-gray-400">Processing</span>
               </div>
             </div>
+
+            {/* Low FPS overlay */}
+            {settings.autoDisabled && !settings.manualOverride && (
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 text-center">
+                <div>
+                  <p className="text-sm text-gray-300 mb-2">Effects disabled due to low FPS ({fps}).</p>
+                  <button
+                    onClick={() => setSettings(prev => ({
+                      ...prev,
+                      autoDisabled: false,
+                      manualOverride: true,
+                      paused: false,
+                    }))}
+                    className="px-3 py-1.5 rounded-md bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20"
+                  >
+                    Enable anyway
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Floating Elements */}
-          {Array.from({ length: FLOATING_ELEMENTS }).map((_, i) => (
+          {!effectsDisabled && Array.from({ length: FLOATING_ELEMENTS }).map((_, i) => (
             <motion.div
               key={i}
               className={`absolute w-4 h-4 ${colorScheme.accent} rounded-full opacity-60`}
@@ -723,9 +836,12 @@ const HeroPreview: React.FC = () => {
         
         {/* Performance Stats */}
         <div className="absolute bottom-4 right-4 text-xs text-gray-400 font-mono">
-          <div>FPS: 60</div>
+          <div>FPS: {fps}</div>
           <div>Particles: {settings.particles ? PARTICLE_COUNT : 0}</div>
           <div>Mode: {currentMode}</div>
+          {settings.autoDisabled && !settings.manualOverride && (
+            <div className="text-yellow-300">Auto-disabled</div>
+          )}
         </div>
       </motion.div>
       
@@ -748,4 +864,4 @@ const HeroPreview: React.FC = () => {
   );
 };
 
-export default HeroPreview;
+export default React.memo(HeroPreview);
