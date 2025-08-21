@@ -4,7 +4,7 @@ import { ArrowRight, Play, Sparkles, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { TOKENS, useReducedMotionPref } from "../tokens";
-// TODO: Import HeroPreview and AnimatedCounter when implemented
+import HeroPreview from "./HeroPreview";
 
 const Hero = () => {
   const reduce = useReducedMotionPref();
@@ -145,7 +145,9 @@ const Hero = () => {
           </motion.div>
 
           {/* Hero Preview */}
-          <div>{/* <HeroPreview /> */}</div>
+          <div>
+            <HeroPreview />
+          </div>
         </div>
 
         {/* Scroll Cue */}
