@@ -91,7 +91,7 @@ const PricingTeaser: React.FC = () => {
                     : "bg-white text-blue-700 border border-slate-200 hover:bg-slate-100"
                 }`}
               >
-                Let's Talk
+                                 Let&apos;s Talk
               </button>
             </Link>
           </div>

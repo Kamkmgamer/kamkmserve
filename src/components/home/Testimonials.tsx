@@ -51,7 +51,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, author, role }
       ))}
     </div>
     <blockquote className="mb-4 text-lg italic text-slate-700 dark:text-slate-200">
-      "{quote}"
+      &ldquo;{quote}&rdquo;
     </blockquote>
     <figcaption className={`text-sm ${TOKENS.textMuted}`}>
       <span className="font-medium text-slate-800 dark:text-slate-100">{author}</span> · {role}

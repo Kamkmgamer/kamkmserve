@@ -7,7 +7,7 @@ import { TOKENS } from "../tokens";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i: number = 0) => ({
+  visible: (i = 0) => ({
     opacity: 1,
     y: 0,
     transition: {

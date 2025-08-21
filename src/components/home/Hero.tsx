@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Play, Sparkles, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { TOKENS, useReducedMotionPref } from "../tokens";
 // TODO: Import HeroPreview and AnimatedCounter when implemented
 
@@ -124,20 +125,22 @@ const Hero = () => {
               variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
               className="mt-8 flex items-center justify-center gap-4 md:justify-start"
             >
-              {[
-                { src: 'https://www.svgrepo.com/show/354512/vercel.svg', alt: 'Vercel' },
-                { src: 'https://www.svgrepo.com/show/448299/aws.svg', alt: 'Amazon Web Services' },
-                { src: 'https://www.svgrepo.com/show/521303/react-16.svg', alt: 'React' },
-                { src: 'https://www.svgrepo.com/show/521320/typescript-16.svg', alt: 'TypeScript' }
-              ].map((logo, i) => (
-                <img
-                  key={i}
-                  src={logo.src}
-                  alt={logo.alt}
-                  className="h-5 w-auto opacity-70 grayscale hover:opacity-100 transition-opacity"
-                  loading="lazy"
-                />
-              ))}
+                             {[
+                 { src: 'https://www.svgrepo.com/show/354512/vercel.svg', alt: 'Vercel' },
+                 { src: 'https://www.svgrepo.com/show/448299/aws.svg', alt: 'Amazon Web Services' },
+                 { src: 'https://www.svgrepo.com/show/521303/react-16.svg', alt: 'React' },
+                 { src: 'https://www.svgrepo.com/show/521320/typescript-16.svg', alt: 'TypeScript' }
+               ].map((logo, i) => (
+                 <Image
+                   key={i}
+                   src={logo.src}
+                   alt={logo.alt}
+                   width={20}
+                   height={20}
+                   className="h-5 w-auto opacity-70 grayscale hover:opacity-100 transition-opacity"
+                   unoptimized
+                 />
+               ))}
             </motion.div>
           </motion.div>
 
