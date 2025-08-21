@@ -10,26 +10,26 @@ export default function HomePage() {
         {/* Hero */}
         <section className="mx-auto max-w-7xl px-4 pb-20 pt-28 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-black/80 backdrop-blur dark:border-white/10">
-              <span className="h-1.5 w-1.5 rounded-full bg-lime-400" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-token bg-surface px-3 py-1 text-xs text-muted backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]" />
               Launch websites faster — no code required
             </span>
             <h1 className="mt-6 bg-[linear-gradient(90deg,#60a5fa,#a78bfa,#34d399,#60a5fa)] bg-[length:200%_100%] bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-6xl animate-[shimmer_8s_linear_infinite]">
               Build and host beautiful websites in minutes
             </h1>
-            <p className="mt-5 text-lg leading-7 text-black/70 dark:text-black/70">
+            <p className="mt-5 text-lg leading-7 text-muted">
               KAMKM Serve is your all‑in‑one platform for website building and managed web services. Design, deploy, and scale with zero DevOps overhead.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="#pricing"
-                className="inline-flex items-center justify-center rounded-full bg-black px-6 py-3 text-black shadow-sm transition hover:opacity-90 dark:bg-white dark:text-black"
+                className="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-white shadow-card transition hover:opacity-90"
               >
                 Get Started Free
               </Link>
               <Link
                 href="#features"
-                className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/70 px-6 py-3 text-black/80 shadow-sm backdrop-blur transition hover:shadow dark:border-white/15 dark:bg-white/10 dark:text-black/90"
+                className="inline-flex items-center justify-center rounded-full border border-token bg-surface px-6 py-3 text-[var(--color-text)] shadow-card backdrop-blur transition hover:shadow"
               >
                 Explore Features
               </Link>
@@ -48,7 +48,7 @@ export default function HomePage() {
             ].map((brand) => (
               <div
                 key={brand}
-                className="flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-black/70 backdrop-blur dark:border-white/10"
+                className="flex items-center justify-center rounded-xl border border-token bg-surface px-3 py-3 text-sm text-muted backdrop-blur"
               >
                 {brand}
               </div>
@@ -60,7 +60,7 @@ export default function HomePage() {
         <section id="features" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Powerful features for modern teams</h2>
-            <p className="mt-3 text-black/70 dark:text-black/70">
+            <p className="mt-3 text-muted">
               Everything you need to design, publish, and operate professional websites — all in one place.
             </p>
           </div>
@@ -100,13 +100,13 @@ export default function HomePage() {
             ].map((f) => (
               <div
                 key={f.title}
-                className="group rounded-2xl border border-white/10 bg-white/60 p-5 shadow-sm transition hover:shadow-md backdrop-blur dark:bg-white/5"
+                className="group rounded-2xl border border-token bg-surface p-5 shadow-card transition hover:shadow-md backdrop-blur"
               >
                 <div className="flex items-start gap-3">
                   <div className="text-xl">{f.icon}</div>
                   <div>
                     <h3 className="text-lg font-medium">{f.title}</h3>
-                    <p className="mt-1 text-sm text-black/70 dark:text-black/70">{f.desc}</p>
+                    <p className="mt-1 text-sm text-muted">{f.desc}</p>
                   </div>
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function HomePage() {
 
         {/* Highlight/Stats */}
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-8 rounded-2xl border border-white/10 bg-white/60 p-8 backdrop-blur md:grid-cols-3 dark:bg-white/5">
+          <div className="grid items-center gap-8 rounded-2xl border border-token bg-surface p-8 shadow-card backdrop-blur md:grid-cols-3">
             {[
               { k: "Websites launched", v: "12,400+" },
               { k: "Avg. page speed", v: "99/100" },
@@ -124,7 +124,7 @@ export default function HomePage() {
             ].map((s) => (
               <div key={s.k} className="text-center">
                 <div className="text-3xl font-semibold">{s.v}</div>
-                <div className="mt-1 text-sm text-black/70 dark:text-black/70">{s.k}</div>
+                <div className="mt-1 text-sm text-muted">{s.k}</div>
               </div>
             ))}
           </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
         <section id="pricing" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Simple, transparent pricing</h2>
-            <p className="mt-3 text-black/70 dark:text-black/70">Start free. Scale as you grow. Cancel anytime.</p>
+            <p className="mt-3 text-muted">Start free. Scale as you grow. Cancel anytime.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -185,8 +185,8 @@ export default function HomePage() {
                 key={p.name}
                 className={`relative rounded-2xl border p-6 backdrop-blur ${
                   p.highlight
-                    ? "border-black/10 bg-black text-black shadow-xl dark:border-white/15 dark:bg-white/10"
-                    : "border-white/10 bg-white/60 shadow-sm dark:bg-white/5"
+                    ? "border-token bg-brand text-white shadow-xl"
+                    : "border-token bg-surface shadow-card"
                 }`}
               >
                 {p.highlight && (
@@ -213,7 +213,7 @@ export default function HomePage() {
                     className={`inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm transition ${
                       p.highlight
                         ? "bg-white text-black hover:opacity-90"
-                        : "border border-black/10 bg-white/70 text-black hover:shadow dark:border-white/15 dark:bg-white/10 dark:text-black"
+                        : "border border-token bg-surface text-muted hover:shadow-card"
                     }`}
                   >
                     {p.cta}
@@ -228,7 +228,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Loved by founders and agencies</h2>
-            <p className="mt-3 text-black/70 dark:text-black/70">Here’s what our customers say about building with KAMKM Serve.</p>
+            <p className="mt-3 text-muted">Here’s what our customers say about building with KAMKM Serve.</p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
@@ -253,11 +253,11 @@ export default function HomePage() {
             ].map((t, i) => (
               <figure
                 key={i}
-                className="rounded-2xl border border-white/10 bg-white/60 p-5 shadow-sm backdrop-blur dark:bg-white/5"
+                className="rounded-2xl border border-token bg-surface p-5 shadow-card backdrop-blur"
               >
-                <blockquote className="text-sm leading-6 text-black/80 dark:text-black/80">“{t.quote}”</blockquote>
-                <figcaption className="mt-4 text-xs text-black/60 dark:text-black/60">
-                  <span className="font-medium text-black/80 dark:text-black/80">{t.name}</span> — {t.role}
+                <blockquote className="text-sm leading-6">“{t.quote}”</blockquote>
+                <figcaption className="mt-4 text-xs text-muted">
+                  <span className="font-medium">{t.name}</span> — {t.role}
                 </figcaption>
               </figure>
             ))}
@@ -268,7 +268,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-5xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Frequently asked questions</h2>
-            <p className="mt-3 text-black/70 dark:text-black/70">Have another question? Reach out via chat or email.</p>
+            <p className="mt-3 text-muted">Have another question? Reach out via chat or email.</p>
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
@@ -290,9 +290,9 @@ export default function HomePage() {
                 a: "You own your content. Export static files anytime from your dashboard.",
               },
             ].map((f) => (
-              <div key={f.q} className="rounded-2xl border border-white/10 bg-white/60 p-5 backdrop-blur dark:bg-white/5">
+              <div key={f.q} className="rounded-2xl border border-token bg-surface p-5 backdrop-blur">
                 <h3 className="font-medium">{f.q}</h3>
-                <p className="mt-1 text-sm text-black/70 dark:text-black/70">{f.a}</p>
+                <p className="mt-1 text-sm text-muted">{f.a}</p>
               </div>
             ))}
           </div>
@@ -301,3 +301,4 @@ export default function HomePage() {
     </main>
   );
 }
+

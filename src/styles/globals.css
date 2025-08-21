@@ -4,3 +4,47 @@
   --font-sans: ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+/* Design tokens per UI Guide */
+:root {
+  --color-bg: #ffffff; /* Background */
+  --color-surface: #f8fafc; /* Surface */
+  --color-text: #0f172a; /* Text Primary */
+  --color-text-muted: #475569; /* Text Muted */
+  --color-brand: #2563eb; /* Brand */
+  --color-accent: #f97316; /* Accent */
+  --color-border: #e2e8f0; /* Border */
+  --color-error: #dc2626; /* Error */
+  --color-success: #16a34a; /* Success */
+}
+
+.dark {
+  --color-bg: #0f172a; /* slate-950 */
+  --color-surface: #1e293b; /* slate-800 */
+  --color-text: #f8fafc; /* Text Primary */
+  --color-text-muted: #94a3b8; /* Text Muted */
+  --color-brand: #3b82f6; /* Brand */
+  --color-accent: #fb923c; /* Accent */
+  --color-border: #334155; /* Border */
+  --color-error: #ef4444; /* Error */
+  --color-success: #22c55e; /* Success */
+}
+
+/* Base application styles using tokens */
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Helpful utilities mapping tokens (Tailwind v4 allows arbitrary values too) */
+.text-muted { color: var(--color-text-muted); }
+.bg-surface { background-color: var(--color-surface); }
+.border-token { border-color: var(--color-border); }
+.text-brand { color: var(--color-brand); }
+.bg-brand { background-color: var(--color-brand); }
+.text-accent { color: var(--color-accent); }
+.bg-accent { background-color: var(--color-accent); }
+
+/* Card shadow token from guide */
+.shadow-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }

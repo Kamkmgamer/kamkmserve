@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`}>
-        <body>
+        <body className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
           <Navbar />
           {children}
         </body>
