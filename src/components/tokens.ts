@@ -28,15 +28,12 @@ export const useIsTouch = () =>
   typeof window !== "undefined" &&
   ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
-export const useInViewOnce = <T extends HTMLElement>(
-  margin?: string
-) => {
+export const useInViewOnce = <T extends HTMLElement>() => {
   const ref = useRef<T | null>(null);
 
   const inView = useInView(ref, {
-    ...(margin ? { margin } : {}),
     once: true,
-  } as any);
+  });
 
   return [ref, inView] as const;
 };

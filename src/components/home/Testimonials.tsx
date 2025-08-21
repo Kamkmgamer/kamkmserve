@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { Star } from "lucide-react";
@@ -11,7 +11,7 @@ interface Testimonial {
   role: string;
 }
 
-interface TestimonialCardProps extends Testimonial {}
+type TestimonialCardProps = Testimonial;
 
 const cardVariants: Variants = {
   enter: {
@@ -86,14 +86,14 @@ const Testimonials: React.FC = () => {
   const reduce = useReducedMotionPref();
   const [wrapRef, inView] = useInViewOnce<HTMLDivElement>();
 
-  const next = () => setIndex((i) => (i + 1) % slides.length);
-  const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length);
+  const next = useCallback(() => setIndex((i) => (i + 1) % slides.length), [slides.length]);
+  const prev = useCallback(() => setIndex((i) => (i - 1 + slides.length) % slides.length), [slides.length]);
 
   useEffect(() => {
     if (reduce || paused || !inView) return;
     const t = setInterval(next, 6000);
     return () => clearInterval(t);
-  }, [reduce, paused, inView]);
+  }, [reduce, paused, inView, next]);
 
   return (
     <div

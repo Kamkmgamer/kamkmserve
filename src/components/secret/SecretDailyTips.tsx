@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { TOKENS } from "../tokens";
+
 
 const SecretDailyTips: React.FC<{ className?: string }> = ({ className = "" }) => {
   return (
@@ -59,7 +59,7 @@ const SecretDailyTips: React.FC<{ className?: string }> = ({ className = "" }) =
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                    Today's Insight
+                    Today&apos;s Insight
                   </h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400">Powered by AI</p>
                 </div>
@@ -73,18 +73,18 @@ const SecretDailyTips: React.FC<{ className?: string }> = ({ className = "" }) =
                     <strong>AI features are now live!</strong> This is a demo of the rich text capabilities.
                   </p>
                   <p className="mt-4">
-                    <em>Enjoy seamless integration with your AI backend.</em>
+                    <em>Enjoy seamless integration with your AI system.</em>
                   </p>
                   <p className="mt-4">
                     Here is a code block example:
                   </p>
                   <pre className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 overflow-x-auto shadow-sm">
                     <code className="text-sm font-mono text-slate-800 dark:text-slate-200 leading-relaxed">
-                      // Modern asynchronous function{'\n'}
-                      async function fetchData(url) {'{'}{'\n'}
-                      {'  '}const response = await fetch(url);{'\n'}
-                      {'  '}return response.json();{'\n'}
-                      {'}'}
+                      {`// Modern asynchronous function
+async function fetchData(url) {
+  const response = await fetch(url);
+  return response.json();
+}`}
                     </code>
                   </pre>
                   <p className="mt-4">

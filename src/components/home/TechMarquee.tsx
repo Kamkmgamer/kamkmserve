@@ -9,7 +9,7 @@ interface TechMarqueeProps {
 
 const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20 }) => {
   const reduce = useReducedMotionPref();
-  const [wrapRef, inView] = useInViewOnce<HTMLDivElement>("0px 0px -10% 0px");
+  const [wrapRef, inView] = useInViewOnce<HTMLDivElement>();
 
   const items = useMemo(
     () => [
