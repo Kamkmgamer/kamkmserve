@@ -14,6 +14,8 @@ export default function CosmicVisualization() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const container = containerRef.current; // Capture the ref value
+
     // Scene setup
     const scene = new THREE.Scene();
     sceneRef.current = scene;
@@ -33,7 +35,7 @@ export default function CosmicVisualization() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Create particles
@@ -143,7 +145,7 @@ export default function CosmicVisualization() {
 
     // Handle resize
     const handleResize = () => {
-      if (cameraRef.current && rendererRef.current && containerRef.current) {
+      if (cameraRef.current && rendererRef.current) {
         cameraRef.current.aspect = window.innerWidth / window.innerHeight;
         cameraRef.current.updateProjectionMatrix();
         rendererRef.current.setSize(window.innerWidth, window.innerHeight);
@@ -159,8 +161,8 @@ export default function CosmicVisualization() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
 
-      if (containerRef.current && rendererRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
+      if (container && rendererRef.current) {
+        container.removeChild(rendererRef.current.domElement);
       }
 
       if (sceneRef.current) {
