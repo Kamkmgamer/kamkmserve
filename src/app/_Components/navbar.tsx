@@ -36,11 +36,25 @@ export default function Navbar() {
           >
             Contact
           </Link>
+          <SignedIn>
+            <Link
+              href="/protected"
+              className="rounded-full px-3 py-1 text-sm text-black/80 transition hover:bg-black/5 hover:text-black dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              Dashboard
+            </Link>
+          </SignedIn>
         </div>
 
         {/* Auth */}
         <div className="flex items-center gap-2">
           <SignedOut>
+            <Link
+              href="/sign-up"
+              className="hidden rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-sm text-black/80 shadow-sm transition hover:shadow md:inline-block dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/15"
+            >
+              Sign up
+            </Link>
             <SignInButton mode="modal">
               <button className="rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-sm text-black/80 shadow-sm transition hover:shadow md:px-3.5 dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/15">
                 Sign in
