@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "./_Components/navbar"; // add this import
+import Footer from "../components/layout/Footer";
 
 
 import { type Metadata } from "next";
@@ -28,6 +29,7 @@ export default function RootLayout({
         <body className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
           <Navbar />
           {children}
+          <Footer />
         </body>
       </html>
     </ClerkProvider>
