@@ -10,7 +10,7 @@ import { Geist } from "next/font/google";
 export const metadata: Metadata = {
   title: "KAMKM Serve",
   description: "KAMKM Serve",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "https://ik.imagekit.io/gtnmxyt2d/servises%20store/favicon.png" }],
 };
 
 const geist = Geist({
