@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { Calendar } from "lucide-react";
-import Link from "next/link";
+import Button from "~/components/ui/button";
 import { TOKENS } from "../tokens";
 
 const fadeUp: Variants = {
@@ -61,27 +61,23 @@ const CTA: React.FC = () => {
             custom={2}
             className="flex flex-col justify-center gap-4 sm:flex-row"
           >
-            <Link href="/contact">
-              <button
-                className="transition-transform duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg shadow-blue-500/20 ring-1 ring-white/10"
-              >
-                Get Started Today
-              </button>
-            </Link>
+            <Button href="/contact" variant="primary" size="lg">
+              Get Started Today
+            </Button>
 
-            <a
+            <Button
               href="https://calendly.com"
               target="_blank"
               rel="noopener noreferrer"
               title="Schedule a call on Calendly"
+              variant="cta-ghost"
+              size="lg"
             >
-              <button
-                className="transition-transform duration-300 hover:scale-105 bg-white/90 text-blue-700 border border-blue-400 px-6 py-3 rounded-full font-semibold flex items-center dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/15"
-              >
+              <span className="inline-flex items-center">
                 <Calendar className="mr-2 h-4 w-4" />
                 Schedule a Call
-              </button>
-            </a>
+              </span>
+            </Button>
           </motion.div>
 
           <motion.div

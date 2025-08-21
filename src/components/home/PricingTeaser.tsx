@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Link from "next/link";
+import Button from "~/components/ui/button";
 import { CheckCircle2, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { TOKENS } from "../tokens";
@@ -83,17 +83,13 @@ const PricingTeaser: React.FC = () => {
               ))}
             </ul>
 
-            <Link href={p.cta}>
-              <button
-                className={`w-full transition-transform duration-200 hover:scale-[1.02] px-4 py-2 rounded-full font-medium ${
-                  p.featured
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                    : "bg-white text-blue-700 border border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                                 Let&apos;s Talk
-              </button>
-            </Link>
+            <Button
+              href={p.cta}
+              className="w-full"
+              variant={p.featured ? "primary" : "cta-light"}
+            >
+              Let&apos;s Talk
+            </Button>
           </div>
         </motion.div>
       ))}

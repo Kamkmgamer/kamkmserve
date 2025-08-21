@@ -4,6 +4,7 @@ import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { Star } from "lucide-react";
 import { TOKENS, useReducedMotionPref, useInViewOnce } from "../tokens";
+import Button from "~/components/ui/button";
 
 interface Testimonial {
   quote: string;
@@ -153,20 +154,12 @@ const Testimonials: React.FC = () => {
       </div>
 
       <div className="mt-4 flex justify-center gap-3">
-        <button
-          onClick={prev}
-          aria-label="Previous testimonial"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 transition-colors"
-        >
+        <Button onClick={prev} aria-label="Previous testimonial" variant="secondary" size="sm">
           Prev
-        </button>
-        <button
-          onClick={next}
-          aria-label="Next testimonial"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 transition-colors"
-        >
+        </Button>
+        <Button onClick={next} aria-label="Next testimonial" variant="secondary" size="sm">
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

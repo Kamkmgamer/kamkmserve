@@ -1,8 +1,8 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Play, Sparkles, ChevronDown } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
+import Button from "~/components/ui/button";
 import { TOKENS, useReducedMotionPref } from "../tokens";
 import HeroPreview from "./HeroPreview";
 import AnimatedCounter from "../ui/animated-counter";
@@ -77,24 +77,26 @@ const Hero = () => {
               variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
               className="mb-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start"
             >
-              <Link href="/contact" aria-label="Start your project">
-                <button className="group hover:scale-105 transition-transform bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-semibold flex items-center">
+              <Button href="/contact" aria-label="Start your project" variant="primary" size="lg">
+                <span className="inline-flex items-center">
                   Start Your Project
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </button>
-              </Link>
-              <a
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </span>
+              </Button>
+              <Button
                 href="https://khalils-portfolio.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="View my work"
                 title="Open portfolio in a new tab"
+                variant="secondary"
+                size="lg"
               >
-                <button className="group hover:scale-105 transition-transform bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 px-6 py-3 rounded-full font-semibold flex items-center">
+                <span className="inline-flex items-center">
                   <Play className="mr-2 h-4 w-4" />
                   View Work
-                </button>
-              </a>
+                </span>
+              </Button>
             </motion.div>
 
             {/* Counters */}
