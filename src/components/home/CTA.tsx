@@ -31,7 +31,7 @@ const CTA: React.FC = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className={`relative z-10 overflow-hidden ${TOKENS.surfaceGlass} ${TOKENS.radius.xl} p-8 md:p-12 ${TOKENS.shadow}`}
+        className={`relative z-10 overflow-hidden ${TOKENS.surfaceGlass} ${TOKENS.radius.xl} p-8 md:p-12 ${TOKENS.shadow} max-w-5xl mx-auto border border-white/10 backdrop-blur-xl`}
       >
         {/* Decorative Shape */}
         <div
@@ -63,7 +63,7 @@ const CTA: React.FC = () => {
           >
             <Link href="/contact">
               <button
-                className="transition-transform duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-semibold"
+                className="transition-transform duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg shadow-blue-500/20 ring-1 ring-white/10"
               >
                 Get Started Today
               </button>
@@ -76,7 +76,7 @@ const CTA: React.FC = () => {
               title="Schedule a call on Calendly"
             >
               <button
-                className="transition-transform duration-300 hover:scale-105 bg-white text-blue-700 border border-blue-500 px-6 py-3 rounded-full font-semibold flex items-center"
+                className="transition-transform duration-300 hover:scale-105 bg-white/90 text-blue-700 border border-blue-400 px-6 py-3 rounded-full font-semibold flex items-center dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/15"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 Schedule a Call

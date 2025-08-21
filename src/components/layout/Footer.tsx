@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
 
 	return (
 		<footer
-			className="relative mt-16 border-t border-slate-200 bg-slate-50/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/60"
+			className="relative border-t border-slate-200 bg-slate-50 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950"
 			role="contentinfo"
 		>
 			<div
@@ -87,7 +87,7 @@ const Footer: React.FC = () => {
 							</span>
 						</Link>
 
-						<p className="mt-4 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-400">
+						<p className="mt-4 max-w-md text-sm leading-6 text-slate-400">
 							Build, deploy, and scale your projects faster. DevServe streamlines your developer workflow with powerful, intuitive tools.
 						</p>
 
@@ -111,12 +111,12 @@ const Footer: React.FC = () => {
 									type="email"
 									required
 									placeholder="you@example.com"
-									className="w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+									className="w-full rounded-full border border-slate-300 bg-white pl-9 pr-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
 								/>
 							</div>
 							<button
 								type="submit"
-								className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-400"
+								className="inline-flex items-center justify-center rounded-full bg-blue-600 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-400"
 							>
 								Subscribe
 							</button>

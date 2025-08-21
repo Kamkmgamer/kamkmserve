@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { TOKENS, useReducedMotionPref } from "../tokens";
 import HeroPreview from "./HeroPreview";
+import AnimatedCounter from "../ui/animated-counter";
 
 const Hero = () => {
   const reduce = useReducedMotionPref();
@@ -102,7 +103,6 @@ const Hero = () => {
               className={`mx-auto max-w-xl ${TOKENS.surfaceGlass} ${TOKENS.radius.lg} p-4 md:mx-0 backdrop-blur-md`}
             >
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {/* TODO: Replace with AnimatedCounter */}
                 {[
                   { label: "Projects", value: 150, suffix: "+" },
                   { label: "Satisfaction", value: 98, suffix: "%" },
@@ -111,8 +111,7 @@ const Hero = () => {
                 ].map((s) => (
                   <div key={s.label} className="text-center">
                     <div className={`text-xl font-bold ${TOKENS.textHeading}`} aria-label={`${s.value}${s.suffix} ${s.label}`}>
-                      {/* <AnimatedCounter end={s.value} suffix={s.suffix} /> */}
-                      {s.value}{s.suffix}
+                      <AnimatedCounter end={s.value} suffix={s.suffix} />
                     </div>
                     <div className={`text-xs ${TOKENS.textMuted}`}>{s.label}</div>
                   </div>
@@ -125,22 +124,22 @@ const Hero = () => {
               variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
               className="mt-8 flex items-center justify-center gap-4 md:justify-start"
             >
-                             {[
-                 { src: 'https://www.svgrepo.com/show/354512/vercel.svg', alt: 'Vercel' },
-                 { src: 'https://www.svgrepo.com/show/448299/aws.svg', alt: 'Amazon Web Services' },
-                 { src: 'https://www.svgrepo.com/show/521303/react-16.svg', alt: 'React' },
-                 { src: 'https://www.svgrepo.com/show/521320/typescript-16.svg', alt: 'TypeScript' }
-               ].map((logo, i) => (
-                 <Image
-                   key={i}
-                   src={logo.src}
-                   alt={logo.alt}
-                   width={20}
-                   height={20}
-                   className="h-5 w-auto opacity-70 grayscale hover:opacity-100 transition-opacity"
-                   unoptimized
-                 />
-               ))}
+              {[
+                { src: 'https://www.svgrepo.com/show/354512/vercel.svg', alt: 'Vercel' },
+                { src: 'https://www.svgrepo.com/show/448299/aws.svg', alt: 'Amazon Web Services' },
+                { src: 'https://www.svgrepo.com/show/521303/react-16.svg', alt: 'React' },
+                { src: 'https://www.svgrepo.com/show/521320/typescript-16.svg', alt: 'TypeScript' }
+              ].map((logo, i) => (
+              <Image
+                key={i}
+                src={logo.src}
+                alt={logo.alt}
+                width={20}
+                height={20}
+                className="h-5 w-auto opacity-70 grayscale hover:opacity-100 transition-opacity"
+                unoptimized
+              />
+            ))}
             </motion.div>
           </motion.div>
 

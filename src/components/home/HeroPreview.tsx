@@ -99,16 +99,8 @@ const HeroPreview: React.FC = () => {
   const rotateX = useTransform(mouseY, [-1, 1], [15, -15]);
   const rotateY = useTransform(mouseX, [-1, 1], [-15, 15]);
   
-  // Settings state
-  const [settings, setSettings] = useState<Settings>(() => {
-    if (typeof window === 'undefined') return defaultSettings;
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? { ...defaultSettings, ...JSON.parse(saved) as Partial<Settings> } : defaultSettings;
-    } catch {
-      return defaultSettings;
-    }
-  });
+  // Settings state (init to default for consistent SSR/CSR markup)
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
   
   // UI state
   const [showSettings, setShowSettings] = useState(false);
@@ -121,6 +113,19 @@ const HeroPreview: React.FC = () => {
   
   const settingsPanelId = useId();
   
+  // Load settings from localStorage after mount (avoid hydration mismatch)
+  useEffect(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<Settings>;
+        setSettings(prev => ({ ...prev, ...parsed }));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   // Save settings to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
