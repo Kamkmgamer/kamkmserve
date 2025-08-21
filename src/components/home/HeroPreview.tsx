@@ -306,7 +306,7 @@ const HeroPreview: React.FC = () => {
       if (settings.particles && particlesRef.current.length) {
         const arr = particlesRef.current;
         for (let i = 0; i < arr.length; i++) {
-          const p = arr[i]! as Particle;
+          const p = arr[i]!;
           const newLife = p.life + 1;
           if (newLife > p.maxLife) {
             arr[i] = {
@@ -316,7 +316,7 @@ const HeroPreview: React.FC = () => {
               z: Math.random() * 200 - 100,
               life: 0,
               color: getParticleColor(settings.colorScheme)
-            } as Particle;
+            };
           } else {
             const gravity = currentMode === 'data' ? -0.1 : 0.05;
             const newVy = p.vy + gravity;
@@ -327,7 +327,7 @@ const HeroPreview: React.FC = () => {
               z: p.z + p.vz * settings.intensity,
               vy: newVy,
               life: newLife
-            } as Particle;
+            };
           }
         }
       }
@@ -336,12 +336,12 @@ const HeroPreview: React.FC = () => {
         const t = timeRef.current;
         const nodes = neuralNodesRef.current;
         for (let i = 0; i < nodes.length; i++) {
-          const n = nodes[i]! as NeuralNode;
+          const n = nodes[i]!;
           nodes[i] = {
             ...n,
             activity: Math.sin(t * 0.01 + n.id) * 0.5 + 0.5,
             pulse: Math.sin(t * 0.02 + n.id * 0.5) * 0.3 + 0.7
-          } as NeuralNode;
+          };
         }
       }
       animationId = requestAnimationFrame(animate);
