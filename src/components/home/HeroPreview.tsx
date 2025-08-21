@@ -4,7 +4,6 @@ import React, {
   useEffect, 
   useRef, 
   useState, 
-  useMemo,
   useId 
 } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
@@ -19,13 +18,7 @@ import {
   Settings2,
   X,
   Play,
-  Pause,
-  RotateCcw,
-  Maximize2,
-  Eye,
-  Palette,
-  Volume2,
-  VolumeX
+  Pause
 } from 'lucide-react';
 import { TOKENS, useReducedMotionPref } from '../tokens';
 
@@ -99,8 +92,6 @@ const HeroPreview: React.FC = () => {
   // Refs for 3D interaction
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
   
   // 3D rotation state
   const mouseX = useSpring(0, { stiffness: 300, damping: 30 });
@@ -113,7 +104,7 @@ const HeroPreview: React.FC = () => {
     if (typeof window === 'undefined') return defaultSettings;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+      return saved ? { ...defaultSettings, ...JSON.parse(saved) as Partial<Settings> } : defaultSettings;
     } catch {
       return defaultSettings;
     }
@@ -121,7 +112,6 @@ const HeroPreview: React.FC = () => {
   
   // UI state
   const [showSettings, setShowSettings] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentMode, setCurrentMode] = useState<PreviewMode>(settings.mode);
   
   // Animation state
@@ -134,7 +124,11 @@ const HeroPreview: React.FC = () => {
   // Save settings to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      } catch {
+        // ignore storage errors
+      }
     }
   }, [settings]);
   
@@ -203,7 +197,7 @@ const HeroPreview: React.FC = () => {
       rainbow: ['#ff0080', '#00ff80', '#8000ff', '#ff8000', '#0080ff']
     };
     const palette = colors[scheme];
-    return palette[Math.floor(Math.random() * palette.length)];
+    return palette[Math.floor(Math.random() * palette.length)] ?? '#00f5ff';
   };
   
   // Color scheme gradients
