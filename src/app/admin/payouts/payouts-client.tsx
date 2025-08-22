@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import toast from "react-hot-toast";
 
 export type Payout = {
   id: string;
@@ -39,6 +40,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     status: "PENDING" as Payout["status"],
     payoutDate: "",
   });
+  const [search, setSearch] = useState("");
 
   const resetForm = () => {
     setForm({ referralId: "", amount: "0", status: "PENDING", payoutDate: "" });
@@ -75,8 +77,9 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
         });
         const raw: unknown = await res.json();
         const json = raw as { data: Payout; error?: unknown };
-        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update payout");
+        if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to update payout");
         setItems((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
+        toast.success("Payout updated successfully");
       } else {
         const res = await fetch(`/api/admin/payouts`, {
           method: "POST",
@@ -90,14 +93,15 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
         });
         const raw: unknown = await res.json();
         const json = raw as { data: Payout; error?: unknown };
-        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create payout");
+        if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to create payout");
         setItems((prev) => [json.data, ...prev]);
+        toast.success("Payout created successfully");
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -109,19 +113,50 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       const res = await fetch(`/api/admin/payouts/${id}`, { method: "DELETE" });
       const raw: unknown = await res.json();
       const json = raw as { error?: unknown };
-      if (!res.ok) throw new Error(fmtError(json.error) || "Failed to delete payout");
+      if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to delete payout");
       setItems((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Payout deleted successfully");
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   }
+
+  async function onMarkAsPaid(id: string) {
+    if (!confirm("Mark this payout as PAID?\nThis will also mark related commissions as PAID.")) return;
+    try {
+      const res = await fetch(`/api/admin/payouts/${id}/mark-paid`, { method: "PATCH" });
+      const raw: unknown = await res.json();
+      const json = raw as { data: Payout; error?: unknown };
+      if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to mark payout as PAID");
+      // Update the local state with the updated payout
+      setItems((prev) => prev.map((p) => (p.id === id ? json.data : p)));
+      toast.success("Payout marked as PAID");
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  // Filter items based on search; case insensitive search on referralCode
+  const filteredItems = items.filter((p) =>
+    p.referralCode.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Payouts</h1>
-        <Button onClick={openCreate}>Add Payout</Button>
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            placeholder="Search by referral code"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-2 py-1 border rounded"
+          />
+          <Button onClick={openCreate}>Add Payout</Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -137,7 +172,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
             </TR>
           </THead>
           <TBody>
-            {items.map((p) => (
+            {filteredItems.map((p) => (
               <TR key={p.id}>
                 <TD>{p.referralCode}</TD>
                 <TD>${(p.amount / 100).toFixed(2)}</TD>
@@ -145,6 +180,11 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
                 <TD>{p.payoutDate ? new Date(p.payoutDate).toLocaleDateString() : "—"}</TD>
                 <TD>{new Date(p.createdAt).toLocaleString()}</TD>
                 <TD className="text-right space-x-2">
+                  {p.status !== "PAID" && (
+                    <Button variant="outline" size="sm" onClick={() => onMarkAsPaid(p.id)}>
+                      Mark as Paid
+                    </Button>
+                  )}
                   <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>
                     Edit
                   </Button>
