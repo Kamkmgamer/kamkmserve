@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
 
 export default function OrderActions({ id, initialStatus }: { id: string; initialStatus: string }) {
   const [status, setStatus] = useState(initialStatus);
@@ -18,9 +19,10 @@ export default function OrderActions({ id, initialStatus }: { id: string; initia
       const json = (await res.json()) as { data?: { status?: string }; error?: unknown };
       if (!res.ok) throw new Error(typeof json.error === "string" ? json.error : "Failed to update");
       if (json.data?.status) setStatus(json.data.status);
+      toast.success(`Order status updated to ${next}`);
     } catch (e) {
       console.error(e);
-      alert(e instanceof Error ? e.message : String(e));
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(null);
     }

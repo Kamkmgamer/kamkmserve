@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export type Commission = {
   id: string;
@@ -94,6 +95,7 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
         const json = raw as { data: Commission; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update commission");
         setItems((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
+        toast.success("Commission updated");
       } else {
         const res = await fetch(`/api/admin/commissions`, {
           method: "POST",
@@ -104,12 +106,13 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
         const json = raw as { data: Commission; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create commission");
         setItems((prev) => [json.data, ...prev]);
+        toast.success("Commission created");
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally { setLoading(false); }
   }
 
@@ -123,7 +126,7 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
       setItems((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 

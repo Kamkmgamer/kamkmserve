@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export type Referral = {
   id: string;
@@ -112,7 +113,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally { setLoading(false); }
   }
 
@@ -126,7 +127,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
       setItems((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 

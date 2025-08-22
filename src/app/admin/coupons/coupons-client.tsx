@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export type Coupon = {
   id: string;
@@ -116,6 +117,7 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
         const json = raw as { data: Coupon; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update coupon");
         setItems((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
+        toast.success("Coupon updated");
       } else {
         const res = await fetch(`/api/admin/coupons`, {
           method: "POST",
@@ -126,12 +128,13 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
         const json = raw as { data: Coupon; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create coupon");
         setItems((prev) => [json.data, ...prev]);
+        toast.success("Coupon created");
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally { setLoading(false); }
   }
 
@@ -145,7 +148,7 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
       setItems((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 
@@ -162,7 +165,7 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
       setItems((prev) => prev.map((x) => (x.id === c.id ? json.data : x)));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 

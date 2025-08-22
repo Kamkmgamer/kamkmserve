@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import Link from "next/link";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export type OrderRow = {
   id: string;
@@ -65,7 +66,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
       URL.revokeObjectURL(href);
     } catch (err) {
       console.error(err);
-      alert(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -112,7 +113,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
       setItems((prev) => prev.map((o) => (o.id === id ? json.data : o)));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally {
       setSavingId(null);
     }

@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 type Service = {
   id: string;
@@ -118,6 +119,7 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
         const json = rawUpdate as { data: Service; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update");
         setServices((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
+        toast.success("Service updated");
       } else {
         const res = await fetch("/api/admin/services", {
           method: "POST",
@@ -128,12 +130,13 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
         const json = rawCreate as { data: Service; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create");
         setServices((prev) => [json.data, ...prev]);
+        toast.success("Service created");
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally {
       setLoading(false);
     }
@@ -149,7 +152,7 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
       setServices((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 

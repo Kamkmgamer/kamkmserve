@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export type Blog = {
   id: string;
@@ -125,7 +126,7 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     } finally {
       setLoading(false);
     }
@@ -141,7 +142,7 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
       setPosts((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert(fmtError(err));
+      toast.error(fmtError(err));
     }
   }
 

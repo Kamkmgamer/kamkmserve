@@ -8,6 +8,7 @@ import { ThemeProvider } from "../contexts/ThemeContext";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "KAMKM Serve",
@@ -38,6 +39,7 @@ export default function RootLayout({
           <ThemeProvider>
             <Navbar />
             {children}
+            <Toaster richColors position="top-right" />
             <Footer />
           </ThemeProvider>
         </body>

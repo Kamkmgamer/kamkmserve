@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export type Payout = {
   id: string;
