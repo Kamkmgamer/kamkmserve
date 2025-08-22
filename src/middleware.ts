@@ -1,10 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-const isProtectedRoute = createRouteMatcher([
-  '/protected(.*)',
-  '/api/protected(.*)',
-])
-
 // Matchers for admin routes (pages and APIs)
 const isAdminRoute = createRouteMatcher([
   '/admin(.*)',
@@ -13,13 +8,6 @@ const isAdminRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   const a = await auth()
-
-  // Enforce auth for protected routes
-  if (isProtectedRoute(req)) {
-    if (!a.userId) {
-      return a.redirectToSignIn({ returnBackUrl: req.url })
-    }
-  }
 
   // Enforce ADMIN/SUPERADMIN role for admin routes
   if (isAdminRoute(req)) {

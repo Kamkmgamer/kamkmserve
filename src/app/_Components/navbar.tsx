@@ -27,28 +27,6 @@ export default function Navbar() {
           >
             Home
           </Link>
-          <Link
-            href="/about"
-            prefetch={false}
-            className="rounded-full px-3 py-1 text-sm text-black/70 transition hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            prefetch={false}
-            className="rounded-full px-3 py-1 text-sm text-black/70 transition hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-          >
-            Contact
-          </Link>
-          <SignedIn>
-            <Link
-              href="/protected"
-              className="rounded-full px-3 py-1 text-sm text-black/80 transition hover:bg-black/5 hover:text-black dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              Dashboard
-            </Link>
-          </SignedIn>
         </div>
 
         {/* Auth + Theme */}
