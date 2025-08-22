@@ -31,7 +31,7 @@ export default clerkMiddleware(async (auth, req) => {
       const envUser = process.env.ADMIN_BASIC_USER
       const envPass = process.env.ADMIN_BASIC_PASS
       haveBasicConfig = Boolean(envUser && envPass)
-      const authz = req.headers.get('authorization') || ''
+      const authz = req.headers.get('authorization') ?? ''
       if (authz.startsWith('Basic ')) {
         const decoded = atob(authz.slice(6))
         const sepIdx = decoded.indexOf(':')

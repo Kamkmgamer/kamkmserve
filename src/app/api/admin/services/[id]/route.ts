@@ -14,13 +14,16 @@ const PartialServiceSchema = z.object({
   imageUrls: z.string().min(1).optional(),
 });
 
+type RouteCtx = { params: Promise<{ id: string }> };
+
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: RouteCtx
 ) {
   try {
+    const params = await context.params;
     const id = params.id;
-    const body = await req.json();
+    const body: unknown = await req.json();
     const parsed = PartialServiceSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -32,15 +35,17 @@ export async function PATCH(
       .returning();
     return NextResponse.json({ data: row });
   } catch (e) {
+    console.error(e);
     return NextResponse.json({ error: "Failed to update service" }, { status: 500 });
   }
 }
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  context: RouteCtx
 ) {
   try {
+    const params = await context.params;
     const id = params.id;
     const [row] = await db
       .delete(services)
@@ -48,6 +53,7 @@ export async function DELETE(
       .returning();
     return NextResponse.json({ data: row });
   } catch (e) {
+    console.error(e);
     return NextResponse.json({ error: "Failed to delete service" }, { status: 500 });
   }
 }

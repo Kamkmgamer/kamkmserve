@@ -75,7 +75,8 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const json = await res.json();
+        const rawUpdate: unknown = await res.json();
+        const json = rawUpdate as { data: Service; error?: string };
         if (!res.ok) throw new Error(json.error ?? "Failed to update");
         setServices((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
       } else {
@@ -84,7 +85,8 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const json = await res.json();
+        const rawCreate: unknown = await res.json();
+        const json = rawCreate as { data: Service; error?: string };
         if (!res.ok) throw new Error(json.error ?? "Failed to create");
         setServices((prev) => [json.data, ...prev]);
       }
@@ -102,7 +104,8 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
     if (!confirm("Delete this service?")) return;
     try {
       const res = await fetch(`/api/admin/services/${id}`, { method: "DELETE" });
-      const json = await res.json();
+      const rawDelete: unknown = await res.json();
+      const json = rawDelete as { error?: string };
       if (!res.ok) throw new Error(json.error ?? "Failed to delete");
       setServices((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
