@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
@@ -34,12 +34,40 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Commission | null>(null);
   const [loading, setLoading] = useState(false);
+  const [q, setQ] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState({
     orderId: "",
     referralId: "",
     amount: "0",
     status: "UNPAID" as Commission["status"],
   });
+
+  // Fetch with search (debounced)
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/commissions?q=${encodeURIComponent(q)}` : "/api/admin/commissions";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: Commission[]; error?: unknown };
+          if (!res.ok) throw new Error(fmtError(json.error) || "Failed to load commissions");
+          setItems(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
 
   const resetForm = () => {
     setForm({ orderId: "", referralId: "", amount: "0", status: "UNPAID" });
@@ -101,8 +129,15 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Commissions</h1>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search referral code or order id..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
         <Button onClick={openCreate}>Add Commission</Button>
       </div>
 

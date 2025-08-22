@@ -101,13 +101,13 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 
 - [x] Ensure all `/admin/api/*` routes check Clerk auth and `role`.
 - [x] Add role upgrade utility to promote users to `ADMIN` (manual or via DB migration).
-- [ ] Audit sensitive fields (commissions, payouts).
+- [x] Audit sensitive fields (commissions, payouts).
 
 ---
 
 ## 10. Polish & Extras
 
-- [ ] Add dashboard stats cards on `/admin` (Total Orders, Revenue, Active Referrals, Pending Payouts).
+- [x] Add dashboard stats cards on `/admin` (Total Orders, Revenue, Active Referrals, Pending Payouts).
 - [ ] Add search & filters for all tables.
 - [ ] Add CSV export for orders, payouts.
 - [ ] Add toast notifications for CRUD actions.

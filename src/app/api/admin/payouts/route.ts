@@ -5,7 +5,7 @@ import { desc } from 'drizzle-orm';
 import { z } from 'zod';
 
 // GET: Return a list of payouts
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     const rows = await db.select().from(payouts).orderBy(desc(payouts.createdAt));
     return NextResponse.json({ data: rows });

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { services } from "~/server/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, like, or } from "drizzle-orm";
 
 const ServiceSchema = z.object({
   name: z.string().min(1),
@@ -14,9 +14,23 @@ const ServiceSchema = z.object({
   imageUrls: z.string().min(1),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const rows = await db.select().from(services).orderBy(desc(services.createdAt));
+    const { searchParams } = new URL(req.url);
+    const q = searchParams.get("q");
+    const rows = await db
+      .select()
+      .from(services)
+      .where(
+        q
+          ? or(
+              like(services.name, `%${q}%`),
+              like(services.category, `%${q}%`),
+              like(services.description, `%${q}%`)
+            )
+          : undefined
+      )
+      .orderBy(desc(services.createdAt));
     return NextResponse.json({ data: rows });
   } catch (e) {
     console.error(e);

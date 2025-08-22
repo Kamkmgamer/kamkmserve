@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
@@ -22,6 +22,7 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
   const [services, setServices] = useState<Service[]>(initialData);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Service | null>(null);
+  const [q, setQ] = useState("");
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -32,6 +33,7 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
     imageUrls: "",
   });
   const [loading, setLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   function fmtError(e: unknown): string {
     try {
@@ -43,6 +45,32 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
       return "Unknown error";
     }
   }
+
+  // Fetch with search
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/services?q=${encodeURIComponent(q)}` : "/api/admin/services";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: Service[]; error?: unknown };
+          if (!res.ok) throw new Error(fmtError(json.error) || "Failed to load services");
+          setServices(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
 
   const resetForm = () => {
     setForm({ name: "", description: "", price: "", features: "", category: "", thumbnailUrl: "", imageUrls: "" });
@@ -127,8 +155,15 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Services</h1>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search name, category, description..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
         <Button onClick={openCreate}>Add Service</Button>
       </div>
 
