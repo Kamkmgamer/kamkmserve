@@ -1,0 +1,124 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { db } from "~/server/db";
+import { coupons } from "~/server/db/schema";
+import { desc, eq } from "drizzle-orm";
+
+const CouponSchema = z.object({
+  code: z.string().min(1),
+  type: z.enum(["percent", "fixed"]).or(z.string().min(1)),
+  value: z.number().int().nonnegative(),
+  minOrderAmount: z.number().int().nonnegative().optional(),
+  maxUses: z.number().int().nonnegative().optional(),
+  active: z.boolean().optional(),
+  expiresAt: z.string().datetime().optional(),
+});
+
+export async function GET() {
+  try {
+    const rows = await db
+      .select({
+        id: coupons.id,
+        code: coupons.code,
+        type: coupons.type,
+        value: coupons.value,
+        minOrderAmount: coupons.minOrderAmount,
+        maxUses: coupons.maxUses,
+        currentUses: coupons.currentUses,
+        active: coupons.active,
+        expiresAt: coupons.expiresAt,
+        createdAt: coupons.createdAt,
+        updatedAt: coupons.updatedAt,
+      })
+      .from(coupons)
+      .orderBy(desc(coupons.createdAt));
+
+    const data = rows.map((r) => ({
+      id: r.id,
+      code: r.code,
+      type: r.type,
+      value: r.value,
+      minOrderAmount: r.minOrderAmount ?? null,
+      maxUses: r.maxUses ?? null,
+      currentUses: r.currentUses,
+      active: r.active,
+      expiresAt: r.expiresAt ? (r.expiresAt instanceof Date ? r.expiresAt.toISOString() : String(r.expiresAt)) : null,
+      createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),
+      updatedAt: r.updatedAt instanceof Date ? r.updatedAt.toISOString() : String(r.updatedAt),
+    }));
+
+    return NextResponse.json({ data });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Failed to list coupons" }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const body: unknown = await req.json();
+    const parsed = CouponSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const values = {
+      code: parsed.data.code,
+      type: parsed.data.type,
+      value: parsed.data.value,
+      minOrderAmount: parsed.data.minOrderAmount,
+      maxUses: parsed.data.maxUses,
+      active: parsed.data.active ?? true,
+      expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null,
+    };
+
+    const inserted = await db
+      .insert(coupons)
+      .values(values)
+      .returning({ id: coupons.id });
+
+    const id = inserted[0]?.id;
+    if (!id) {
+      return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+    }
+
+    const [r] = await db
+      .select({
+        id: coupons.id,
+        code: coupons.code,
+        type: coupons.type,
+        value: coupons.value,
+        minOrderAmount: coupons.minOrderAmount,
+        maxUses: coupons.maxUses,
+        currentUses: coupons.currentUses,
+        active: coupons.active,
+        expiresAt: coupons.expiresAt,
+        createdAt: coupons.createdAt,
+        updatedAt: coupons.updatedAt,
+      })
+      .from(coupons)
+      .where(eq(coupons.id, id))
+      .limit(1);
+
+    if (!r) return NextResponse.json({ error: "Failed to load created coupon" }, { status: 500 });
+
+    const data = {
+      id: r.id,
+      code: r.code,
+      type: r.type,
+      value: r.value,
+      minOrderAmount: r.minOrderAmount ?? null,
+      maxUses: r.maxUses ?? null,
+      currentUses: r.currentUses,
+      active: r.active,
+      expiresAt: r.expiresAt ? (r.expiresAt instanceof Date ? r.expiresAt.toISOString() : String(r.expiresAt)) : null,
+      createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),
+      updatedAt: r.updatedAt instanceof Date ? r.updatedAt.toISOString() : String(r.updatedAt),
+    };
+
+    return NextResponse.json({ data }, { status: 201 });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+  }
+}
