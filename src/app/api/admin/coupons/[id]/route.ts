@@ -11,7 +11,14 @@ const PartialSchema = z.object({
   minOrderAmount: z.number().int().nonnegative().nullable().optional(),
   maxUses: z.number().int().nonnegative().nullable().optional(),
   active: z.boolean().optional(),
-  expiresAt: z.string().datetime().nullable().optional(),
+  expiresAt: z
+    .string()
+    .refine(
+      (v) => /^(\d{4})-(\d{2})-(\d{2})$/.test(v) || !Number.isNaN(Date.parse(v)),
+      { message: "Invalid date format. Use YYYY-MM-DD or a valid datetime string." },
+    )
+    .nullable()
+    .optional(),
 });
 
 type RouteCtx = { params: Promise<{ id: string }> };

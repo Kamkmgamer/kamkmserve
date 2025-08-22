@@ -35,6 +35,17 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
   const [items, setItems] = useState<OrderRow[]>(initialData);
   const [savingId, setSavingId] = useState<string | null>(null);
 
+  function fmtError(e: unknown): string {
+    try {
+      if (!e) return "Unknown error";
+      if (typeof e === "string") return e;
+      if (e instanceof Error) return e.message;
+      return JSON.stringify(e);
+    } catch {
+      return "Unknown error";
+    }
+  }
+
   async function onChangeStatus(id: string, status: OrderRow["status"]) {
     setSavingId(id);
     try {
@@ -44,12 +55,12 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
         body: JSON.stringify({ status }),
       });
       const raw: unknown = await res.json();
-      const json = raw as { data: OrderRow; error?: string };
-      if (!res.ok) throw new Error(json.error ?? "Failed to update order");
+      const json = raw as { data: OrderRow; error?: unknown };
+      if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update order");
       setItems((prev) => prev.map((o) => (o.id === id ? json.data : o)));
     } catch (err) {
       console.error(err);
-      alert((err as Error).message);
+      alert(fmtError(err));
     } finally {
       setSavingId(null);
     }

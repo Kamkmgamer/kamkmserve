@@ -11,7 +11,13 @@ const CouponSchema = z.object({
   minOrderAmount: z.number().int().nonnegative().optional(),
   maxUses: z.number().int().nonnegative().optional(),
   active: z.boolean().optional(),
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z
+    .string()
+    .refine(
+      (v) => /^(\d{4})-(\d{2})-(\d{2})$/.test(v) || !Number.isNaN(Date.parse(v)),
+      { message: "Invalid date format. Use YYYY-MM-DD or a valid datetime string." },
+    )
+    .optional(),
 });
 
 export async function GET() {

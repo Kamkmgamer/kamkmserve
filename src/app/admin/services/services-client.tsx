@@ -33,6 +33,17 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
   });
   const [loading, setLoading] = useState(false);
 
+  function fmtError(e: unknown): string {
+    try {
+      if (!e) return "Unknown error";
+      if (typeof e === "string") return e;
+      if (e instanceof Error) return e.message;
+      return JSON.stringify(e);
+    } catch {
+      return "Unknown error";
+    }
+  }
+
   const resetForm = () => {
     setForm({ name: "", description: "", price: "", features: "", category: "", thumbnailUrl: "", imageUrls: "" });
     setEditing(null);
@@ -76,8 +87,8 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
           body: JSON.stringify(payload),
         });
         const rawUpdate: unknown = await res.json();
-        const json = rawUpdate as { data: Service; error?: string };
-        if (!res.ok) throw new Error(json.error ?? "Failed to update");
+        const json = rawUpdate as { data: Service; error?: unknown };
+        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update");
         setServices((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
       } else {
         const res = await fetch("/api/admin/services", {
@@ -86,15 +97,15 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
           body: JSON.stringify(payload),
         });
         const rawCreate: unknown = await res.json();
-        const json = rawCreate as { data: Service; error?: string };
-        if (!res.ok) throw new Error(json.error ?? "Failed to create");
+        const json = rawCreate as { data: Service; error?: unknown };
+        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create");
         setServices((prev) => [json.data, ...prev]);
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert((err as Error).message);
+      alert(fmtError(err));
     } finally {
       setLoading(false);
     }
@@ -105,12 +116,12 @@ export default function ServicesClient({ initialData }: { initialData: Service[]
     try {
       const res = await fetch(`/api/admin/services/${id}`, { method: "DELETE" });
       const rawDelete: unknown = await res.json();
-      const json = rawDelete as { error?: string };
-      if (!res.ok) throw new Error(json.error ?? "Failed to delete");
+      const json = rawDelete as { error?: unknown };
+      if (!res.ok) throw new Error(fmtError(json.error) || "Failed to delete");
       setServices((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert((err as Error).message);
+      alert(fmtError(err));
     }
   }
 

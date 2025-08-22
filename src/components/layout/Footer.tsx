@@ -152,6 +152,7 @@ const Footer: React.FC = () => {
 										<li key={l.label}>
 											<Link
 												href={l.href}
+												prefetch={false}
 												className="text-sm text-slate-600 transition hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/60 dark:text-slate-400 dark:hover:text-blue-400"
 											>
 												{l.label}
@@ -168,6 +169,7 @@ const Footer: React.FC = () => {
 										<li key={l.label}>
 											<Link
 												href={l.href}
+												prefetch={false}
 												className="text-sm text-slate-600 transition hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/60 dark:text-slate-400 dark:hover:text-blue-400"
 											>
 												{l.label}
@@ -184,6 +186,7 @@ const Footer: React.FC = () => {
 										<li key={l.label}>
 											<Link
 												href={l.href}
+												prefetch={false}
 												className="text-sm text-slate-600 transition hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/60 dark:text-slate-400 dark:hover:text-blue-400"
 											>
 												{l.label}

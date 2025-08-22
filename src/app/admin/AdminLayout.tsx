@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           {nav.map((item) => {
             const active = pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
-              <Link key={item.href} href={item.href} className="w-full">
+              <Link key={item.href} href={item.href} prefetch={false} className="w-full">
                 <Button
                   variant={active ? "primary" : "ghost"}
                   className="w-full justify-start"

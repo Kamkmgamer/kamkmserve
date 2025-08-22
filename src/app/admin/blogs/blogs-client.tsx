@@ -51,6 +51,17 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
     setOpen(true);
   };
 
+  function fmtError(e: unknown): string {
+    try {
+      if (!e) return "Unknown error";
+      if (typeof e === "string") return e;
+      if (e instanceof Error) return e.message;
+      return JSON.stringify(e);
+    } catch {
+      return "Unknown error";
+    }
+  }
+
   async function onSubmit() {
     setLoading(true);
     try {
@@ -67,8 +78,8 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
           body: JSON.stringify(payload),
         });
         const raw: unknown = await res.json();
-        const json = raw as { data: Blog; error?: string };
-        if (!res.ok) throw new Error(json.error ?? "Failed to update post");
+        const json = raw as { data: Blog; error?: unknown };
+        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update post");
         setPosts((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
       } else {
         const res = await fetch(`/api/admin/blogs`, {
@@ -77,15 +88,15 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
           body: JSON.stringify(payload),
         });
         const raw: unknown = await res.json();
-        const json = raw as { data: Blog; error?: string };
-        if (!res.ok) throw new Error(json.error ?? "Failed to create post");
+        const json = raw as { data: Blog; error?: unknown };
+        if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create post");
         setPosts((prev) => [json.data, ...prev]);
       }
       setOpen(false);
       resetForm();
     } catch (err) {
       console.error(err);
-      alert((err as Error).message);
+      alert(fmtError(err));
     } finally {
       setLoading(false);
     }
@@ -96,12 +107,12 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
     try {
       const res = await fetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
       const raw: unknown = await res.json();
-      const json = raw as { error?: string };
-      if (!res.ok) throw new Error(json.error ?? "Failed to delete post");
+      const json = raw as { error?: unknown };
+      if (!res.ok) throw new Error(fmtError(json.error) || "Failed to delete post");
       setPosts((prev) => prev.filter((x) => x.id !== id));
     } catch (err) {
       console.error(err);
-      alert((err as Error).message);
+      alert(fmtError(err));
     }
   }
 

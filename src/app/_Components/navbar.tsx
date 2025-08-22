@@ -29,12 +29,14 @@ export default function Navbar() {
           </Link>
           <Link
             href="/about"
+            prefetch={false}
             className="rounded-full px-3 py-1 text-sm text-black/70 transition hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
           >
             About
           </Link>
           <Link
             href="/contact"
+            prefetch={false}
             className="rounded-full px-3 py-1 text-sm text-black/70 transition hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
           >
             Contact
