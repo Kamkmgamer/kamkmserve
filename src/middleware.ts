@@ -23,7 +23,41 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Enforce ADMIN/SUPERADMIN role for admin routes
   if (isAdminRoute(req)) {
+    // 0) Optional: Allow Basic Auth specifically for admin routes (separate from Clerk)
+    //    Set ADMIN_BASIC_USER and ADMIN_BASIC_PASS in your environment to enable this.
+    let basicAuthed = false
+    let haveBasicConfig = false
+    try {
+      const envUser = process.env.ADMIN_BASIC_USER
+      const envPass = process.env.ADMIN_BASIC_PASS
+      haveBasicConfig = Boolean(envUser && envPass)
+      const authz = req.headers.get('authorization') || ''
+      if (authz.startsWith('Basic ')) {
+        const decoded = atob(authz.slice(6))
+        const sepIdx = decoded.indexOf(':')
+        const user = sepIdx >= 0 ? decoded.slice(0, sepIdx) : decoded
+        const pass = sepIdx >= 0 ? decoded.slice(sepIdx + 1) : ''
+        if (envUser && envPass && user === envUser && pass === envPass) {
+          // Successful Basic Auth — bypass Clerk for admin route
+          basicAuthed = true
+        }
+      }
+    } catch {
+      // Ignore Basic Auth errors and continue to Clerk checks
+    }
+
+    if (basicAuthed) {
+      return
+    }
+
     if (!a.userId) {
+      // If basic auth is configured, challenge the browser for credentials.
+      if (haveBasicConfig) {
+        return new Response('Unauthorized', {
+          status: 401,
+          headers: { 'WWW-Authenticate': 'Basic realm="Admin", charset="UTF-8"' },
+        })
+      }
       return a.redirectToSignIn({ returnBackUrl: req.url })
     }
 
