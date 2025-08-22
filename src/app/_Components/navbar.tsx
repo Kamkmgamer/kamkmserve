@@ -70,7 +70,7 @@ export default function Navbar() {
               Sign up
             </Link>
             <SignInButton mode="modal">
-              <button className="rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-sm text-black/80 shadow-sm transition hover:shadow md:px-3.5 dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/15">
+              <button className={["rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-sm text-black/80 shadow-sm transition hover:shadow md:px-3.5 dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/15", open ? "hidden" : ""].join(" ")}>
                 Sign in
               </button>
             </SignInButton>
