@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { coupons } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
+import { coupons, orders } from "~/server/db/schema";
+import { and, eq, inArray } from "drizzle-orm";
 
 const PartialSchema = z.object({
   code: z.string().min(1).optional(),
@@ -64,6 +64,18 @@ export async function PATCH(req: Request, context: RouteCtx) {
 
     if (!r) return NextResponse.json({ error: "Failed to load updated coupon" }, { status: 500 });
 
+    // recompute currentUses for this coupon from orders
+    const agg = await db
+      .select({ couponId: orders.couponId })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.couponId, r.id),
+          inArray(orders.status, ["PENDING", "PAID", "IN_TECHNICAL_REVIEW", "APPROVED"]),
+        ),
+      );
+    const usage = agg.length;
+
     const data = {
       id: r.id,
       code: r.code,
@@ -71,7 +83,7 @@ export async function PATCH(req: Request, context: RouteCtx) {
       value: r.value,
       minOrderAmount: r.minOrderAmount ?? null,
       maxUses: r.maxUses ?? null,
-      currentUses: r.currentUses,
+      currentUses: usage,
       active: r.active,
       expiresAt: r.expiresAt ? (r.expiresAt instanceof Date ? r.expiresAt.toISOString() : String(r.expiresAt)) : null,
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),

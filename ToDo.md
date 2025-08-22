@@ -44,10 +44,10 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 - [x] Page: `/admin/coupons`
   - [x] Table with coupon code, type, value, usage, status.
   - [x] Create form (code, type [percent/fixed], value, minOrderAmount, maxUses, expiresAt).
-  - [ ] Toggle coupon `active` on/off.
+  - [x] Toggle coupon `active` on/off.
 - [x] API:
   - [x] CRUD endpoints for coupons.
-  - [ ] Auto-calc `currentUses`.
+  - [x] Auto-calc `currentUses`.
 
 ---
 

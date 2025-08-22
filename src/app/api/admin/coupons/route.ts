@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { coupons } from "~/server/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { coupons, orders } from "~/server/db/schema";
+import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 
 const CouponSchema = z.object({
   code: z.string().min(1),
@@ -24,7 +24,7 @@ export async function GET() {
         value: coupons.value,
         minOrderAmount: coupons.minOrderAmount,
         maxUses: coupons.maxUses,
-        currentUses: coupons.currentUses,
+        currentUses: coupons.currentUses, // will be overridden by aggregate below
         active: coupons.active,
         expiresAt: coupons.expiresAt,
         createdAt: coupons.createdAt,
@@ -33,6 +33,23 @@ export async function GET() {
       .from(coupons)
       .orderBy(desc(coupons.createdAt));
 
+    // Aggregate order counts per coupon
+    const agg = await db
+      .select({ couponId: orders.couponId })
+      .from(orders)
+      .where(
+        and(
+          isNotNull(orders.couponId),
+          // exclude non-successful orders from usage
+          inArray(orders.status, ["PENDING", "PAID", "IN_TECHNICAL_REVIEW", "APPROVED"]) // keep PENDING to reflect holds, exclude CANCELED/REFUNDED/FAILED
+        ),
+      );
+    const counts = new Map<string, number>();
+    for (const r of agg) {
+      if (!r.couponId) continue;
+      counts.set(r.couponId, (counts.get(r.couponId) ?? 0) + 1);
+    }
+
     const data = rows.map((r) => ({
       id: r.id,
       code: r.code,
@@ -40,7 +57,7 @@ export async function GET() {
       value: r.value,
       minOrderAmount: r.minOrderAmount ?? null,
       maxUses: r.maxUses ?? null,
-      currentUses: r.currentUses,
+      currentUses: counts.get(r.id) ?? 0,
       active: r.active,
       expiresAt: r.expiresAt ? (r.expiresAt instanceof Date ? r.expiresAt.toISOString() : String(r.expiresAt)) : null,
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),
@@ -102,6 +119,18 @@ export async function POST(req: Request) {
 
     if (!r) return NextResponse.json({ error: "Failed to load created coupon" }, { status: 500 });
 
+    // recompute currentUses for this coupon
+    const agg = await db
+      .select({ couponId: orders.couponId })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.couponId, r.id),
+          inArray(orders.status, ["PENDING", "PAID", "IN_TECHNICAL_REVIEW", "APPROVED"]),
+        ),
+      );
+    const usage = agg.length;
+
     const data = {
       id: r.id,
       code: r.code,
@@ -109,7 +138,7 @@ export async function POST(req: Request) {
       value: r.value,
       minOrderAmount: r.minOrderAmount ?? null,
       maxUses: r.maxUses ?? null,
-      currentUses: r.currentUses,
+      currentUses: usage,
       active: r.active,
       expiresAt: r.expiresAt ? (r.expiresAt instanceof Date ? r.expiresAt.toISOString() : String(r.expiresAt)) : null,
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),

@@ -110,6 +110,23 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
     }
   }
 
+  async function onToggleActive(c: Coupon) {
+    try {
+      const res = await fetch(`/api/admin/coupons/${c.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: !c.active }),
+      });
+      const raw: unknown = await res.json();
+      const json = raw as { data: Coupon; error?: string };
+      if (!res.ok) throw new Error(json.error ?? "Failed to update active state");
+      setItems((prev) => prev.map((x) => (x.id === c.id ? json.data : x)));
+    } catch (err) {
+      console.error(err);
+      alert((err as Error).message);
+    }
+  }
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -140,7 +157,12 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
                   {c.currentUses}
                   {c.maxUses !== null ? ` / ${c.maxUses}` : ""}
                 </TD>
-                <TD>{c.active ? "Yes" : "No"}</TD>
+                <TD>
+                  <span className="mr-2">{c.active ? "Yes" : "No"}</span>
+                  <Button variant="ghost" size="sm" onClick={() => onToggleActive(c)}>
+                    {c.active ? "Disable" : "Enable"}
+                  </Button>
+                </TD>
                 <TD>{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : "—"}</TD>
                 <TD className="text-right space-x-2">
                   <Button variant="secondary" size="sm" onClick={() => openEdit(c)}>Edit</Button>
