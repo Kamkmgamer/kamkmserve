@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { coupons, orders } from "~/server/db/schema";
-import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, like, or } from "drizzle-orm";
 
 const CouponSchema = z.object({
   code: z.string().min(1),
@@ -20,8 +20,10 @@ const CouponSchema = z.object({
     .optional(),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const q = searchParams.get("q");
     const rows = await db
       .select({
         id: coupons.id,
@@ -37,6 +39,14 @@ export async function GET() {
         updatedAt: coupons.updatedAt,
       })
       .from(coupons)
+      .where(
+        q
+          ? or(
+              like(coupons.code, `%${q}%`),
+              like(coupons.type, `%${q}%`)
+            )
+          : undefined
+      )
       .orderBy(desc(coupons.createdAt));
 
     // Aggregate order counts per coupon

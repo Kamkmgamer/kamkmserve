@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
@@ -32,6 +32,8 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Referral | null>(null);
   const [loading, setLoading] = useState(false);
+  const [q, setQ] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState({
     userId: "",
     code: "",
@@ -49,6 +51,32 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
     setForm({ userId: r.userId, code: r.code, commissionRate: String(r.commissionRate) });
     setOpen(true);
   };
+
+  // Debounced fetch on search
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/referrals?q=${encodeURIComponent(q)}` : "/api/admin/referrals";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: Referral[]; error?: unknown };
+          if (!res.ok) throw new Error(typeof json.error === "string" ? json.error : "Failed to load referrals");
+          setItems(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
 
   async function onSubmit() {
     setLoading(true);
@@ -104,8 +132,15 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Referrals</h1>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search by email or code..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
         <Button onClick={openCreate}>Add Referral</Button>
       </div>
 
