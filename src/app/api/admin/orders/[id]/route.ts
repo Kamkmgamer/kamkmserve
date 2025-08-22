@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { coupons, orders, users, orderLineItems, services, referrals } from "~/server/db/schema";
+import { coupons, orders, users, orderLineItems, services, referrals, commissions } from "~/server/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 const PatchSchema = z.object({
@@ -111,6 +111,41 @@ export async function PATCH(req: Request, context: RouteCtx) {
       .returning({ id: orders.id });
 
     if (!row?.id) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+
+    // Auto-create commission if status becomes PAID and order has referral
+    if (parsed.data.status === "PAID") {
+      // Load order info including referral and totalAmount, plus referral rate
+      const [ord] = await db
+        .select({
+          id: orders.id,
+          referralId: orders.referralId,
+          totalAmount: orders.totalAmount,
+          commissionRate: referrals.commissionRate,
+        })
+        .from(orders)
+        .leftJoin(referrals, eq(referrals.id, orders.referralId))
+        .where(eq(orders.id, row.id))
+        .limit(1);
+
+      if (ord?.referralId) {
+        // Check if commission already exists for this order
+        const existing = await db
+          .select({ id: commissions.id })
+          .from(commissions)
+          .where(eq(commissions.orderId, row.id))
+          .limit(1);
+        if (!existing.length) {
+          const rate = typeof ord.commissionRate === "number" ? ord.commissionRate : 0.1;
+          const amount = Math.max(0, Math.round((ord.totalAmount ?? 0) * rate));
+          await db.insert(commissions).values({
+            orderId: row.id,
+            referralId: ord.referralId,
+            amount,
+            // status defaults to UNPAID via schema
+          });
+        }
+      }
+    }
 
     const [r] = await db
       .select({

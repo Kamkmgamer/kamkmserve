@@ -53,32 +53,32 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 
 ## 5. Order Management
 
-- [ ] Page: `/admin/orders`
-  - [ ] Table view (user email, totalAmount, status, createdAt).
-  - [ ] Order detail page: list line items, applied coupon, referral info, requirements/suggestions.
-  - [ ] Actions:
-    - [ ] Update order `status` (PENDING → PAID → APPROVED).
-    - [ ] Refund / Cancel.
-- [ ] API:
-  - [ ] `GET /api/admin/orders`
-  - [ ] `PATCH /api/admin/orders/:id` → update status, refund, etc.
+- [x] Page: `/admin/orders`
+  - [x] Table view (user email, totalAmount, status, createdAt).
+  - [x] Order detail page: list line items, applied coupon, referral info, requirements/suggestions.
+  - [x] Actions:
+    - [x] Update order `status` (PENDING → PAID → APPROVED).
+    - [x] Refund / Cancel.
+- [x] API:
+  - [x] `GET /api/admin/orders`
+  - [x] `PATCH /api/admin/orders/:id` → update status, refund, etc.
 
 ---
 
 ## 6. Referral & Affiliate Program
 
-- [ ] Page: `/admin/referrals`
-  - [ ] List referrals (user, code, commissionRate, createdAt).
-  - [ ] Generate referral code for a user.
-  - [ ] Edit commission rate.
-- [ ] API:
-  - [ ] CRUD endpoints for referrals.
+- [x] Page: `/admin/referrals`
+  - [x] List referrals (user, code, commissionRate, createdAt).
+  - [x] Generate referral code for a user.
+  - [x] Edit commission rate.
+- [x] API:
+  - [x] CRUD endpoints for referrals.
 
 ---
 
 ## 7. Commission Tracking
 
-- [ ] Auto-create `commission` entry when an order with referral is marked `PAID`.
+- [x] Auto-create `commission` entry when an order with referral is marked `PAID`.
 - [ ] Page: `/admin/commissions`
   - [ ] Table with referral code, order, amount, status (UNPAID, PENDING, PAID).
 - [ ] API:
