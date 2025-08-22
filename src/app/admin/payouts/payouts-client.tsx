@@ -42,6 +42,25 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
   });
   const [q, setQ] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  
+  async function downloadCsv(url: string, filename: string) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to download CSV (${res.status})`);
+      const blob = await res.blob();
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(href);
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
+  }
 
   const resetForm = () => {
     setForm({ referralId: "", amount: "0", status: "PENDING", payoutDate: "" });
@@ -178,6 +197,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
           onChange={(e) => setQ(e.target.value)}
           className="max-w-xs"
         />
+        <Button variant="outline" onClick={() => downloadCsv("/api/admin/payouts/export", "payouts.csv")}>Export CSV</Button>
         <Button onClick={openCreate}>Add Payout</Button>
       </div>
 

@@ -50,6 +50,25 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
     }
   }
 
+  async function downloadCsv(url: string, filename: string) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to download CSV (${res.status})`);
+      const blob = await res.blob();
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(href);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : String(err));
+    }
+  }
+
   // Fetch with search (debounced)
   useEffect(() => {
     const controller = new AbortController();
@@ -110,6 +129,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
           onChange={(e) => setQ(e.target.value)}
           className="max-w-xs"
         />
+        <Button variant="outline" onClick={() => downloadCsv("/api/admin/orders/export", "orders.csv")}>Export CSV</Button>
       </div>
 
       <div className="overflow-x-auto">
