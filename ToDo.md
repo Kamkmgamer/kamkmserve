@@ -108,7 +108,7 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 ## 10. Polish & Extras
 
 - [x] Add dashboard stats cards on `/admin` (Total Orders, Revenue, Active Referrals, Pending Payouts).
-- [ ] Add search & filters for all tables.
+- [x] Add search & filters for all tables.
 - [x] Add CSV export for orders, payouts.
 - [x] Add toast notifications for CRUD actions.
 - [x] Write Drizzle seed script for dummy data.

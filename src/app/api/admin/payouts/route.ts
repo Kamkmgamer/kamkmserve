@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '~/server/db';
 import { payouts, referrals } from '~/server/db/schema';
-import { desc, eq, like, or } from 'drizzle-orm';
+import { and, desc, eq, like, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 // GET: Return a list of payouts (optional search: q matches referral code or status)
@@ -9,6 +9,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q');
+    const status = searchParams.get('status');
 
     const rows = await db
       .select({
@@ -24,12 +25,12 @@ export async function GET(request: Request) {
       .from(payouts)
       .leftJoin(referrals, eq(referrals.id, payouts.referralId))
       .where(
-        q
-          ? or(
-              like(referrals.code, `%${q}%`),
-              like(payouts.status, `%${q}%`)
+        q || status
+          ? and(
+              status ? eq(payouts.status, status as typeof payouts.$inferSelect.status) : undefined,
+              q ? or(like(referrals.code, `%${q}%`), like(payouts.status, `%${q}%`)) : undefined,
             )
-          : undefined
+          : undefined,
       )
       .orderBy(desc(payouts.createdAt));
 

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "~/server/db";
 import { coupons, orders, users } from "~/server/db/schema";
-import { desc, eq, like, or } from "drizzle-orm";
+import { and, desc, eq, like, or } from "drizzle-orm";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const q = searchParams.get("q");
+    const status = searchParams.get("status");
     const rows = await db
       .select({
         id: orders.id,
@@ -21,13 +22,18 @@ export async function GET(req: Request) {
       .leftJoin(users, eq(users.id, orders.userId))
       .leftJoin(coupons, eq(coupons.id, orders.couponId))
       .where(
-        q
-          ? or(
-              like(users.email, `%${q}%`),
-              like(coupons.code, `%${q}%`),
-              like(orders.id, `%${q}%`)
+        q || status
+          ? and(
+              status ? eq(orders.status, status as typeof orders.$inferSelect.status) : undefined,
+              q
+                ? or(
+                    like(users.email, `%${q}%`),
+                    like(coupons.code, `%${q}%`),
+                    like(orders.id, `%${q}%`)
+                  )
+                : undefined,
             )
-          : undefined
+          : undefined,
       )
       .orderBy(desc(orders.createdAt));
 

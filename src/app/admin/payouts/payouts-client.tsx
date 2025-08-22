@@ -42,6 +42,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
   });
   const [q, setQ] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  const [statusFilter, setStatusFilter] = useState<Payout["status"] | "">("");
   
   async function downloadCsv(url: string, filename: string) {
     try {
@@ -72,7 +73,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     setOpen(true);
   };
 
-  // Debounced server-side search
+  // Debounced server-side search + filters
   useEffect(() => {
     const controller = new AbortController();
     abortRef.current?.abort();
@@ -80,7 +81,10 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     const t = setTimeout(() => {
       void (async () => {
         try {
-          const url = q ? `/api/admin/payouts?q=${encodeURIComponent(q)}` : "/api/admin/payouts";
+          const params = new URLSearchParams();
+          if (q) params.set("q", q);
+          if (statusFilter) params.set("status", statusFilter);
+          const url = params.toString() ? `/api/admin/payouts?${params.toString()}` : "/api/admin/payouts";
           const res = await fetch(url, { signal: controller.signal });
           const raw: unknown = await res.json();
           const json = raw as { data: Payout[]; error?: unknown };
@@ -96,7 +100,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       controller.abort();
       clearTimeout(t);
     };
-  }, [q]);
+  }, [q, statusFilter]);
   const openEdit = (p: Payout) => {
     setEditing(p);
     setForm({
@@ -197,6 +201,16 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
           onChange={(e) => setQ(e.target.value)}
           className="max-w-xs"
         />
+        <select
+          className="border rounded px-2 py-1"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as Payout["status"] | "")}
+        >
+          <option value="">All Statuses</option>
+          {(["PENDING","PAID","FAILED","UNPAID"] as const).map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
         <Button variant="outline" onClick={() => downloadCsv("/api/admin/payouts/export", "payouts.csv")}>Export CSV</Button>
         <Button onClick={openCreate}>Add Payout</Button>
       </div>

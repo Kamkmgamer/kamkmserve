@@ -39,6 +39,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
   const [savingId, setSavingId] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
   function fmtError(e: unknown): string {
     try {
@@ -70,7 +71,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
     }
   }
 
-  // Fetch with search (debounced)
+  // Fetch with search + filters (debounced)
   useEffect(() => {
     const controller = new AbortController();
     abortRef.current?.abort();
@@ -78,7 +79,10 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
     const t = setTimeout(() => {
       void (async () => {
         try {
-          const url = q ? `/api/admin/orders?q=${encodeURIComponent(q)}` : "/api/admin/orders";
+          const params = new URLSearchParams();
+          if (q) params.set("q", q);
+          if (statusFilter) params.set("status", statusFilter);
+          const url = params.toString() ? `/api/admin/orders?${params.toString()}` : "/api/admin/orders";
           const res = await fetch(url, { signal: controller.signal });
           const raw: unknown = await res.json();
           const json = raw as { data: OrderRow[]; error?: unknown };
@@ -97,7 +101,7 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
       controller.abort();
       clearTimeout(t);
     };
-  }, [q]);
+  }, [q, statusFilter]);
 
   async function onChangeStatus(id: string, status: OrderRow["status"]) {
     setSavingId(id);
@@ -130,6 +134,16 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
           onChange={(e) => setQ(e.target.value)}
           className="max-w-xs"
         />
+        <select
+          className="border rounded px-2 py-1"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">All Statuses</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
         <Button variant="outline" onClick={() => downloadCsv("/api/admin/orders/export", "orders.csv")}>Export CSV</Button>
       </div>
 
