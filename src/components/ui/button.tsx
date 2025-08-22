@@ -3,7 +3,7 @@ import Link, { type LinkProps } from "next/link";
 import { cn } from "~/lib/cn";
 
 // Variants and sizes per requested API
-type Variant = "primary" | "secondary" | "ghost" | "cta-light" | "cta-ghost";
+type Variant = "primary" | "secondary" | "ghost" | "cta-light" | "cta-ghost" | "outline";
 type Size = "sm" | "md" | "lg";
 
 interface BaseButtonProps {
@@ -38,6 +38,8 @@ const variantClasses: Record<Variant, string> = {
     "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700 border border-slate-200 shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-blue-500/60 disabled:opacity-60",
   "cta-ghost":
     "bg-blue-100 text-blue-700 border border-blue-500 hover:bg-blue-50 hover:text-blue-800 dark:bg-slate-900 dark:text-blue-400 dark:border-blue-500 dark:hover:bg-blue-500/10 dark:hover:text-blue-300 shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500/60 disabled:opacity-60",
+  outline:
+    "border border-blue-500 text-blue-500 bg-transparent hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500/60 disabled:opacity-60",
 };
 
 const sizeClasses: Record<Size, string> = {
