@@ -29,7 +29,7 @@ const Hero = () => {
           className="absolute bottom-0 right-0 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.2),transparent_60%)] blur-3xl"
           style={{ y: useTransform(scrollY, [0, 500], [0, -30]) }}
         />
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.05]" />
       </motion.div>
 
       <div className="relative z-10 py-20 max-w-7xl mx-auto px-4">

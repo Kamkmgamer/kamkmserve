@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "./_Components/navbar"; // add this import
 import Footer from "../components/layout/Footer";
+import { ThemeProvider } from "../contexts/ThemeContext";
 
 
 import { type Metadata } from "next";
@@ -25,11 +26,20 @@ export default function RootLayout({
   
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geist.variable}`}>
+      <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
         <body id="top" className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
-          <Navbar />
-          {children}
-          <Footer />
+          {/* Prevent theme flash on first paint */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "(function(){try{var s=localStorage.getItem('theme');/* Force migrate to light once */if(s!=='light'){localStorage.setItem('theme','light');s='light';}if(s==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();",
+            }}
+          />
+          <ThemeProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

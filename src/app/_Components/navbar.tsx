@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import AnimatedLogo from '~/components/AnimatedLogo';
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '~/contexts/ThemeContext';
 
 export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-white/60 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-black/30">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -46,8 +49,20 @@ export default function Navbar() {
           </SignedIn>
         </div>
 
-        {/* Auth */}
+        {/* Auth + Theme */}
         <div className="flex items-center gap-2">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="rounded-full p-2 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5 text-amber-400" />
+            ) : (
+              <Moon className="h-5 w-5 text-black/70 dark:text-white/70" />
+            )}
+          </button>
           <SignedOut>
             <Link
               href="/sign-up"
