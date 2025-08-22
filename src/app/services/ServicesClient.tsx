@@ -17,7 +17,7 @@ const formatPrice = (n: number) =>
 const safeParse = (value?: string) => {
   if (!value) return [] as string[];
   try {
-    const parsed = JSON.parse(value);
+    const parsed: unknown = JSON.parse(value);
     if (Array.isArray(parsed)) return parsed.map(String);
   } catch {
     return value
@@ -36,17 +36,6 @@ function useDebouncedValue<T>(value: T, ms = 300) {
   }, [value, ms]);
   return v;
 }
-
-const SkeletonCard = () => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-    <div className="mb-3 h-40 w-full animate-pulse rounded-md bg-slate-200 dark:bg-slate-800" />
-    <div className="h-4 w-3/5 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-    <div className="mt-2 flex items-center justify-between">
-      <div className="h-4 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-      <div className="h-4 w-1/4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-    </div>
-  </div>
-);
 
 const CategoryPill: React.FC<{
   name: string;
@@ -145,7 +134,7 @@ export default function ServicesClient({ initialServices }: { initialServices: S
 
   const categories = useMemo(() => {
     const base = new Map<string, number>();
-    services.forEach((s) => base.set(s.category, (base.get(s.category) || 0) + 1));
+    services.forEach((s) => base.set(s.category, (base.get(s.category) ?? 0) + 1));
     return [
       { name: "All", count: services.length },
       ...Array.from(base.entries()).map(([name, count]) => ({ name, count })),

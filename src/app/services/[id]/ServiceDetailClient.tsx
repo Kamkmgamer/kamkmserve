@@ -18,7 +18,7 @@ const formatPrice = (n: number) =>
 
 const parseJsonArray = (jsonString: string): string[] => {
   try {
-    const arr = JSON.parse(jsonString);
+    const arr: unknown = JSON.parse(jsonString);
     return Array.isArray(arr) ? arr.map(String) : [];
   } catch {
     return [];
@@ -59,14 +59,17 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
 
   // Detect Web Share API support on client to avoid SSR/CSR mismatch
   useEffect(() => {
-    setCanShare(typeof navigator !== "undefined" && typeof (navigator as any).share === "function");
+    if (typeof navigator === "undefined") return;
+    const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+    setCanShare(typeof nav.share === "function");
   }, []);
 
   const handleShare = useCallback(async () => {
     const url = window.location.href;
     if (canShare) {
       try {
-        await (navigator as any).share({ title: service.name, text: service.description?.slice(0, 100), url });
+        const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+        await nav.share?.({ title: service.name, text: service.description?.slice(0, 100), url });
       } catch {}
     } else {
       try {
@@ -129,7 +132,6 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
                       ].join(" ")}
                       aria-label={`Thumbnail ${idx + 1}`}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       {url ? (
                         <img src={url} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" loading="lazy" />
                       ) : (

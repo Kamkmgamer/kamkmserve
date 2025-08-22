@@ -215,7 +215,7 @@ function useCosmicCursor({ enabled = true, theme = 'dark', perfScale = 1, active
 export default function NotFound() {
   const theme = useSystemTheme()
   const { deviceScale, shouldAnimate } = usePerformanceController()
-  const [features, setFeatures] = useState({
+  const [features] = useState({
     supernova: true,
     cosmicCursor: true,
     floatingDust: true,

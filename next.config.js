@@ -5,7 +5,10 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const coreConfig = {};
+const coreConfig = {
+  // Silence monorepo/workspace root auto-detection warning
+  outputFileTracingRoot: process.cwd(),
+};
 
 import {withSentryConfig} from "@sentry/nextjs";
 
