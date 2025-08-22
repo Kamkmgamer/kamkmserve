@@ -88,12 +88,12 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 
 ## 8. Payout Management
 
-- [ ] Page: `/admin/payouts`
-  - [ ] List payouts (referral, amount, status, payoutDate).
-  - [ ] Button: "Mark as Paid" → update status of payout + linked commissions.
-- [ ] API:
-  - [ ] CRUD endpoints for payouts.
-  - [ ] Action endpoint: mark payout & commissions as PAID.
+- [x] Page: `/admin/payouts`
+  - [x] List payouts (referral, amount, status, payoutDate).
+  - [x] Button: "Mark as Paid" → update status of payout + linked commissions.
+- [x] API:
+  - [x] CRUD endpoints for payouts.
+  - [x] Action endpoint: mark payout & commissions as PAID.
 
 ---
 
