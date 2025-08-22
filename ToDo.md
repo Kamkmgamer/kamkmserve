@@ -111,7 +111,7 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 - [ ] Add search & filters for all tables.
 - [x] Add CSV export for orders, payouts.
 - [x] Add toast notifications for CRUD actions.
-- [ ] Write Drizzle seed script for dummy data.
+- [x] Write Drizzle seed script for dummy data.
 
 ---
 
