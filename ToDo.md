@@ -30,12 +30,12 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 
 ## 3. Blog Management
 
-- [ ] Page: `/admin/blogs`
-  - [ ] List posts (title, summary, author, createdAt).
-  - [ ] Create/Edit form with rich text editor (e.g., TipTap or Lexical).
-  - [ ] Delete posts.
-- [ ] API:
-  - [ ] CRUD endpoints for blog posts.
+- [x] Page: `/admin/blogs`
+  - [x] List posts (title, summary, author, createdAt).
+  - [x] Create/Edit form with rich text editor (basic rich-text textarea for now).
+  - [x] Delete posts.
+- [x] API:
+  - [x] CRUD endpoints for blog posts.
 
 ---
 
