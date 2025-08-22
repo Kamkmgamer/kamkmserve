@@ -99,8 +99,8 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 
 ## 9. Auth & Security
 
-- [ ] Ensure all `/admin/api/*` routes check Clerk auth and `role`.
-- [ ] Add role upgrade utility to promote users to `ADMIN` (manual or via DB migration).
+- [x] Ensure all `/admin/api/*` routes check Clerk auth and `role`.
+- [x] Add role upgrade utility to promote users to `ADMIN` (manual or via DB migration).
 - [ ] Audit sensitive fields (commissions, payouts).
 
 ---
