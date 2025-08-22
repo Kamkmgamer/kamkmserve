@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
@@ -23,6 +23,8 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(false);
+  const [q, setQ] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState({
     title: "",
     summary: "",
@@ -61,6 +63,33 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
       return "Unknown error";
     }
   }
+
+  // Fetch with search (debounced)
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/blogs?q=${encodeURIComponent(q)}` : "/api/admin/blogs";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: Blog[]; error?: unknown };
+          if (!res.ok) throw new Error(typeof json.error === "string" ? json.error : "Failed to load posts");
+          setPosts(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
+  
 
   async function onSubmit() {
     setLoading(true);
@@ -118,8 +147,15 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Blogs</h1>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search title, summary, content, or author..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
         <Button onClick={openCreate}>New Post</Button>
       </div>
 

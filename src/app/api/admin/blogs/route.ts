@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { blogPosts, users } from "~/server/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, like, or } from "drizzle-orm";
 import { currentUser } from "@clerk/nextjs/server";
 
 const BlogSchema = z.object({
@@ -12,8 +12,10 @@ const BlogSchema = z.object({
   thumbnailUrl: z.string().url().optional().or(z.literal("").transform(() => undefined)),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const q = searchParams.get("q");
     const rows = await db
       .select({
         id: blogPosts.id,
@@ -24,10 +26,35 @@ export async function GET() {
         createdAt: blogPosts.createdAt,
         updatedAt: blogPosts.updatedAt,
         userId: blogPosts.userId,
+        authorName: users.name,
+        authorEmail: users.email,
       })
       .from(blogPosts)
+      .leftJoin(users, eq(users.id, blogPosts.userId))
+      .where(
+        q
+          ? or(
+              like(blogPosts.title, `%${q}%`),
+              like(blogPosts.summary, `%${q}%`),
+              like(blogPosts.content, `%${q}%`),
+              like(users.name, `%${q}%`),
+              like(users.email, `%${q}%`)
+            )
+          : undefined
+      )
       .orderBy(desc(blogPosts.createdAt));
-    return NextResponse.json({ data: rows });
+    const data = rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      summary: r.summary,
+      content: r.content,
+      thumbnailUrl: r.thumbnailUrl,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      userId: r.userId,
+      author: r.authorName ?? r.authorEmail ?? "Unknown",
+    }));
+    return NextResponse.json({ data });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Failed to list posts" }, { status: 500 });

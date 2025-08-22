@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import Link from "next/link";
+import { Input } from "~/components/ui/input";
 
 export type OrderRow = {
   id: string;
@@ -35,6 +36,8 @@ const STATUSES: OrderRow["status"][] = [
 export default function OrdersClient({ initialData }: { initialData: OrderRow[] }) {
   const [items, setItems] = useState<OrderRow[]>(initialData);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [q, setQ] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
 
   function fmtError(e: unknown): string {
     try {
@@ -46,6 +49,35 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
       return "Unknown error";
     }
   }
+
+  // Fetch with search (debounced)
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/orders?q=${encodeURIComponent(q)}` : "/api/admin/orders";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: OrderRow[]; error?: unknown };
+          if (!res.ok) {
+            const msg = typeof json.error === "string" ? json.error : "Failed to load orders";
+            throw new Error(msg);
+          }
+          setItems(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
 
   async function onChangeStatus(id: string, status: OrderRow["status"]) {
     setSavingId(id);
@@ -69,8 +101,15 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Orders</h1>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search email, coupon, or order id..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
       </div>
 
       <div className="overflow-x-auto">
