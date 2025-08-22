@@ -27,6 +27,12 @@ export default function Navbar() {
           >
             Home
           </Link>
+          <Link
+            href="/services"
+            className="rounded-full px-3 py-1 text-sm text-black/70 transition hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+          >
+            Services
+          </Link>
         </div>
 
         {/* Auth + Theme */}
