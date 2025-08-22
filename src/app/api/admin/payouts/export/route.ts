@@ -3,7 +3,7 @@ import { db } from '~/server/db';
 import { payouts } from '~/server/db/schema';
 import { desc } from 'drizzle-orm';
 
-export async function GET(request: Request): Promise<Response> {
+export async function GET(_request: Request): Promise<Response> {
   try {
     const rows = await db.select().from(payouts).orderBy(desc(payouts.createdAt));
     let csv = 'id,referralId,amount,status,payoutDate,createdAt,updatedAt\n';

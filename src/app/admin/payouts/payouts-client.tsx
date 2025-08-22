@@ -77,7 +77,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
         });
         const raw: unknown = await res.json();
         const json = raw as { data: Payout; error?: unknown };
-        if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to update payout");
+        if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to update payout");
         setItems((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
         toast.success("Payout updated successfully");
       } else {
@@ -93,7 +93,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
         });
         const raw: unknown = await res.json();
         const json = raw as { data: Payout; error?: unknown };
-        if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to create payout");
+        if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to create payout");
         setItems((prev) => [json.data, ...prev]);
         toast.success("Payout created successfully");
       }
@@ -113,7 +113,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       const res = await fetch(`/api/admin/payouts/${id}`, { method: "DELETE" });
       const raw: unknown = await res.json();
       const json = raw as { error?: unknown };
-      if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to delete payout");
+      if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to delete payout");
       setItems((prev) => prev.filter((x) => x.id !== id));
       toast.success("Payout deleted successfully");
     } catch (err) {
@@ -128,7 +128,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       const res = await fetch(`/api/admin/payouts/${id}/mark-paid`, { method: "PATCH" });
       const raw: unknown = await res.json();
       const json = raw as { data: Payout; error?: unknown };
-      if (!res.ok) throw new Error(json.error ? String(json.error) : "Failed to mark payout as PAID");
+      if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to mark payout as PAID");
       // Update the local state with the updated payout
       setItems((prev) => prev.map((p) => (p.id === id ? json.data : p)));
       toast.success("Payout marked as PAID");

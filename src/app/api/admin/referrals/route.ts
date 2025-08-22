@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { referrals, users } from "~/server/db/schema";
-import { and, desc, eq, like, or } from "drizzle-orm";
+import { desc, eq, like, or } from "drizzle-orm";
 
 const CreateSchema = z.object({
   userId: z.string().min(1),

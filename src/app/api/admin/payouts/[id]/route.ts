@@ -2,12 +2,23 @@ import { NextResponse } from 'next/server';
 import { db } from '~/server/db';
 import { payouts } from '~/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 // PATCH endpoint to update a payout
-export async function PATCH(request: Request, { params }: { params: { id: string } }): Promise<Response> {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
   try {
-    const body = await request.json();
-    const { amount, status, payoutDate } = body;
+    const { id } = await context.params;
+    const PatchSchema = z.object({
+      amount: z.number().optional(),
+      status: z.enum(['PENDING','PAID','FAILED','UNPAID']).optional(),
+      payoutDate: z.string().datetime().optional(),
+    });
+    const bodyUnknown: unknown = await request.json();
+    const parsed = PatchSchema.safeParse(bodyUnknown);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+    const { amount, status, payoutDate } = parsed.data;
     await db
       .update(payouts)
       .set({
@@ -15,9 +26,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         status,
         payoutDate: payoutDate ? new Date(payoutDate) : undefined
       })
-      .where(eq(payouts.id, params.id));
+      .where(eq(payouts.id, id));
 
-    const [updatedPayout] = await db.select().from(payouts).where(eq(payouts.id, params.id));
+    const [updatedPayout] = await db.select().from(payouts).where(eq(payouts.id, id));
     if (!updatedPayout) {
       return NextResponse.json({ error: 'Payout not found' }, { status: 404 });
     }
@@ -28,9 +39,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 // DELETE endpoint to remove a payout
-export async function DELETE(request: Request, { params }: { params: { id: string } }): Promise<Response> {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
   try {
-    await db.delete(payouts).where(eq(payouts.id, params.id));
+    const { id } = await context.params;
+    await db.delete(payouts).where(eq(payouts.id, id));
     return NextResponse.json({ message: 'Payout deleted successfully' });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Error deleting payout' }, { status: 500 });

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 /**
  * Sentry tunnel route to proxy Sentry requests through your domain

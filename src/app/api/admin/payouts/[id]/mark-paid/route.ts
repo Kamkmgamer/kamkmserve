@@ -4,26 +4,26 @@ import { db } from '~/server/db';
 import { payouts, commissions } from '~/server/db/schema';
 
 // This PATCH endpoint marks a payout as PAID and updates linked commissions as PAID as well.
-export async function PATCH(request: Request, context: any): Promise<Response> {
-  const { params } = context;
+export async function PATCH(_request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
   try {
+    const { id } = await context.params;
     // Mark the payout as PAID and update payoutDate to now
-    const updatedPayouts = await db
+    await db
       .update(payouts)
       .set({ status: 'PAID', payoutDate: new Date() })
-      .where(eq(payouts.id, params.id));
+      .where(eq(payouts.id, id));
 
     // Update linked commissions: assuming there is a payoutId field linking commissions and payouts
-    const updatedCommissions = await db
+    await db
       .update(commissions)
       .set({ status: 'PAID' })
-      .where(eq(commissions.payoutId, params.id));
+      .where(eq(commissions.payoutId, id));
 
     // Retrieve the updated payout record
     const [updatedPayout] = await db
       .select()
       .from(payouts)
-      .where(eq(payouts.id, params.id));
+      .where(eq(payouts.id, id));
 
     if (!updatedPayout) {
       return NextResponse.json({ error: 'Payout not found' }, { status: 404 });
