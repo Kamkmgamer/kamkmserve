@@ -1,8 +1,7 @@
 import "~/styles/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import Navbar from "./_Components/navbar";
-import Footer from "../components/layout/Footer";
+import PublicChrome from "../components/layout/PublicChrome";
 import { ThemeProvider } from "../contexts/ThemeContext";
 
 
@@ -37,10 +36,8 @@ export default function RootLayout({
             }}
           />
           <ThemeProvider>
-            <Navbar />
-            {children}
+            <PublicChrome>{children}</PublicChrome>
             <Toaster richColors position="top-right" />
-            <Footer />
           </ThemeProvider>
         </body>
       </html>
