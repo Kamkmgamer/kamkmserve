@@ -1,13 +1,38 @@
 import { NextResponse } from 'next/server';
 import { db } from '~/server/db';
-import { payouts } from '~/server/db/schema';
-import { desc } from 'drizzle-orm';
+import { payouts, referrals } from '~/server/db/schema';
+import { desc, eq, like, or } from 'drizzle-orm';
 import { z } from 'zod';
 
-// GET: Return a list of payouts
-export async function GET(_request: Request) {
+// GET: Return a list of payouts (optional search: q matches referral code or status)
+export async function GET(request: Request) {
   try {
-    const rows = await db.select().from(payouts).orderBy(desc(payouts.createdAt));
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get('q');
+
+    const rows = await db
+      .select({
+        id: payouts.id,
+        referralId: payouts.referralId,
+        amount: payouts.amount,
+        status: payouts.status,
+        payoutDate: payouts.payoutDate,
+        createdAt: payouts.createdAt,
+        updatedAt: payouts.updatedAt,
+        referralCode: referrals.code,
+      })
+      .from(payouts)
+      .leftJoin(referrals, eq(referrals.id, payouts.referralId))
+      .where(
+        q
+          ? or(
+              like(referrals.code, `%${q}%`),
+              like(payouts.status, `%${q}%`)
+            )
+          : undefined
+      )
+      .orderBy(desc(payouts.createdAt));
+
     return NextResponse.json({ data: rows });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Error fetching payouts' }, { status: 500 });

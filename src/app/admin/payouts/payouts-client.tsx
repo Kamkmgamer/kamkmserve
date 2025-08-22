@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
@@ -40,7 +40,8 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     status: "PENDING" as Payout["status"],
     payoutDate: "",
   });
-  const [search, setSearch] = useState("");
+  const [q, setQ] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
 
   const resetForm = () => {
     setForm({ referralId: "", amount: "0", status: "PENDING", payoutDate: "" });
@@ -51,6 +52,32 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     resetForm();
     setOpen(true);
   };
+
+  // Debounced server-side search
+  useEffect(() => {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    const t = setTimeout(() => {
+      void (async () => {
+        try {
+          const url = q ? `/api/admin/payouts?q=${encodeURIComponent(q)}` : "/api/admin/payouts";
+          const res = await fetch(url, { signal: controller.signal });
+          const raw: unknown = await res.json();
+          const json = raw as { data: Payout[]; error?: unknown };
+          if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to load payouts");
+          setItems(json.data);
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          console.error(err);
+        }
+      })();
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [q]);
   const openEdit = (p: Payout) => {
     setEditing(p);
     setForm({
@@ -138,25 +165,20 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
     }
   }
 
-  // Filter items based on search; case insensitive search on referralCode
-  const filteredItems = items.filter((p) =>
-    p.referralCode.toLowerCase().includes(search.toLowerCase())
-  );
+  // Items are already filtered server-side via q
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Payouts</h1>
-        <div className="flex gap-2 items-center">
-          <input
-            type="text"
-            placeholder="Search by referral code"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="px-2 py-1 border rounded"
-          />
-          <Button onClick={openCreate}>Add Payout</Button>
-        </div>
+        <div className="flex-1" />
+        <Input
+          placeholder="Search by referral code or status..."
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-xs"
+        />
+        <Button onClick={openCreate}>Add Payout</Button>
       </div>
 
       <div className="overflow-x-auto">
@@ -172,7 +194,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
             </TR>
           </THead>
           <TBody>
-            {filteredItems.map((p) => (
+            {items.map((p) => (
               <TR key={p.id}>
                 <TD>{p.referralCode}</TD>
                 <TD>${(p.amount / 100).toFixed(2)}</TD>
