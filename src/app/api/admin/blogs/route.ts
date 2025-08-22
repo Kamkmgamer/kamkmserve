@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unable to resolve author user" }, { status: 500 });
     }
 
-    const [row] = await db
+    const [inserted] = await db
       .insert(blogPosts)
       .values({
         title: parsed.data.title,
@@ -84,9 +84,50 @@ export async function POST(req: Request) {
         thumbnailUrl: parsed.data.thumbnailUrl,
         userId: appUserId,
       })
-      .returning();
+      .returning({ id: blogPosts.id });
 
-    return NextResponse.json({ data: row }, { status: 201 });
+    if (!inserted?.id) {
+      return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+    }
+
+    // Re-select with author info for client shape
+    const [full] = await db
+      .select({
+        id: blogPosts.id,
+        title: blogPosts.title,
+        summary: blogPosts.summary,
+        content: blogPosts.content,
+        thumbnailUrl: blogPosts.thumbnailUrl,
+        createdAt: blogPosts.createdAt,
+        updatedAt: blogPosts.updatedAt,
+        userId: blogPosts.userId,
+        authorName: users.name,
+        authorEmail: users.email,
+      })
+      .from(blogPosts)
+      .leftJoin(users, eq(users.id, blogPosts.userId))
+      .where(eq(blogPosts.id, inserted.id))
+      .limit(1);
+
+    const data = full
+      ? {
+          id: full.id,
+          title: full.title,
+          summary: full.summary,
+          content: full.content,
+          thumbnailUrl: full.thumbnailUrl ?? null,
+          createdAt: full.createdAt instanceof Date ? full.createdAt.toISOString() : String(full.createdAt),
+          updatedAt: full.updatedAt instanceof Date ? full.updatedAt.toISOString() : String(full.updatedAt),
+          userId: full.userId,
+          author: full.authorName ?? full.authorEmail ?? "Unknown",
+        }
+      : undefined;
+
+    if (!data) {
+      return NextResponse.json({ error: "Failed to load created post" }, { status: 500 });
+    }
+
+    return NextResponse.json({ data }, { status: 201 });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
