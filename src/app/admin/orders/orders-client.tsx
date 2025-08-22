@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
+import Link from "next/link";
 
 export type OrderRow = {
   id: string;
@@ -104,9 +105,9 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
                 <TD>{o.couponCode ?? "—"}</TD>
                 <TD>{new Date(o.createdAt).toLocaleString()}</TD>
                 <TD className="text-right space-x-2">
-                  <Button variant="secondary" size="sm" disabled>
-                    View
-                  </Button>
+                  <Link href={`/admin/orders/${o.id}`}>
+                    <Button variant="secondary" size="sm">View</Button>
+                  </Link>
                 </TD>
               </TR>
             ))}
