@@ -79,10 +79,10 @@ services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
 ## 7. Commission Tracking
 
 - [x] Auto-create `commission` entry when an order with referral is marked `PAID`.
-- [ ] Page: `/admin/commissions`
-  - [ ] Table with referral code, order, amount, status (UNPAID, PENDING, PAID).
-- [ ] API:
-  - [ ] CRUD endpoints for commissions.
+- [x] Page: `/admin/commissions`
+  - [x] Table with referral code, order, amount, status (UNPAID, PENDING, PAID).
+- [x] API:
+  - [x] CRUD endpoints for commissions.
 
 ---
 
