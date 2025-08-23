@@ -69,10 +69,10 @@ A comprehensive checklist to ensure your application is production-ready, secure
 ## Testing & Validation
 
 - [x] Run full integration and e2e tests before deployment.
-- [ ] Validate staging is identical to production.
-- [ ] Perform load testing and stress testing.
-- [ ] Perform penetration testing or security audits.
-- [ ] Ensure rollback strategy is tested and documented.
+- [x] Validate staging is identical to production.
+- [x] Perform load testing and stress testing.
+- [x] Perform penetration testing or security audits.
+- [x] Ensure rollback strategy is tested and documented.
 
 ---
 
