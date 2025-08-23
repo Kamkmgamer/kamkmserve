@@ -1,125 +1,104 @@
-# TODO – Build Admin CMS for KamkmServe
+# 🛡️ Production Hardening Checklist
 
-This document outlines the steps to build an admin dashboard (CMS) in Next.js for managing
-services, prices, blogs, coupons, orders, referrals, affiliates, and payouts.
-
----
-
-## 1. Setup Admin Area
-
-- [x] Create `/admin` route in Next.js (protected layout).
-- [x] Add `AdminLayout.tsx` with sidebar navigation (Services, Blogs, Coupons, Orders, Referrals, Payouts).
-- [x] Style using `shadcn/ui` components (Sidebar, Table, Button, Dialog).
-- [x] Configure `middleware.ts` to restrict `/admin/*` routes to users with `role = ADMIN` or `SUPERADMIN` (via Clerk + Drizzle).
+A comprehensive checklist to ensure your application is production-ready, secure, and resilient.
 
 ---
 
-## 2. Services Management
+## Security
 
-- [x] Page: `/admin/services`
-  - [x] List all services in a table (name, category, price, createdAt).
-  - [x] Add button → opens modal with form (name, description, price, features, category, image).
-  - [x] Edit & Delete actions per row.
-- [x] API:
-  - [x] `GET /api/admin/services` → list services.
-  - [x] `POST /api/admin/services` → create service.
-  - [x] `PATCH /api/admin/services/:id` → update service.
-  - [x] `DELETE /api/admin/services/:id` → delete service.
-
----
-
-## 3. Blog Management
-
-- [x] Page: `/admin/blogs`
-  - [x] List posts (title, summary, author, createdAt).
-  - [x] Create/Edit form with rich text editor (basic rich-text textarea for now).
-  - [x] Delete posts.
-- [x] API:
-  - [x] CRUD endpoints for blog posts.
+- [ ] Enforce HTTPS everywhere (redirect HTTP → HTTPS).
+- [ ] Enable HSTS (HTTP Strict Transport Security).
+- [ ] Configure TLS with strong ciphers only.
+- [ ] Rotate and secure secrets, API keys, and credentials.
+- [ ] Store secrets in environment variables or secret managers (not in code).
+- [ ] Ensure JWT/session tokens have short expiration times and refresh tokens are secure.
+- [ ] Sanitize and validate all user input (prevent SQLi, XSS, etc.).
+- [ ] Apply security headers:
+  - [ ] `Content-Security-Policy`
+  - [ ] `X-Frame-Options`
+  - [ ] `X-Content-Type-Options`
+  - [ ] `Referrer-Policy`
+  - [ ] `Strict-Transport-Security`
+- [ ] Limit file upload types, validate size, and scan for malware.
+- [ ] Disable directory listing and unnecessary server signatures.
+- [ ] Verify access controls (RBAC/ABAC).
+- [ ] Run automated dependency vulnerability scans.
 
 ---
 
-## 4. Coupon Management
+## Infrastructure & Configuration
 
-- [x] Page: `/admin/coupons`
-  - [x] Table with coupon code, type, value, usage, status.
-  - [x] Create form (code, type [percent/fixed], value, minOrderAmount, maxUses, expiresAt).
-  - [x] Toggle coupon `active` on/off.
-- [x] API:
-  - [x] CRUD endpoints for coupons.
-  - [x] Auto-calc `currentUses`.
-
----
-
-## 5. Order Management
-
-- [x] Page: `/admin/orders`
-  - [x] Table view (user email, totalAmount, status, createdAt).
-  - [x] Order detail page: list line items, applied coupon, referral info, requirements/suggestions.
-  - [x] Actions:
-    - [x] Update order `status` (PENDING → PAID → APPROVED).
-    - [x] Refund / Cancel.
-- [x] API:
-  - [x] `GET /api/admin/orders`
-  - [x] `PATCH /api/admin/orders/:id` → update status, refund, etc.
+- [ ] Use Infrastructure as Code (IaC) for reproducibility.
+- [ ] Restrict inbound/outbound network access with firewall/security groups.
+- [ ] Lock down SSH: 
+  - [ ] Disable root login
+  - [ ] Use SSH keys, not passwords
+- [ ] Disable unused ports and services.
+- [ ] Configure automatic security updates for OS packages.
+- [ ] Set file permissions and ownership correctly.
+- [ ] Run services under non-root users.
+- [ ] Ensure container images are minimal and scanned for vulnerabilities.
+- [ ] Configure environment variables securely.
+- [ ] Apply least privilege principle to IAM roles and services.
 
 ---
 
-## 6. Referral & Affiliate Program
+## Observability
 
-- [x] Page: `/admin/referrals`
-  - [x] List referrals (user, code, commissionRate, createdAt).
-  - [x] Generate referral code for a user.
-  - [x] Edit commission rate.
-- [x] API:
-  - [x] CRUD endpoints for referrals.
-
----
-
-## 7. Commission Tracking
-
-- [x] Auto-create `commission` entry when an order with referral is marked `PAID`.
-- [x] Page: `/admin/commissions`
-  - [x] Table with referral code, order, amount, status (UNPAID, PENDING, PAID).
-- [x] API:
-  - [x] CRUD endpoints for commissions.
+- [ ] Centralized logging (structured JSON logs preferred).
+- [ ] Collect application metrics (CPU, memory, request latency, errors).
+- [ ] Set up health checks (liveness/readiness probes).
+- [ ] Implement alerting for anomalies and downtime.
+- [ ] Enable distributed tracing if applicable.
+- [ ] Audit logs enabled and stored securely.
 
 ---
 
-## 8. Payout Management
+## Testing & Validation
 
-- [x] Page: `/admin/payouts`
-  - [x] List payouts (referral, amount, status, payoutDate).
-  - [x] Button: "Mark as Paid" → update status of payout + linked commissions.
-- [x] API:
-  - [x] CRUD endpoints for payouts.
-  - [x] Action endpoint: mark payout & commissions as PAID.
-
----
-
-## 9. Auth & Security
-
-- [x] Ensure all `/admin/api/*` routes check Clerk auth and `role`.
-- [x] Add role upgrade utility to promote users to `ADMIN` (manual or via DB migration).
-- [x] Audit sensitive fields (commissions, payouts).
+- [ ] Run full integration and e2e tests before deployment.
+- [ ] Validate staging is identical to production.
+- [ ] Perform load testing and stress testing.
+- [ ] Perform penetration testing or security audits.
+- [ ] Ensure rollback strategy is tested and documented.
 
 ---
 
-## 10. Polish & Extras
+## Deployment & Availability
 
-- [x] Add dashboard stats cards on `/admin` (Total Orders, Revenue, Active Referrals, Pending Payouts).
-- [x] Add search & filters for all tables.
-- [x] Add CSV export for orders, payouts.
-- [x] Add toast notifications for CRUD actions.
-- [x] Write Drizzle seed script for dummy data.
+- [ ] Use blue-green or canary deployments when possible.
+- [ ] Automate deployments with CI/CD pipelines.
+- [ ] Database migrations are safe and tested.
+- [ ] Apply rate limiting and request throttling.
+- [ ] Use CDN for static assets.
+- [ ] Enable caching layers (Redis, CDN, etc.).
+- [ ] Configure graceful shutdown for services.
+- [ ] Ensure horizontal/vertical scaling strategy is in place.
 
 ---
 
-## Tech Stack Notes
+## Data & Storage
 
-- **UI**: shadcn/ui + Tailwind.
-- **Forms**: React Hook Form + Zod validation.
-- **API Layer**: Next.js App Router `app/api/admin/*`.
-- **ORM**: Drizzle with PostgreSQL.
-- **Auth**: Clerk (role-based).
-- **Rich Text**: TipTap or Lexical for blogs.
+- [ ] Encrypt data at rest (databases, volumes, backups).
+- [ ] Encrypt data in transit (TLS everywhere).
+- [ ] Set database access controls and roles.
+- [ ] Rotate database credentials regularly.
+- [ ] Enable database query logging (sanitized).
+- [ ] Backup strategy tested and verified.
+- [ ] Retention policies applied to logs and backups.
+
+---
+
+## People & Processes
+
+- [ ] Document runbooks for incident response.
+- [ ] Define on-call escalation procedures.
+- [ ] Ensure monitoring dashboards are up to date.
+- [ ] Review code and infrastructure changes via peer review.
+- [ ] Regularly train team on security and operations best practices.
+- [ ] Apply principle of least privilege to all accounts.
+- [ ] Enforce 2FA for all critical systems.
+
+---
+
+ Use this checklist before every production release to minimize risks and maximize reliability.
