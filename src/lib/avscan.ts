@@ -14,7 +14,7 @@ export async function avScan(_buffer: Buffer): Promise<{ ok: boolean; reason?: s
     // const json = await res.json();
     // return { ok: json.clean, reason: json.reason };
     return { ok: true };
-  } catch (_e) {
+  } catch {
     // Fail closed or open depending on policy; we choose fail-closed for safety
     return { ok: false, reason: "scan-error" };
   }

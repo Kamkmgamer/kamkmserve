@@ -133,6 +133,7 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
                       aria-label={`Thumbnail ${idx + 1}`}
                     >
                       {url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={url} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" loading="lazy" />
                       ) : (
                         <div className="h-full w-full bg-slate-100 dark:bg-slate-800" />

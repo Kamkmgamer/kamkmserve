@@ -300,3 +300,27 @@ export const payouts = createTable(
 // Refresh Tokens
 // ==========================
 // Note: users.referredById intentionally has no FK to avoid circular dependency with referrals.
+
+// ==========================
+// Audit Logs
+// ==========================
+export const auditLogs = createTable(
+  "audit_log",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    event: text("event").notNull(),
+    action: text("action").notNull(),
+    resource: text("resource").notNull(),
+    allowed: boolean("allowed").notNull().default(false),
+    actorUserId: text("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+    ip: text("ip"),
+    userAgent: text("user_agent"),
+    metadata: text("metadata"), // JSON string
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("audit_log_created_at_idx").on(t.createdAt),
+    index("audit_log_actor_idx").on(t.actorUserId),
+    index("audit_log_action_idx").on(t.action),
+  ],
+);
