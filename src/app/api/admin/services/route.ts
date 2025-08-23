@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { services } from "~/server/db/schema";
 import { desc, like, or } from "drizzle-orm";
+import { requireRole } from "~/server/auth/roles";
 
 const ServiceSchema = z.object({
   name: z.string().min(1),
@@ -16,6 +17,8 @@ const ServiceSchema = z.object({
 
 export async function GET(req: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const { searchParams } = new URL(req.url);
     const qp = Object.fromEntries(searchParams.entries());
     const QuerySchema = z.object({ q: z.string().trim().max(200).optional() });
@@ -46,6 +49,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const body: unknown = await req.json();
     const parsed = ServiceSchema.safeParse(body);
     if (!parsed.success) {

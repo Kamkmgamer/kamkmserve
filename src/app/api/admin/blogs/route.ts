@@ -4,6 +4,7 @@ import { db } from "~/server/db";
 import { blogPosts, users } from "~/server/db/schema";
 import { desc, eq, like, or } from "drizzle-orm";
 import { currentUser } from "@clerk/nextjs/server";
+import { requireRole } from "~/server/auth/roles";
 
 const BlogSchema = z.object({
   title: z.string().min(1),
@@ -14,6 +15,8 @@ const BlogSchema = z.object({
 
 export async function GET(req: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const { searchParams } = new URL(req.url);
     const qp = Object.fromEntries(searchParams.entries());
     const QuerySchema = z.object({ q: z.string().trim().max(200).optional() });
@@ -69,6 +72,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const body: unknown = await req.json();
     const parsed = BlogSchema.safeParse(body);
     if (!parsed.success) {

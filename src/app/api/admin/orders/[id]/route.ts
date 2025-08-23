@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { coupons, orders, users, orderLineItems, services, referrals, commissions } from "~/server/db/schema";
 import { desc, eq } from "drizzle-orm";
+import { requireRole } from "~/server/auth/roles";
 
 const PatchSchema = z.object({
   status: z.enum([
@@ -93,6 +94,8 @@ export async function GET(_req: Request, context: RouteCtx) {
 
 export async function PATCH(req: Request, context: RouteCtx) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const { id } = await context.params;
     const body: unknown = await req.json();
     const parsed = PatchSchema.safeParse(body);

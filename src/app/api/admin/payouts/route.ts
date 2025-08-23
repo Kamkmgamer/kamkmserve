@@ -3,10 +3,13 @@ import { db } from '~/server/db';
 import { payouts, referrals } from '~/server/db/schema';
 import { and, desc, eq, like, or } from 'drizzle-orm';
 import { z } from 'zod';
+import { requireRole } from "~/server/auth/roles";
 
 // GET: Return a list of payouts (optional search: q matches referral code or status)
 export async function GET(request: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const { searchParams } = new URL(request.url);
     const qp = Object.fromEntries(searchParams.entries());
     const QuerySchema = z.object({
@@ -51,6 +54,8 @@ export async function GET(request: Request) {
 // POST: Create a new payout
 export async function POST(request: Request) {
   try {
+    const auth = await requireRole("ADMIN");
+    if (!auth.ok) return auth.res;
     const CreateSchema = z.object({
       referralId: z.string().min(1),
       amount: z.number(),
