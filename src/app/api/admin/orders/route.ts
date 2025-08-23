@@ -2,12 +2,22 @@ import { NextResponse } from "next/server";
 import { db } from "~/server/db";
 import { coupons, orders, users } from "~/server/db/schema";
 import { and, desc, eq, like, or } from "drizzle-orm";
+import { z } from "zod";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const q = searchParams.get("q");
-    const status = searchParams.get("status");
+    const qp = Object.fromEntries(searchParams.entries());
+    const QuerySchema = z.object({
+      q: z.string().trim().max(200).optional(),
+      status: z.string().trim().max(50).optional(),
+    });
+    const parsed = QuerySchema.safeParse(qp);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+    const q = parsed.data.q;
+    const status = parsed.data.status;
     const rows = await db
       .select({
         id: orders.id,
