@@ -8,8 +8,16 @@ import { z } from 'zod';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get('q');
-    const status = searchParams.get('status');
+    const qp = Object.fromEntries(searchParams.entries());
+    const QuerySchema = z.object({
+      q: z.string().trim().max(200).optional(),
+      status: z.enum(['PENDING','PAID','FAILED','UNPAID']).optional(),
+    });
+    const parsed = QuerySchema.safeParse(qp);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+    const { q, status } = parsed.data;
 
     const rows = await db
       .select({
@@ -27,7 +35,7 @@ export async function GET(request: Request) {
       .where(
         q || status
           ? and(
-              status ? eq(payouts.status, status as typeof payouts.$inferSelect.status) : undefined,
+              status ? eq(payouts.status, status) : undefined,
               q ? or(like(referrals.code, `%${q}%`), like(payouts.status, `%${q}%`)) : undefined,
             )
           : undefined,

@@ -13,7 +13,13 @@ const CreateSchema = z.object({
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const q = searchParams.get("q"); // optional search by email or code
+    const qp = Object.fromEntries(searchParams.entries());
+    const QuerySchema = z.object({ q: z.string().trim().max(200).optional() });
+    const parsed = QuerySchema.safeParse(qp);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+    const q = parsed.data.q; // optional search by email or code
 
     const rows = await db
       .select({
