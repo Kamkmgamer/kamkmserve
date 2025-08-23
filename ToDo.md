@@ -6,19 +6,19 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## Security
 
-- [ ] Enforce HTTPS everywhere (redirect HTTP → HTTPS).
-- [ ] Enable HSTS (HTTP Strict Transport Security).
+- [x] Enforce HTTPS everywhere (redirect HTTP → HTTPS).
+- [x] Enable HSTS (HTTP Strict Transport Security).
 - [ ] Configure TLS with strong ciphers only.
 - [ ] Rotate and secure secrets, API keys, and credentials.
 - [ ] Store secrets in environment variables or secret managers (not in code).
 - [ ] Ensure JWT/session tokens have short expiration times and refresh tokens are secure.
 - [ ] Sanitize and validate all user input (prevent SQLi, XSS, etc.).
 - [ ] Apply security headers:
-  - [ ] `Content-Security-Policy`
-  - [ ] `X-Frame-Options`
-  - [ ] `X-Content-Type-Options`
-  - [ ] `Referrer-Policy`
-  - [ ] `Strict-Transport-Security`
+  - [x] `Content-Security-Policy`
+  - [x] `X-Frame-Options`
+  - [x] `X-Content-Type-Options`
+  - [x] `Referrer-Policy`
+  - [x] `Strict-Transport-Security`
 - [ ] Limit file upload types, validate size, and scan for malware.
 - [ ] Disable directory listing and unnecessary server signatures.
 - [ ] Verify access controls (RBAC/ABAC).
@@ -47,7 +47,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 - [ ] Centralized logging (structured JSON logs preferred).
 - [ ] Collect application metrics (CPU, memory, request latency, errors).
-- [ ] Set up health checks (liveness/readiness probes).
+- [x] Set up health checks (liveness/readiness probes).
 - [ ] Implement alerting for anomalies and downtime.
 - [ ] Enable distributed tracing if applicable.
 - [ ] Audit logs enabled and stored securely.
@@ -69,7 +69,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [ ] Use blue-green or canary deployments when possible.
 - [ ] Automate deployments with CI/CD pipelines.
 - [ ] Database migrations are safe and tested.
-- [ ] Apply rate limiting and request throttling.
+- [x] Apply rate limiting and request throttling.
 - [ ] Use CDN for static assets.
 - [ ] Enable caching layers (Redis, CDN, etc.).
 - [ ] Configure graceful shutdown for services.
