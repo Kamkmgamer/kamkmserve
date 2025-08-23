@@ -8,6 +8,8 @@ import "./src/env.js";
 const coreConfig = {
   // Silence monorepo/workspace root auto-detection warning
   outputFileTracingRoot: process.cwd(),
+  // Remove X-Powered-By header
+  poweredByHeader: false,
   async headers() {
     const csp = [
       "default-src 'self'",
