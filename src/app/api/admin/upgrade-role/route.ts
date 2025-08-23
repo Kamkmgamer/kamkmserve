@@ -3,11 +3,14 @@ import { db } from '~/server/db';
 import { users } from '~/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { requireRole } from "~/server/auth/roles";
 
 // PATCH endpoint to upgrade a user's role to ADMIN
 // This endpoint should be accessible only to SUPERADMIN users via middleware protection
 export async function PATCH(request: Request): Promise<Response> {
   try {
+    const auth = await requireRole('SUPERADMIN');
+    if (!auth.ok) return auth.res;
     const Schema = z.object({ userId: z.string().min(1) });
     const bodyUnknown: unknown = await request.json();
     const parsed = Schema.safeParse(bodyUnknown);
