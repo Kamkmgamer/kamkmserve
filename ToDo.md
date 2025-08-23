@@ -22,7 +22,6 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [ ] Limit file upload types, validate size, and scan for malware.
 - [ ] Disable directory listing and unnecessary server signatures.
 - [ ] Verify access controls (RBAC/ABAC).
-- [ ] Run automated dependency vulnerability scans.
 - [x] Run automated dependency vulnerability scans.
 
 ---
