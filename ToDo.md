@@ -12,7 +12,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Rotate and secure secrets, API keys, and credentials.
 - [x] Store secrets in environment variables or secret managers (not in code).
 - [x] Ensure JWT/session tokens have short expiration times and refresh tokens are secure.
-- [ ] Sanitize and validate all user input (prevent SQLi, XSS, etc.).
+- [x] Sanitize and validate all user input (prevent SQLi, XSS, etc.).
 - [ ] Apply security headers:
   - [x] `Content-Security-Policy`
   - [x] `X-Frame-Options`
