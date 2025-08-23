@@ -8,10 +8,10 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 - [x] Enforce HTTPS everywhere (redirect HTTP → HTTPS).
 - [x] Enable HSTS (HTTP Strict Transport Security).
-- [ ] Configure TLS with strong ciphers only.
-- [ ] Rotate and secure secrets, API keys, and credentials.
-- [ ] Store secrets in environment variables or secret managers (not in code).
-- [ ] Ensure JWT/session tokens have short expiration times and refresh tokens are secure.
+- [x] Configure TLS with strong ciphers only.
+- [x] Rotate and secure secrets, API keys, and credentials.
+- [x] Store secrets in environment variables or secret managers (not in code).
+- [x] Ensure JWT/session tokens have short expiration times and refresh tokens are secure.
 - [ ] Sanitize and validate all user input (prevent SQLi, XSS, etc.).
 - [ ] Apply security headers:
   - [x] `Content-Security-Policy`
@@ -23,6 +23,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [ ] Disable directory listing and unnecessary server signatures.
 - [ ] Verify access controls (RBAC/ABAC).
 - [ ] Run automated dependency vulnerability scans.
+- [x] Run automated dependency vulnerability scans.
 
 ---
 
