@@ -8,6 +8,41 @@ import "./src/env.js";
 const coreConfig = {
   // Silence monorepo/workspace root auto-detection warning
   outputFileTracingRoot: process.cwd(),
+  async headers() {
+    const csp = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      // Allow Next/React hydration and common patterns; tighten for prod as needed.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https: wss:",
+      "frame-ancestors 'self'",
+    ].join('; ')
+
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // HSTS (only effective over HTTPS)
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          // Mitigate clickjacking (redundant with frame-ancestors, but widely supported)
+          { key: 'X-Frame-Options', value: 'DENY' },
+          // Prevent MIME sniffing
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Privacy-preserving referrer policy
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Content Security Policy
+          { key: 'Content-Security-Policy', value: csp },
+        ],
+      },
+    ]
+  },
 };
 
 import {withSentryConfig} from "@sentry/nextjs";
