@@ -20,8 +20,20 @@ A comprehensive checklist to ensure your application is production-ready, secure
   - [x] `Referrer-Policy`
   - [x] `Strict-Transport-Security`
 - [ ] Limit file upload types, validate size, and scan for malware.
+  - [ ] Integrate `validateUpload()` from `src/lib/uploads.ts` in any upload endpoints
+  - [ ] Enforce size limits per route (default 10MB)
+  - [ ] Restrict to allowlisted MIME/ext (images, optional PDF)
+  - [ ] Add optional AV scan hook before persistence
+  - [ ] Add unit tests for allowed/blocked files
+  - [ ] Document endpoints to use `docs/security/uploads.md` guidance
 - [ ] Disable directory listing and unnecessary server signatures.
-- [ ] Verify access controls (RBAC/ABAC).
+- [x] Verify access controls (RBAC).
+- [ ] Verify access controls (ABAC).
+  - [ ] Define attributes (resource owner, org, plan, feature flags)
+  - [ ] Implement a small `can(user, action, resource)` policy helper
+  - [ ] Apply ABAC checks to sensitive routes (orders, payouts)
+  - [ ] Add tests for representative policies
+  - [ ] Add `docs/security/abac.md` with examples
 - [x] Run automated dependency vulnerability scans.
 
 ---
