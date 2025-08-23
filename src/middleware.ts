@@ -23,6 +23,49 @@ export default clerkMiddleware(async (auth, req) => {
     // If redirect logic fails, continue request handling
   }
 
+  // Basic rate limiting for API routes (best-effort; for robust prod use a shared store like Redis)
+  try {
+    const { pathname } = new URL(req.url)
+    if (pathname.startsWith('/api')) {
+      type RateRecord = { count: number; resetAt: number }
+      type RateStore = Map<string, RateRecord>
+      const g = globalThis as typeof globalThis & { __rateLimitStore?: RateStore }
+      const WINDOW_MS = 60_000 // 1 minute window
+      const MAX_REQS = 100 // per IP per window
+
+      const getStore = (): RateStore => {
+        g.__rateLimitStore ??= new Map<string, RateRecord>()
+        return g.__rateLimitStore
+      }
+      const store = getStore()
+      const xff = req.headers.get('x-forwarded-for')
+      const xri = req.headers.get('x-real-ip')
+      const ip = (xff?.split(',')[0]?.trim() ?? xri ?? 'unknown')
+      const now = Date.now()
+      const rec = store.get(ip)
+      if (!rec || now > rec.resetAt) {
+        store.set(ip, { count: 1, resetAt: now + WINDOW_MS })
+      } else {
+        const updated: RateRecord = { count: rec.count + 1, resetAt: rec.resetAt }
+        store.set(ip, updated)
+        if (updated.count > MAX_REQS) {
+          const retryAfter = Math.ceil((updated.resetAt - now) / 1000)
+          return new Response('Too Many Requests', {
+            status: 429,
+            headers: {
+              'Retry-After': String(Math.max(retryAfter, 1)),
+              'X-RateLimit-Limit': String(MAX_REQS),
+              'X-RateLimit-Remaining': '0',
+              'X-RateLimit-Reset': String(Math.floor(updated.resetAt / 1000)),
+            },
+          })
+        }
+      }
+    }
+  } catch {
+    // If rate limit logic fails, continue request handling
+  }
+
   // Enforce ADMIN/SUPERADMIN role for admin routes
   if (isAdminRoute(req)) {
     // 0) Optional: Allow Basic Auth specifically for admin routes (separate from Clerk)
