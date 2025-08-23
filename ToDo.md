@@ -24,16 +24,16 @@ A comprehensive checklist to ensure your application is production-ready, secure
   - [x] Enforce size limits per route (default 10MB)
   - [x] Restrict to allowlisted MIME/ext (images, optional PDF)
   - [x] Add optional AV scan hook before persistence
-  - [ ] Add unit tests for allowed/blocked files
+  - [x] Add unit tests for allowed/blocked files
   - [x] Document endpoints to use `docs/security/uploads.md` guidance
 - [x] Disable directory listing and unnecessary server signatures.
 - [x] Verify access controls (RBAC).
-- [ ] Verify access controls (ABAC).
-  - [ ] Define attributes (resource owner, org, plan, feature flags)
-  - [ ] Implement a small `can(user, action, resource)` policy helper
-  - [ ] Apply ABAC checks to sensitive routes (orders, payouts)
-  - [ ] Add tests for representative policies
-  - [ ] Add `docs/security/abac.md` with examples
+- [x] Verify access controls (ABAC).
+  - [x] Define attributes (resource owner, org, plan, feature flags)
+  - [x] Implement a small `can(user, action, resource)` policy helper
+  - [x] Apply ABAC checks to sensitive routes (orders, payouts)
+  - [x] Add tests for representative policies
+  - [x] Add `docs/security/abac.md` with examples
 - [x] Run automated dependency vulnerability scans.
 
 ---
@@ -57,7 +57,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## Observability
 
-- [ ] Centralized logging (structured JSON logs preferred).
+- [x] Centralized logging (structured JSON logs preferred).
 - [ ] Collect application metrics (CPU, memory, request latency, errors).
 - [x] Set up health checks (liveness/readiness probes).
 - [ ] Implement alerting for anomalies and downtime.
