@@ -47,11 +47,11 @@ A comprehensive checklist to ensure your application is production-ready, secure
   - [x] Use SSH keys, not passwords
 - [x] Disable unused ports and services.
 - [x] Configure automatic security updates for OS packages.
-- [ ] Set file permissions and ownership correctly.
-- [ ] Run services under non-root users.
-- [ ] Ensure container images are minimal and scanned for vulnerabilities.
-- [ ] Configure environment variables securely.
-- [ ] Apply least privilege principle to IAM roles and services.
+- [x] Set file permissions and ownership correctly.
+- [x] Run services under non-root users.
+- [x] Ensure container images are minimal and scanned for vulnerabilities.
+- [x] Configure environment variables securely.
+- [x] Apply least privilege principle to IAM roles and services.
 
 ---
 
@@ -60,8 +60,8 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Centralized logging (structured JSON logs preferred).
 - [x] Collect application metrics (CPU, memory, request latency, errors).
 - [x] Set up health checks (liveness/readiness probes).
-- [ ] Implement alerting for anomalies and downtime.
-- [ ] Enable distributed tracing if applicable.
+- [x] Implement alerting for anomalies and downtime.
+- [x] Enable distributed tracing if applicable.
 - [x] Audit logs enabled and stored securely.
 
 ---
