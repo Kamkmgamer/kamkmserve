@@ -40,14 +40,14 @@ export async function validateUpload(file: UploadFile, opts: ValidateOptions = {
 
   const ext = path.extname(file.filename).toLowerCase();
   if (!allowedExt.includes(ext)) {
-    const extDisplay = ext && ext.length ? ext : "(none)";
+    const extDisplay = ext?.length ? ext : "(none)";
     return { ok: false as const, error: `File extension not allowed: ${extDisplay}` };
   }
 
   // Best-effort magic number detection for common types
   const detected = detectMime(file.buffer) ?? (file.mimetype ?? "").toLowerCase();
   if (!allowedMime.includes(detected)) {
-    const mimeDisplay = detected && detected.length ? detected : "unknown";
+    const mimeDisplay = detected?.length ? detected : "unknown";
     return { ok: false as const, error: `MIME not allowed: ${mimeDisplay}` };
   }
 
