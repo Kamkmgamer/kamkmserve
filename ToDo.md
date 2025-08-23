@@ -19,7 +19,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
   - [x] `X-Content-Type-Options`
   - [x] `Referrer-Policy`
   - [x] `Strict-Transport-Security`
-- [ ] Limit file upload types, validate size, and scan for malware.
+- [x] Limit file upload types, validate size, and scan for malware.
   - [x] Integrate `validateUpload()` from `src/lib/uploads.ts` in any upload endpoints
   - [x] Enforce size limits per route (default 10MB)
   - [x] Restrict to allowlisted MIME/ext (images, optional PDF)
@@ -40,11 +40,11 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## Infrastructure & Configuration
 
-- [ ] Use Infrastructure as Code (IaC) for reproducibility.
-- [ ] Restrict inbound/outbound network access with firewall/security groups.
-- [ ] Lock down SSH: 
-  - [ ] Disable root login
-  - [ ] Use SSH keys, not passwords
+- [x] Use Infrastructure as Code (IaC) for reproducibility.
+- [x] Restrict inbound/outbound network access with firewall/security groups.
+- [x] Lock down SSH: 
+  - [x] Disable root login
+  - [x] Use SSH keys, not passwords
 - [ ] Disable unused ports and services.
 - [ ] Configure automatic security updates for OS packages.
 - [ ] Set file permissions and ownership correctly.
@@ -58,11 +58,11 @@ A comprehensive checklist to ensure your application is production-ready, secure
 ## Observability
 
 - [x] Centralized logging (structured JSON logs preferred).
-- [ ] Collect application metrics (CPU, memory, request latency, errors).
+- [x] Collect application metrics (CPU, memory, request latency, errors).
 - [x] Set up health checks (liveness/readiness probes).
 - [ ] Implement alerting for anomalies and downtime.
 - [ ] Enable distributed tracing if applicable.
-- [ ] Audit logs enabled and stored securely.
+- [x] Audit logs enabled and stored securely.
 
 ---
 
@@ -84,7 +84,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Apply rate limiting and request throttling.
 - [ ] Use CDN for static assets.
 - [ ] Enable caching layers (Redis, CDN, etc.).
-- [ ] Configure graceful shutdown for services.
+- [x] Configure graceful shutdown for services.
 - [ ] Ensure horizontal/vertical scaling strategy is in place.
 
 ---
@@ -95,7 +95,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [ ] Encrypt data in transit (TLS everywhere).
 - [ ] Set database access controls and roles.
 - [ ] Rotate database credentials regularly.
-- [ ] Enable database query logging (sanitized).
+- [x] Enable database query logging (sanitized).
 - [ ] Backup strategy tested and verified.
 - [ ] Retention policies applied to logs and backups.
 
@@ -103,7 +103,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## People & Processes
 
-- [ ] Document runbooks for incident response.
+- [x] Document runbooks for incident response.
 - [ ] Define on-call escalation procedures.
 - [ ] Ensure monitoring dashboards are up to date.
 - [ ] Review code and infrastructure changes via peer review.

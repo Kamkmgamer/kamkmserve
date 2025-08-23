@@ -1,0 +1,33 @@
+# Normalize line endings using .gitattributes
+# Treat all files as text by default and let overrides specify EOL
+* text=auto
+
+# Force LF for source/text files
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.scss text eol=lf
+*.md   text eol=lf
+*.mdx  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.tf   text eol=lf
+*.sh   text eol=lf
+*.sql  text eol=lf
+*.tfvars text eol=lf
+
+# Keep Windows EOL for Windows scripts
+*.bat eol=crlf
+*.cmd eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg binary
+*.ico binary
+*.pdf binary

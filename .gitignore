@@ -46,3 +46,12 @@ yarn-error.log*
 .idea
 # Sentry Config File
 .env.sentry-build-plugin
+
+# terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/*.tfstate.backup
+**/*.tfvars
+**/crash.log
+**/crash.*.log

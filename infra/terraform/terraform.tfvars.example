@@ -1,0 +1,5 @@
+# Example variables for Terraform IaC scaffold
+# Copy to terraform.tfvars and fill with real values as needed.
+
+aws_region    = "us-east-1"
+project_name  = "kamkmserve"
