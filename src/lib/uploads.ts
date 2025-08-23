@@ -38,15 +38,17 @@ export async function validateUpload(file: UploadFile, opts: ValidateOptions = {
     return { ok: false as const, error: `File too large. Max ${maxBytes} bytes` };
   }
 
-  const ext = path.extname(file.filename || "").toLowerCase();
+  const ext = path.extname(file.filename).toLowerCase();
   if (!allowedExt.includes(ext)) {
-    return { ok: false as const, error: `File extension not allowed: ${ext || "(none)"}` };
+    const extDisplay = ext && ext.length ? ext : "(none)";
+    return { ok: false as const, error: `File extension not allowed: ${extDisplay}` };
   }
 
   // Best-effort magic number detection for common types
-  const detected = detectMime(file.buffer) || (file.mimetype ?? "").toLowerCase();
+  const detected = detectMime(file.buffer) ?? (file.mimetype ?? "").toLowerCase();
   if (!allowedMime.includes(detected)) {
-    return { ok: false as const, error: `MIME not allowed: ${detected || "unknown"}` };
+    const mimeDisplay = detected && detected.length ? detected : "unknown";
+    return { ok: false as const, error: `MIME not allowed: ${mimeDisplay}` };
   }
 
   if (opts.scan) {
