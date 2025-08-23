@@ -1,3 +1,6 @@
+import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+
 export const metadata = {
   title: "Pricing | KAMKM Serve",
   description: "Plans and pricing for KAMKM Serve",
@@ -57,44 +60,48 @@ export default function PricingPage() {
 
       <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {tiers.map((tier) => (
-          <div
+          <Card
             key={tier.name}
-            className={`rounded-2xl border bg-white/80 p-8 shadow-sm dark:bg-slate-900/80 ${
+            className={
               tier.highlighted
-                ? "border-blue-500 shadow-lg ring-2 ring-blue-500"
-                : "border-slate-200 dark:border-slate-700"
-            }`}
+                ? "shadow-lg ring-2 ring-blue-500 border-blue-500"
+                : undefined
+            }
           >
-            <h2 className="text-xl font-semibold">{tier.name}</h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
-              {tier.description}
-            </p>
-            <div className="mt-6">
-              <span className="text-4xl font-bold">{tier.price}</span>
-              {tier.period && (
-                <span className="text-slate-600 dark:text-slate-400">
-                  /{tier.period}
-                </span>
-              )}
-            </div>
-            <ul className="mt-6 space-y-3 text-slate-700 dark:text-slate-300">
-              {tier.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-2">
-                  <span className="text-green-500">✔</span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-            <button
-              className={`mt-8 w-full rounded-xl px-4 py-3 font-medium transition ${
-                tier.highlighted
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
-              }`}
-            >
-              {tier.name === "Enterprise" ? "Contact Sales" : "Get Started"}
-            </button>
-          </div>
+            <CardHeader>
+              <h2 className="text-xl font-semibold">{tier.name}</h2>
+              <p className="mt-2 text-slate-600 dark:text-slate-400">
+                {tier.description}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="mt-4">
+                <span className="text-4xl font-bold">{tier.price}</span>
+                {tier.period && (
+                  <span className="text-slate-600 dark:text-slate-400">
+                    /{tier.period}
+                  </span>
+                )}
+              </div>
+              <ul className="mt-6 space-y-3 text-slate-700 dark:text-slate-300">
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-2">
+                    <span className="text-green-500">✔</span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full mt-2"
+                size="lg"
+                variant={tier.highlighted ? "primary" : "secondary"}
+              >
+                {tier.name === "Enterprise" ? "Contact Sales" : "Get Started"}
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </main>
