@@ -78,7 +78,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## Deployment & Availability
 
-- [ ] Use blue-green or canary deployments when possible.
+- [x] Use blue-green or canary deployments when possible.
 - [ ] Automate deployments with CI/CD pipelines.
 - [ ] Database migrations are safe and tested.
 - [x] Apply rate limiting and request throttling.
