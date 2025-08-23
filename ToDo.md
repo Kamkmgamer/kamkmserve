@@ -45,8 +45,8 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Lock down SSH: 
   - [x] Disable root login
   - [x] Use SSH keys, not passwords
-- [ ] Disable unused ports and services.
-- [ ] Configure automatic security updates for OS packages.
+- [x] Disable unused ports and services.
+- [x] Configure automatic security updates for OS packages.
 - [ ] Set file permissions and ownership correctly.
 - [ ] Run services under non-root users.
 - [ ] Ensure container images are minimal and scanned for vulnerabilities.
