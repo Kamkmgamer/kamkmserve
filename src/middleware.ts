@@ -9,6 +9,20 @@ const isAdminRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   const a = await auth()
 
+  // Enforce HTTPS in production (skip localhost and when already https)
+  try {
+    const host = req.headers.get('host') ?? ''
+    const proto = req.headers.get('x-forwarded-proto') ?? ''
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.endsWith('.local')
+    if (process.env.NODE_ENV === 'production' && !isLocalhost && proto !== 'https') {
+      const url = new URL(req.url)
+      url.protocol = 'https:'
+      return Response.redirect(url, 301)
+    }
+  } catch {
+    // If redirect logic fails, continue request handling
+  }
+
   // Enforce ADMIN/SUPERADMIN role for admin routes
   if (isAdminRoute(req)) {
     // 0) Optional: Allow Basic Auth specifically for admin routes (separate from Clerk)
