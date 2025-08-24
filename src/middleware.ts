@@ -1,6 +1,74 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { logger } from '~/lib/logger'
 import { NextResponse } from 'next/server'
+// --- Admin role cache helpers (signed cookie) ---
+const ROLE_COOKIE_NAME = 'kamkmserve.admin_role'
+const ROLE_CACHE_TTL_SEC = Number.parseInt(process.env.ROLE_CACHE_TTL_SEC ?? '300') // default 5 min
+
+// Base64url helpers compatible with Edge runtime (no Buffer)
+const b64u = {
+  enc(buf: ArrayBuffer): string {
+    const bytes = new Uint8Array(buf)
+    let bin = ''
+    for (const b of bytes) bin += String.fromCharCode(b)
+    const b64 = btoa(bin)
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  },
+  encStr(str: string): string {
+    const bytes = new TextEncoder().encode(str)
+    let bin = ''
+    for (const b of bytes) bin += String.fromCharCode(b)
+    const b64 = btoa(bin)
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  },
+  decStr(b64url: string): string {
+    const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/')
+    const bin = atob(b64)
+    const bytes = new Uint8Array(bin.length)
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+    return new TextDecoder().decode(bytes)
+  },
+}
+
+async function hmacSign(input: string, secret: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(input))
+  return b64u.enc(sig)
+}
+
+async function verifyAndParseRoleCookie(cookieVal: string | undefined, secret: string): Promise<{ role: string; exp: number } | undefined> {
+  if (!cookieVal) return undefined
+  const parts = cookieVal.split('.')
+  if (parts.length !== 2) return undefined
+  const payloadB64 = parts[0]!
+  const sig = parts[1]!
+  const expectedSig = await hmacSign(payloadB64, secret)
+  if (sig !== expectedSig) return undefined
+  try {
+    const json = b64u.decStr(payloadB64)
+    const data = JSON.parse(json) as { role?: unknown; exp?: unknown }
+    const role = typeof data.role === 'string' ? data.role : undefined
+    const exp = typeof data.exp === 'number' ? data.exp : undefined
+    if (!role || !exp) return undefined
+    if (Date.now() > exp) return undefined
+    return { role, exp }
+  } catch {
+    return undefined
+  }
+}
+
+async function createRoleCookie(role: string, secret: string): Promise<string> {
+  const payload = { role, exp: Date.now() + ROLE_CACHE_TTL_SEC * 1000 }
+  const payloadB64 = b64u.encStr(JSON.stringify(payload))
+  const sig = await hmacSign(payloadB64, secret)
+  return `${payloadB64}.${sig}`
+}
 // Types for Upstash limiter result to avoid any
 type UpstashLimitResult = { success: boolean; limit: number; remaining: number; reset: number }
 type UpstashLimiter = { limit: (key: string) => Promise<UpstashLimitResult> }
@@ -160,6 +228,7 @@ export default clerkMiddleware(async (auth, req) => {
     }
 
     if (basicAuthed) {
+      // Allow through (no caching in bypass mode)
       return
     }
 
@@ -174,8 +243,34 @@ export default clerkMiddleware(async (auth, req) => {
       return a.redirectToSignIn({ returnBackUrl: req.url })
     }
 
-    // Edge-safe role check using Neon HTTP + Drizzle without importing server-only dotenv code
+    // Edge-safe role check (+ short-lived signed cookie cache) using Neon HTTP + Drizzle without importing server-only dotenv code
     try {
+      // 0) If we have a signed role cookie and secret, trust it to avoid DB lookups
+      const roleSecret = process.env.ROLE_CACHE_SECRET
+      const hasRoleSecret = typeof roleSecret === 'string' && roleSecret.length > 0
+      if (hasRoleSecret) {
+        const secret = roleSecret
+        try {
+          const cached = await verifyAndParseRoleCookie(req.cookies.get(ROLE_COOKIE_NAME)?.value, secret)
+          const cachedRole = cached?.role
+          if (cachedRole === 'ADMIN' || cachedRole === 'SUPERADMIN') {
+            const res = NextResponse.next()
+            // Refresh cookie TTL on each valid hit
+            const newVal = await createRoleCookie(cachedRole, secret)
+            res.cookies.set(ROLE_COOKIE_NAME, newVal, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
+              maxAge: ROLE_CACHE_TTL_SEC,
+            })
+            return res
+          }
+        } catch {
+          // Ignore cache errors; fall through to claims/DB
+        }
+      }
+
       // 1) Prefer role from Clerk session claims
       const claims = (a as { sessionClaims?: Record<string, unknown> }).sessionClaims ?? {}
 
@@ -189,6 +284,25 @@ export default clerkMiddleware(async (auth, req) => {
 
       const claimRole = directRole ?? publicRole ?? privateRole
       if (claimRole === 'ADMIN' || claimRole === 'SUPERADMIN') {
+        // Cache role if secret provided
+        if (hasRoleSecret) {
+          const secret = roleSecret
+          try {
+            const res = NextResponse.next()
+            const cookieVal = await createRoleCookie(claimRole, secret)
+            res.cookies.set(ROLE_COOKIE_NAME, cookieVal, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
+              maxAge: ROLE_CACHE_TTL_SEC,
+            })
+            return res
+          } catch {
+            // If cookie set fails, still allow
+            return
+          }
+        }
         return
       }
 
@@ -229,6 +343,26 @@ export default clerkMiddleware(async (auth, req) => {
       if (role !== 'ADMIN' && role !== 'SUPERADMIN') {
         return new Response('Forbidden', { status: 403 })
       }
+      // Success from DB path — set cache cookie if secret is present
+      if (hasRoleSecret) {
+        const secret = roleSecret
+        try {
+          const res = NextResponse.next()
+          const cookieVal = await createRoleCookie(role, secret)
+          res.cookies.set(ROLE_COOKIE_NAME, cookieVal, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: ROLE_CACHE_TTL_SEC,
+          })
+          return res
+        } catch {
+          // If cookie set fails, still allow
+          return
+        }
+      }
+      return
     } catch {
       // Fail closed if role cannot be determined
       return new Response('Forbidden', { status: 403 })
