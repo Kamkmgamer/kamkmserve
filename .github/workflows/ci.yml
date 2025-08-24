@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint, Typecheck, Test, Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Unit tests
+        run: pnpm run test:run
+
+      - name: Build (skip env validation)
+        env:
+          SKIP_ENV_VALIDATION: "true"
+        run: pnpm run build
+
+  deploy:
+    if: >-
+      ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !cancelled() && !failure() }}
+    name: Deploy to Vercel (prod)
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Pull Vercel env
+        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+
+      - name: Build with Vercel (prebuilt artifacts)
+        run: npx vercel build --prod --token "$VERCEL_TOKEN"
+
+      - name: Deploy to Vercel (prebuilt)
+        run: npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN"
