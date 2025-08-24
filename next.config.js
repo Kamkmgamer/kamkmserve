@@ -46,6 +46,40 @@ const coreConfig = {
           { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
         ],
       },
+      // Edge caching for read-heavy marketing pages (tune TTLs as needed)
+      {
+        source: '/',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=600, stale-while-revalidate=86400' },
+        ],
+      },
+      {
+        source: '/about',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/pricing',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
+        ],
+      },
+      {
+        source: '/blog',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=1800, stale-while-revalidate=86400' },
+        ],
+      },
+      { source: '/careers', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=86400, stale-while-revalidate=604800' }] },
+      { source: '/changelog', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=1800, stale-while-revalidate=86400' }] },
+      { source: '/community', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=86400, stale-while-revalidate=604800' }] },
+      { source: '/contact', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' }] },
+      { source: '/docs', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' }] },
+      { source: '/guides', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' }] },
+      { source: '/privacy', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=604800, stale-while-revalidate=2592000' }] },
+      { source: '/roadmap', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' }] },
+      { source: '/terms', headers: [{ key: 'Cache-Control', value: 'public, s-maxage=604800, stale-while-revalidate=2592000' }] },
       // Default security headers for all routes
       {
         source: '/:path*',
