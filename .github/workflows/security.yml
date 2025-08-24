@@ -26,9 +26,8 @@ jobs:
           run_install: true
       - name: Audit dependencies
         run: |
-          pnpm audit --audit-level=high || true
-        # Note: We don't fail CI by default to avoid blocking deploys.
-        # You can remove `|| true` to enforce blocking on vulnerabilities.
+          pnpm audit --audit-level=high
+        # CI will now fail on high or critical vulnerabilities to enforce security posture.
 
   dependency-review:
     name: Dependency Review (PRs)
