@@ -17,6 +17,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
+    "migrate:safe": "node scripts/check-migrations.mjs",
     "start": "next start",
     "test": "vitest",
     "test:ui": "vitest --ui",
