@@ -68,7 +68,7 @@
     "drizzle-kit": "^0.31.4",
     "eslint-config-next": "^15.2.3",
     "eslint-plugin-drizzle": "^0.2.3",
-    "jest-axe": "^9.0.0",
+    "jest-axe": "^10.0.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
