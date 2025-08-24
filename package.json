@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "push": "git push",
     "build": "next build",
     "check": "next lint && tsc --noEmit",
     "db:generate": "drizzle-kit generate",

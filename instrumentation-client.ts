@@ -8,5 +8,5 @@ Sentry.init({
   // Capture Web Vitals (LCP/CLS/etc.) and navigation/interaction spans.
   integrations: [Sentry.browserTracingIntegration()],
   // TODO: tune this in production or use tracesSampler.
-  tracesSampleRate: 1.0,
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 });
