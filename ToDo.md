@@ -79,10 +79,10 @@ A comprehensive checklist to ensure your application is production-ready, secure
 ## Deployment & Availability
 
 - [x] Use blue-green or canary deployments when possible.
-- [ ] Automate deployments with CI/CD pipelines.
-- [ ] Database migrations are safe and tested.
+- [x] Automate deployments with CI/CD pipelines.
+- [x] Database migrations are safe and tested.
 - [x] Apply rate limiting and request throttling.
-- [ ] Use CDN for static assets.
+- [x] Use CDN for static assets.
 - [ ] Enable caching layers (Redis, CDN, etc.).
 - [x] Configure graceful shutdown for services.
 - [ ] Ensure horizontal/vertical scaling strategy is in place.
