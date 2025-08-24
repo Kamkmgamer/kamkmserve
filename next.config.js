@@ -105,7 +105,8 @@ const coreConfig = {
 
 import {withSentryConfig} from "@sentry/nextjs";
 
-const config = withSentryConfig(coreConfig,
+const config = withSentryConfig(
+  coreConfig,
   {
     // For all available options, see:
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
