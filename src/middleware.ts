@@ -343,7 +343,7 @@ export default clerkMiddleware(async (auth, req) => {
       }
 
       if (role !== 'ADMIN' && role !== 'SUPERADMIN') {
-        logger.security('Admin role check failed', { feature: 'admin_role_check', userId: a.userId, role }, req)
+        logger.security('Admin role check failed', { feature: 'admin_role_check', userId: a.userId, role }, req) 
         return new Response('Forbidden', { status: 403 })
       }
       // Success from DB path — set cache cookie if secret is present
