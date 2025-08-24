@@ -1,10 +1,5 @@
 "use client";
 
-export const metadata = {
-  title: "Contact | KAMKM Serve",
-  description: "Get in touch with us",
-};
-
 import { useState } from "react";
 
 export default function ContactPage() {
