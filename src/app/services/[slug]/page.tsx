@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllServices, getServiceBySlug, slugifyServiceName } from "~/server/services";
-import ServiceDetailClient from "../[id]/ServiceDetailClient";
+import ServiceDetailClient from "../_components/ServiceDetailClient";
 
 export const dynamic = "force-dynamic";
 
