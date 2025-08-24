@@ -35,6 +35,7 @@ const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20 }) => {
     <div
       ref={wrapRef}
       className={`relative overflow-hidden ${TOKENS.surfaceGlass} ${TOKENS.radius.lg} p-4`}
+      role="region"
       aria-label="Technologies used"
     >
       {/* Left and Right Fade Edges */}
