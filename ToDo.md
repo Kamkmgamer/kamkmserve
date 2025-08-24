@@ -10,26 +10,26 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 ---
 ### High Impact / Low Effort (Weeks 0–1)
 - [ ] Harden CSP in `next.config.js`
-  - [ ] Remove `'unsafe-eval'`; minimize `'unsafe-inline'` for `script-src`/`style-src`
+  - [x] Remove `'unsafe-eval'`; minimize `'unsafe-inline'` for `script-src`/`style-src`
   - [ ] Add nonces/hashes where inlining is required
   - [ ] Add regression test to assert headers (`tests` or `vitest` server harness)
-- [ ] Reduce Sentry tracing in production
-  - [ ] Gate `tracesSampleRate` via `NODE_ENV` in `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` (target 0.05–0.2)
-  - [ ] Optionally implement `tracesSampler`
-- [ ] Align Sentry DSN envs and docs
-  - [ ] Use `SENTRY_DSN` (server/edge) and `NEXT_PUBLIC_SENTRY_DSN` (client) consistently
-  - [ ] Update `.env.example`, `README.md`, Vercel envs
-- [ ] Configure Next Image remote sources
-  - [ ] Add `images.remotePatterns` for ImageKit and any CDN domains in `next.config.js`
+- [x] Reduce Sentry tracing in production
+  - [x] Gate `tracesSampleRate` via `NODE_ENV` in `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` (target 0.05–0.2)
+  - [x] Optionally implement `tracesSampler`
+- [x] Align Sentry DSN envs and docs
+  - [x] Use `SENTRY_DSN` (server/edge) and `NEXT_PUBLIC_SENTRY_DSN` (client) consistently
+  - [x] Update `.env.example`, `README.md`, Vercel envs
+- [x] Configure Next Image remote sources
+  - [x] Add `images.remotePatterns` for ImageKit and any CDN domains in `next.config.js`
 
 ### High Impact / Medium Effort (Weeks 1–3)
 - [ ] Expand tests and run Playwright in CI
   - [ ] Middleware/auth tests: role checks, rate-limit behavior (`src/middleware.ts`)
   - [ ] Admin API mutations: create/update/delete with positive/negative cases (`src/app/api/admin/*`)
   - [ ] Security headers regression test (CSP, HSTS, XFO, no-sniff, referrer policy)
-  - [ ] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
+  - [x] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
 - [ ] Enforce dependency security posture
-  - [ ] Update `security.yml` to pnpm `10.13.1`
+  - [x] Update `security.yml` to pnpm `10.13.1`
   - [ ] Consider failing builds on high/critical vulns (remove `|| true` or gate with approvals)
   - [ ] Add Renovate or Dependabot for automated updates
 
