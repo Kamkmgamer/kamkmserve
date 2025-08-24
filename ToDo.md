@@ -83,7 +83,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Database migrations are safe and tested.
 - [x] Apply rate limiting and request throttling.
 - [x] Use CDN for static assets.
-- [ ] Enable caching layers (Redis, CDN, etc.).
+- [x] Enable caching layers (Redis, CDN, etc.).
 - [x] Configure graceful shutdown for services.
 - [ ] Ensure horizontal/vertical scaling strategy is in place.
 
