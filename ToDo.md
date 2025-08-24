@@ -30,17 +30,17 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
   - [x] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
 - [ ] Enforce dependency security posture
   - [x] Update `security.yml` to pnpm `10.13.1`
-  - [ ] Consider failing builds on high/critical vulns (remove `|| true` or gate with approvals)
-  - [ ] Add Renovate or Dependabot for automated updates
+  - [x] Consider failing builds on high/critical vulns (remove `|| true` or gate with approvals)
+  - [x] Add Renovate or Dependabot for automated updates
 
 ### Medium Impact / Low Effort (Weeks 0–2)
 - [ ] Review postinstall script policy
-  - [ ] Revisit `vercel.json` `installCommand` (avoid `--config.ignore-scripts=false` if possible)
+  - [x] Revisit `vercel.json` `installCommand` (avoid `--config.ignore-scripts=false` if possible)
   - [ ] Document any packages that require lifecycle scripts
 - [ ] Ensure `pgcrypto` availability for `gen_random_uuid()` across Postgres providers
-  - [ ] Add conditional migration or setup documentation
+  - [x] Add conditional migration or setup documentation
 - [ ] Consolidate env validation as single source of truth
-  - [ ] Confirm `@t3-oss/env-nextjs` is canonical; align `next.config.js` import `./src/env.js` and `~/env`
+  - [x] Confirm `@t3-oss/env-nextjs` is canonical; align `next.config.js` import `./src/env.js` and `~/env`
 
 ### Medium Impact / Medium Effort (Weeks 2–4)
 - [ ] Observability improvements

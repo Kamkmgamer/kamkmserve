@@ -79,7 +79,13 @@ Install
 pnpm install
 ```
 
-Environment
+### Postinstall scripts policy
+
+- By default we do not force package lifecycle scripts during Vercel installs.
+- `vercel.json` uses `"installCommand": "pnpm install"` (no `--config.ignore-scripts=false`).
+- If any package requires lifecycle scripts, document it here with justification and review security implications before enabling scripts in CI/deploy.
+
+## Environment
 1) Copy `.env.example` to `.env` and fill values (aligns with `src/env.js`):
 ```
 DATABASE_URL=postgres://postgres:password@localhost:5432/kamkmserve
@@ -92,6 +98,12 @@ ADMIN_BASIC_PASS=change_me
 Note: If your `.env.example` contains legacy `STACK_*` keys, replace them with the Clerk keys above.
 
 2) Env validation is loaded via `src/env.js` from `next.config.js`. You can set `SKIP_ENV_VALIDATION=1` for CI/Docker builds.
+
+3) Canonical env validation source of truth
+
+- The canonical env schema lives in `src/env.js` using `@t3-oss/env-nextjs`.
+- `next.config.js` imports `./src/env.js` to validate at build time.
+- `drizzle.config.ts` imports `~/env` (aliased to `src/env.js`) for DB credentials, keeping a single source of truth.
 
 3) Sentry DSNs
 
@@ -191,6 +203,12 @@ Vercel checklist
 - Set Sentry DSNs if you use Sentry: `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`.
 - Optionally set `SKIP_ENV_VALIDATION=1` for build containers.
 - If using Sentry source map upload, keep org/project in `next.config.js` or set via env in CI.
+
+### Postinstall scripts policy
+
+- By default we do not force package lifecycle scripts during Vercel installs.
+- `vercel.json` uses `"installCommand": "pnpm install"` (no `--config.ignore-scripts=false`).
+- If any package requires lifecycle scripts, document it here with justification and review security implications before enabling scripts in CI/deploy.
 
 ## Scripts (package.json)
 
