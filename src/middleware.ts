@@ -343,8 +343,8 @@ export default clerkMiddleware(async (auth, req) => {
       }
 
       if (role !== 'ADMIN' && role !== 'SUPERADMIN') {
-        logger.security('Admin role check failed', { feature: 'admin_role_check', userId: a.userId, role }, req) 
-        return new Response('Forbidden', { status: 403 })
+        logger.security('Admin role check failed', { feature: 'admin_role_check', userId: a.userId, role }, req);
+        return new Response('Forbidden', { status: 403 });
       }
       // Success from DB path — set cache cookie if secret is present
       if (hasRoleSecret) {
@@ -368,12 +368,12 @@ export default clerkMiddleware(async (auth, req) => {
       return
     } catch (err) {
       // Fail closed if role cannot be determined
-      const error = err instanceof Error ? err : new Error(String(err))
-      logger.security('Admin role check errored', { feature: 'admin_role_check', userId: a.userId, error: { message: error.message, stack: error.stack } }, req)
-      return new Response('Forbidden', { status: 403 })
+      const error = err instanceof Error ? err : new Error(String(err));
+      logger.security('Admin role check errored', { feature: 'admin_role_check', userId: a.userId, error: { message: error.message, stack: error.stack } }, req);
+      return new Response('Forbidden', { status: 403 });
     }
   }
-})
+});
 
 export const config = {
   matcher: [
@@ -382,4 +382,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-}
+};
