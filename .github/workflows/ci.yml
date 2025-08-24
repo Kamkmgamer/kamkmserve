@@ -32,6 +32,9 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
+      - name: Migration safety check
+        run: pnpm run migrate:safe
+
       - name: Lint
         run: pnpm run lint
 
