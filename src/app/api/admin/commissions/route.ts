@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { commissions, referrals, orders } from "~/server/db/schema";
 import { desc, eq, like, or } from "drizzle-orm";
+import { requireRole } from "~/server/auth/roles";
 
 const CreateSchema = z.object({
   orderId: z.string().min(1),
@@ -13,6 +14,8 @@ const CreateSchema = z.object({
 
 export async function GET(req: Request) {
   try {
+  const auth = await requireRole("ADMIN");
+  if (!auth.ok) return auth.res;
     const { searchParams } = new URL(req.url);
     const q = searchParams.get("q");
 
@@ -57,6 +60,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+  const auth = await requireRole("ADMIN");
+  if (!auth.ok) return auth.res;
     const body: unknown = await req.json();
     const parsed = CreateSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
