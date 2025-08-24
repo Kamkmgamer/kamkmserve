@@ -220,6 +220,9 @@ export default clerkMiddleware(async (auth, req) => {
           } else if (process.env.NODE_ENV === 'production') {
             // In production, never allow bypass; log the attempt
             logger.security('Admin Basic Auth bypass attempt blocked in production', { feature: 'admin_basic_bypass', enabled: false, user }, req)
+          } else {
+            // Credentials presented but bypass not enabled (non-production)
+            logger.security('Admin Basic Auth credentials presented but bypass disabled', { feature: 'admin_basic_bypass', enabled: false, user, bypassEnabled }, req)
           }
         } else {
           logger.security('Admin Basic Auth attempt failed', { feature: 'admin_basic_bypass', enabled: false, user }, req)
@@ -255,6 +258,9 @@ export default clerkMiddleware(async (auth, req) => {
         try {
           const cached = await verifyAndParseRoleCookie(req.cookies.get(ROLE_COOKIE_NAME)?.value, secret)
           const cachedRole = cached?.role
+          if (!cached) {
+            logger.security('Role cache miss or invalid', { feature: 'role_cache', cookiePresent: Boolean(req.cookies.get(ROLE_COOKIE_NAME)?.value) }, req)
+          }
           if (cachedRole === 'ADMIN' || cachedRole === 'SUPERADMIN') {
             const res = NextResponse.next()
             // Refresh cookie TTL on each valid hit
@@ -306,6 +312,10 @@ export default clerkMiddleware(async (auth, req) => {
           }
         }
         return
+      }
+      // If claims exist but are not admin, emit a security event for observability
+      if (claimRole) {
+        logger.security('Non-admin claim used for admin route', { feature: 'admin_role_check', claimRole }, req)
       }
 
       // 2) Fallback to DB lookup by Clerk user id if claim is missing/not admin
