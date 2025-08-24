@@ -1,0 +1,4 @@
+name,price,period,description,highlighted,features
+Starter,59,month,Perfect for individuals and small projects.,false,"1 Project;Basic analytics;Email support;Community access"
+Pro,149,month,For growing teams that need more power.,true,"Up to 10 Projects;Advanced analytics;Priority email support;Integrations (Slack, Zapier, etc.)"
+Enterprise,Custom,,Tailored solutions for large organizations.,false,"Unlimited Projects;Dedicated success manager;24/7 phone & chat support;Custom integrations"
