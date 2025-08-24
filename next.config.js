@@ -10,6 +10,22 @@ const coreConfig = {
   outputFileTracingRoot: process.cwd(),
   // Remove X-Powered-By header
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.svgrepo.com',
+        port: '',
+        pathname: '/show/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   async headers() {
     const csp = [
       "default-src 'self'",
