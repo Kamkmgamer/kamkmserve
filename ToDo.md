@@ -27,11 +27,11 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 ### Performance & Caching
 - [x] Define per-route revalidation and caching strategy (ISR, tags) and document it. (see `docs/deployment/revalidation.md`)
 - [x] Consider edge caching for read-heavy marketing pages. (added Cache-Control headers in `next.config.js`)
-- [ ] Add bundle analyzer checks and perf budgets in CI; track CLS/LCP in Sentry dashboards.
+- [x] Add bundle analyzer checks and perf budgets in CI; track CLS/LCP in Sentry dashboards. (added `scripts/check-budgets.mjs`, CI step in `.github/workflows/ci.yml`, Sentry browser tracing in `instrumentation-client.ts`)
 
 ### DX, Docs & Operations
-- [ ] Add architectural diagram and “where to add features” guide to `README.md`.
-- [ ] Add runbooks and deployment safety checklist; document role-lookup fallback behavior.
+- [x] Add architectural diagram and “where to add features” guide to `README.md`. (see `README.md` Architecture + Where to add features)
+- [x] Add runbooks and deployment safety checklist; document role-lookup fallback behavior. (added `docs/operations/runbooks.md`, `docs/deployment/safety-checklist.md`)
 - [ ] Enable Dependabot/Renovate for dependency updates.
 - [ ] Add a11y checks (axe) to CI and fix contrast/focus regressions.
 

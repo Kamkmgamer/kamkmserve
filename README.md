@@ -2,6 +2,47 @@
 
 Admin-enabled Next.js app for selling services with referrals, commissions, and payouts. Includes a marketing site, protected admin CMS, Clerk auth, Drizzle ORM with PostgreSQL, and Sentry monitoring.
 
+## Architecture
+
+```mermaid
+flowchart TD
+  A[Client Browser] -->|HTTP/HTTPS| B[Next.js App Router]\n(Edge/Middleware)
+  B -->|Middleware auth + rate limit| C[Route Handlers / Pages]
+  C -->|DB Queries (HTTP)| D[(Neon Postgres + Drizzle)]
+  C -->|Auth| E[Clerk]
+  B -->|Security Events| F[Sentry]
+  C -->|Perf + Web Vitals| F
+  C -->|Uploads| G[(Object Storage / CDN)]
+
+  subgraph Next.js
+    B
+    C
+  end
+```
+
+Key paths
+- `src/middleware.ts` — auth gate for admin routes, rate limiting, role cache.
+- `src/app/` — routes, pages, API handlers.
+- `src/server/` — database, services, utilities.
+- `next.config.js` — headers, security, Sentry integration, caching.
+
+## Where to add features
+
+- UI pages/components
+  - Marketing pages: `src/app/<page>/page.tsx` and components under `src/components/`
+  - Admin views: `src/app/admin/<feature>/*`
+- API endpoints
+  - App Router route handlers: `src/app/api/<feature>/route.ts` (index) and nested routes for item ops
+  - Admin APIs: `src/app/api/admin/<resource>/...`
+- Data access
+  - Schema and queries: `src/server/db/schema.ts` and driven through Drizzle in route handlers or service modules
+- Authz and roles
+  - Middleware role checks: `src/middleware.ts`
+  - Clerk claims mapping or DB lookup paths for ADMIN/SUPERADMIN
+- Observability
+  - Sentry client/perf: `instrumentation-client.ts`
+  - Server/edge Sentry: `sentry.*.config.ts`
+
 ## Tech Stack
 
 - Next.js App Router (`src/app/`)
