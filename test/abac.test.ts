@@ -64,7 +64,7 @@ describe('ABAC System', () => {
 
     it('should evaluate policies in order', () => {
       // First policy should be superadmin universal access
-      const firstPolicy = defaultPolicySet.policies[0]
+      const firstPolicy = defaultPolicySet.policies[0]!
       expect(firstPolicy.name).toBe('superadmin-universal-access')
       expect(firstPolicy.condition(mockSuperadminCtx, 'delete', createResource('order'))).toBe(true)
     })

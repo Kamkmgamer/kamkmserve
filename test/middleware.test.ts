@@ -75,7 +75,7 @@ describe('middleware.ts - auth and rate limit behaviors', () => {
   it('challenges with Basic auth on /admin when configured and unauthenticated', async () => {
     process.env.ADMIN_BASIC_USER = 'admin'
     process.env.ADMIN_BASIC_PASS = 'secret'
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
 
     const req = makeRequest('https://example.com/admin', {
       'x-forwarded-proto': 'https',
@@ -91,7 +91,7 @@ describe('middleware.ts - auth and rate limit behaviors', () => {
     process.env.ADMIN_BASIC_USER = 'admin'
     process.env.ADMIN_BASIC_PASS = 'secret'
     process.env.ADMIN_BASIC_BYPASS_ENABLED = 'true'
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
 
     const creds = btoa('admin:secret')
     const req = makeRequest('https://example.com/admin', {

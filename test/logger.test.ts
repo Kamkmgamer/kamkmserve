@@ -67,7 +67,7 @@ describe('Logger System', () => {
       const context: LogContext = { userId: '123', action: 'login' }
       logger.info('User action', context)
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       expect(logCall).toContain('"userId":"123"')
       expect(logCall).toContain('"action":"login"')
     })
@@ -112,7 +112,7 @@ describe('Logger System', () => {
       
       logger.info('Test message')
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       // Should contain timestamp, level, and message in readable format
       expect(logCall).toMatch(/^\d{1,2}:\d{2}:\d{2} [AP]M INFO : Test message/)
     })
@@ -122,7 +122,7 @@ describe('Logger System', () => {
       
       logger.info('Test message')
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       const parsed = JSON.parse(logCall)
       
       expect(parsed).toHaveProperty('timestamp')
@@ -142,7 +142,7 @@ describe('Logger System', () => {
 
       logger.request(mockRequest, 150, 200)
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       expect(logCall).toContain('POST /api/users')
       expect(logCall).toContain('200')
       // Duration is in the context part
@@ -160,7 +160,7 @@ describe('Logger System', () => {
       const error = new Error('Database connection failed')
       logger.request(mockRequest, 5000, 500, error)
       
-      const logCall = mockConsole.error.mock.calls[0][0]
+      const logCall = mockConsole.error.mock.calls[0]![0] as string
       expect(logCall).toContain('Request failed')
       expect(logCall).toContain('Database connection failed')
     })
@@ -168,7 +168,7 @@ describe('Logger System', () => {
     it('should log security events', () => {
       logger.security('Failed login attempt', { ip: '192.168.1.1', attempts: 5 })
       
-      const logCall = mockConsole.warn.mock.calls[0][0]
+      const logCall = mockConsole.warn.mock.calls[0]![0] as string
       expect(logCall).toContain('Security event: Failed login attempt')
       expect(logCall).toContain('"securityEvent":true')
     })
@@ -176,7 +176,7 @@ describe('Logger System', () => {
     it('should log database operations', () => {
       logger.database('SELECT', 'users', 25)
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       expect(logCall).toContain('Database operation: SELECT on users')
       expect(logCall).toContain('"duration":25')
     })
@@ -184,21 +184,21 @@ describe('Logger System', () => {
     it('should log performance metrics', () => {
       logger.performance('Database query', 1500)
       
-      const logCall = mockConsole.warn.mock.calls[0][0]
+      const logCall = mockConsole.warn.mock.calls[0]![0] as string
       expect(logCall).toContain('Slow operation: Database query took 1500ms')
     })
 
     it('should log fast operations at debug level', () => {
       logger.performance('Cache lookup', 5)
       
-      const logCall = mockConsole.debug.mock.calls[0][0]
+      const logCall = mockConsole.debug.mock.calls[0]![0] as string
       expect(logCall).toContain('Operation: Cache lookup took 5ms')
     })
 
     it('should log user activity', () => {
       logger.userActivity('user-123', 'create', 'order')
       
-      const logCall = mockConsole.info.mock.calls[0][0]
+      const logCall = mockConsole.info.mock.calls[0]![0] as string
       expect(logCall).toContain('User activity: user-123 performed create on order')
       expect(logCall).toContain('"userActivity":true')
     })
@@ -206,14 +206,14 @@ describe('Logger System', () => {
     it('should log access control decisions', () => {
       logger.accessControl('user-123', 'read', 'order-456', true)
       
-      const logCall = mockConsole.debug.mock.calls[0][0]
+      const logCall = mockConsole.debug.mock.calls[0]![0] as string
       expect(logCall).toContain('Access granted: user-123 can read order-456')
     })
 
     it('should log denied access at warn level', () => {
       logger.accessControl('user-123', 'delete', 'order-456', false)
       
-      const logCall = mockConsole.warn.mock.calls[0][0]
+      const logCall = mockConsole.warn.mock.calls[0]![0] as string
       expect(logCall).toContain('Access denied: user-123 cannot delete order-456')
     })
   })
