@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
-import { getAllServices, getServiceById } from "~/server/services";
-import ServiceDetailClient from "./ServiceDetailClient";
+import { notFound, redirect } from "next/navigation";
+import { getServiceById, slugifyServiceName } from "~/server/services";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +12,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   const service = await getServiceById(id);
   if (!service) return notFound();
 
-  // Compute related services (same category, exclude current), limit 3
-  const all = await getAllServices();
-  const related = all.filter((s) => s.category === service.category && s.id !== service.id).slice(0, 3);
-
-  return <ServiceDetailClient service={service} related={related} />;
+  // Permanent redirect to slug route to avoid duplicate content
+  const slug = slugifyServiceName(service.name);
+  redirect(`/services/${slug}`);
 }

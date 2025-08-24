@@ -7,6 +7,14 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Search, Tag } from "lucide-react";
 import type { Service } from "~/server/services";
 
+const slugify = (name: string) =>
+  name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const formatPrice = (n: number) =>
   new Intl.NumberFormat(undefined, {
     style: "currency",
@@ -108,7 +116,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
     exit="exit"
     className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
   >
-    <Link href={`/services/${service.id}`} className="block">
+    <Link href={`/services/${slugify(service.name)}`} className="block">
       <motion.div layoutId={`service-image-${service.id}`}>
         <PreviewImage service={service} />
       </motion.div>

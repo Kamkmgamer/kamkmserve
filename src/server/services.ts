@@ -14,6 +14,15 @@ export type Service = {
   thumbnailUrl: string | null;
 };
 
+export function slugifyServiceName(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export const getAllServices = cache(
   async (): Promise<Service[]> => {
     const rows = await db.select().from(servicesTable);
@@ -55,4 +64,17 @@ export const getServiceById = async (id: string): Promise<Service | null> =>
     },
     ["services:by-id", id],
     { revalidate: 300, tags: ["services", `service:${id}`] }
+  )();
+
+export const getServiceBySlug = async (slug: string): Promise<(Service & { slug: string }) | null> =>
+  cache(
+    async () => {
+      const all = await getAllServices();
+      const found = all
+        .map((s) => ({ ...s, slug: slugifyServiceName(s.name) }))
+        .find((s) => s.slug === slug);
+      return found ?? null;
+    },
+    ["services:by-slug", slug],
+    { revalidate: 300, tags: ["services", `service-slug:${slug}`] }
   )();

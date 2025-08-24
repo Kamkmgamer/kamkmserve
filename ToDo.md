@@ -124,15 +124,16 @@ Hands-on experience upgrading and optimizing PCs and laptops (RAM, SSD, hardware
   - Show service tiers/packages
   - CTA to contact
 
-- [ ] **Blog (`/blog`)**
-  - SEO articles
+- [x] **Blog (`/blog`)**
+  - List posts from JSON data source
   - Individual blog posts `/blog/[slug]`
+  - Basic metadata per post
 
-- [ ] **Contact (`/contact`)**
-  - Contact form (name, email, message) resend
-  - Email notifications
-  - WhatsApp/Telegram/Email direct links
-  - Optional: Calendly booking
+- [x] **Contact (`/contact`)**
+  - Contact form (name, email, message) -> API route `/api/contact`
+  - Placeholder server handling; ready for provider integration
+  - WhatsApp/Telegram/Email direct links (future)
+  - Optional: Calendly booking (future)
 
 ## 2. Trust & Compliance
 - [ ] Privacy Policy (`/privacy`)

@@ -9,6 +9,14 @@ import { CheckCircle, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Share2,
 import type { Service } from "~/server/services";
 import { toast } from "sonner";
 
+const slugify = (name: string) =>
+  name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const formatPrice = (n: number) =>
   new Intl.NumberFormat(undefined, {
     style: "currency",
@@ -223,7 +231,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
             <h2 className="mb-5 text-2xl font-bold text-slate-900 dark:text-white">Related Services</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((s) => (
-                <Link key={s.id} href={`/services/${s.id}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+                <Link key={s.id} href={`/services/${slugify(s.name)}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
                   <div className="relative h-36 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {s.thumbnailUrl ? (
