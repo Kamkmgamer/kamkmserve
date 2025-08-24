@@ -26,8 +26,8 @@ describe('Security headers - Content-Security-Policy', () => {
       "default-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
-      // Allow Next/React hydration and common patterns; tighten for prod as needed.
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      // Hardened: removed 'unsafe-eval'; keep 'unsafe-inline' temporarily until nonces/hashes are wired.
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",

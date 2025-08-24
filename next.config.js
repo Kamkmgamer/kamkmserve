@@ -15,7 +15,8 @@ const coreConfig = {
       "default-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
-      // Allow Next/React hydration and common patterns; tighten for prod as needed.
+      // Allow Next/React hydration; keep 'unsafe-inline' temporarily until nonces/hashes are wired.
+      // TODO: Add nonces/hashes and remove 'unsafe-inline' from scripts.
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
