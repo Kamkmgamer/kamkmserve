@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
 import React from 'react'
+import { expect } from 'vitest'
+import { toHaveNoViolations } from 'jest-axe'
+
+// Register jest-axe matchers
+expect.extend(toHaveNoViolations)
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({

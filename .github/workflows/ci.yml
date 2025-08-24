@@ -44,6 +44,9 @@ jobs:
       - name: Unit tests
         run: pnpm run test:run
 
+      - name: Accessibility (axe)
+        run: pnpm run test:a11y
+
       - name: Build (skip env validation)
         env:
           SKIP_ENV_VALIDATION: "true"
