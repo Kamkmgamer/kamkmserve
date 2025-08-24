@@ -27,18 +27,40 @@ const coreConfig = {
     ],
   },
   async headers() {
-    const csp = [
-      "default-src 'self'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      // No inline scripts required — theme init moved to /public/theme-init.js
-      "script-src 'self'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https:",
-      "font-src 'self' data:",
-      "connect-src 'self' https: wss:",
-      "frame-ancestors 'self'",
-    ].join('; ')
+    const isProd = process.env.NODE_ENV === 'production'
+    // Allow Clerk and Sentry, and enable workers. Keep inline allowed for Next/Sentry snippets.
+    // In production, scope third-party origins; in development, be permissive for DX.
+    const csp = (
+      isProd
+        ? [
+            "default-src 'self'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            // Next.js injects small inline scripts; Sentry and some tooling also rely on it.
+            // If you want stricter CSP, switch to nonce-based policy and remove 'unsafe-inline'.
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.com https://*.clerkstage.dev https://*.clerk.accounts.dev https://*.sentry-cdn.com",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: https:",
+            "font-src 'self' data:",
+            "connect-src 'self' https: wss:",
+            "worker-src 'self' blob:",
+            "frame-src https://*.clerk.com https://*.clerkstage.dev https://*.clerk.accounts.dev",
+            "frame-ancestors 'self'",
+          ]
+        : [
+            "default-src 'self'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: https:",
+            "font-src 'self' data:",
+            "connect-src 'self' https: wss:",
+            "worker-src 'self' blob:",
+            "frame-src https:",
+            "frame-ancestors 'self'",
+          ]
+    ).join('; ')
 
     return [
       // Long-lived immutable caching for Next.js build assets

@@ -238,8 +238,9 @@ export default clerkMiddleware(async (auth, req) => {
     }
 
     if (!a.userId) {
-      // If basic auth is configured, challenge the browser for credentials.
-      if (haveBasicConfig) {
+      // Only issue a Basic Auth challenge when bypass is explicitly enabled (non-production).
+      // Otherwise, always use Clerk sign-in redirect for a consistent UX.
+      if (haveBasicConfig && bypassEnabled) {
         return new Response('Unauthorized', {
           status: 401,
           headers: { 'WWW-Authenticate': 'Basic realm="Admin", charset="UTF-8"' },
@@ -291,6 +292,19 @@ export default clerkMiddleware(async (auth, req) => {
         : undefined
 
       const claimRole = directRole ?? publicRole ?? privateRole
+      
+      // Debug logging for role detection
+      logger.security('Admin role check - Clerk claims debug', { 
+        feature: 'admin_role_debug', 
+        userId: a.userId,
+        directRole,
+        publicRole,
+        privateRole,
+        claimRole,
+        hasSessionClaims: Boolean(claims),
+        claimsKeys: Object.keys(claims)
+      }, req)
+      
       if (claimRole === 'ADMIN' || claimRole === 'SUPERADMIN') {
         // Cache role if secret provided
         if (hasRoleSecret) {

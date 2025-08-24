@@ -44,7 +44,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 
 ### Medium Impact / Medium Effort (Weeks 2–4)
 - [ ] Observability improvements
-  - [ ] Consider Sentry Replay with sampling caps
+  - [x] Consider Sentry Replay with sampling caps
   - [ ] Create dashboards/alerts for LCP/CLS/API latency
 - [ ] Performance tooling
   - [x] Add optional Next bundle analyzer script and PR artifact/reporting for large diffs
