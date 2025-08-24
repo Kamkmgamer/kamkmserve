@@ -1,9 +1,9 @@
+"use client";
+
 export const metadata = {
   title: "Contact | KAMKM Serve",
   description: "Get in touch with us",
 };
-
-"use client";
 
 import { useState } from "react";
 
