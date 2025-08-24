@@ -10,6 +10,13 @@ Sentry.init({
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  tracesSampler: (samplingContext) => {
+    const isProd = process.env.NODE_ENV === 'production'
+    if (!isProd) return 1.0
+    const url = samplingContext.request?.url || ''
+    if (url.includes('/_next/') || url.includes('/monitoring/health') || url.includes('/sentry-tunnel')) return 0.0
+    return 0.1
+  },
 
   // Enable logs to be sent to Sentry
   enableLogs: true,
