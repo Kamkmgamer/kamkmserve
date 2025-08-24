@@ -24,9 +24,9 @@ export default function ContactPage() {
       setName("");
       setEmail("");
       setMessage("");
-    } catch (err: any) {
+    } catch (err) {
       setStatus("error");
-      setError(err?.message ?? "Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     }
   }
 
