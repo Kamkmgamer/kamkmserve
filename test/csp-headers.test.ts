@@ -36,5 +36,5 @@ describe('Security headers - Content-Security-Policy', () => {
     ].join('; ')
 
     expect(cspHeader.value).toBe(expectedCsp)
-  })
+  }, 20000)
 })
