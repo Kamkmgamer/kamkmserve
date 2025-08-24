@@ -221,6 +221,8 @@ export default clerkMiddleware(async (auth, req) => {
             // In production, never allow bypass; log the attempt
             logger.security('Admin Basic Auth bypass attempt blocked in production', { feature: 'admin_basic_bypass', enabled: false, user }, req)
           }
+        } else {
+          logger.security('Admin Basic Auth attempt failed', { feature: 'admin_basic_bypass', enabled: false, user }, req)
         }
       }
     } catch {
@@ -341,6 +343,7 @@ export default clerkMiddleware(async (auth, req) => {
       }
 
       if (role !== 'ADMIN' && role !== 'SUPERADMIN') {
+        logger.security('Admin role check failed', { feature: 'admin_role_check', userId: a.userId, role }, req)
         return new Response('Forbidden', { status: 403 })
       }
       // Success from DB path — set cache cookie if secret is present
@@ -363,8 +366,10 @@ export default clerkMiddleware(async (auth, req) => {
         }
       }
       return
-    } catch {
+    } catch (err) {
       // Fail closed if role cannot be determined
+      const error = err instanceof Error ? err : new Error(String(err))
+      logger.security('Admin role check errored', { feature: 'admin_role_check', userId: a.userId, error: { message: error.message, stack: error.stack } }, req)
       return new Response('Forbidden', { status: 403 })
     }
   }
