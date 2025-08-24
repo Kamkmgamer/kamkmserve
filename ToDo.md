@@ -91,7 +91,7 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 ## Data & Storage
 
-- [ ] Encrypt data at rest (databases, volumes, backups).
+- [x] Encrypt data at rest (databases, volumes, backups).
 - [x] Encrypt data in transit (TLS everywhere).
 - [ ] Set database access controls and roles.
 - [ ] Rotate database credentials regularly.
