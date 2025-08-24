@@ -8,8 +8,9 @@ import Footer from "~/components/layout/Footer";
 export default function PublicChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isClientOnly = pathname?.startsWith("/client");
 
-  if (isAdmin) {
+  if (isAdmin || isClientOnly) {
     // On admin routes, hide public Navbar/Footer
     return <>{children}</>;
   }
