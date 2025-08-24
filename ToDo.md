@@ -33,7 +33,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 - [x] Add architectural diagram and “where to add features” guide to `README.md`. (see `README.md` Architecture + Where to add features)
 - [x] Add runbooks and deployment safety checklist; document role-lookup fallback behavior. (added `docs/operations/runbooks.md`, `docs/deployment/safety-checklist.md`)
 - [ ] Enable Dependabot/Renovate for dependency updates.
-- [ ] Add a11y checks (axe) to CI and fix contrast/focus regressions.
+- [x] Add a11y checks (axe) to CI and fix contrast/focus regressions. (added `test/a11y.home.test.tsx`, registered matchers in `test/setup.tsx`, CI step in `.github/workflows/ci.yml`)
 
 ---
 
