@@ -17,18 +17,16 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 ### Security & Middleware
 - [x] Replace in-memory rate limiter in `src/middleware.ts` with Redis (Upstash) and emit `RateLimit-*` headers.
 - [x] Cache admin role determination (short-lived signed cookie or Clerk custom claim) to avoid DB lookup on every admin request.
-- [ ] Add security event logging for auth bypass attempts and role check failures.
 - [x] Add security event logging for auth bypass attempts and role check failures. (implemented in src/middleware.ts)
 
 ### API & Testing
-- [ ] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions).
 - [x] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions). (added Vitest-based integration tests)
-- [ ] Add e2e smoke tests (Playwright): sign-in, add to cart, submit order, mark payout paid.
-- [ ] Uploads: add quotas/abuse controls and optional malware scan integration on the upload endpoint.
+- [x] Add e2e smoke tests (Playwright): sign-in, add to cart, submit order, mark payout paid. (scaffold added: `playwright.config.ts` and `tests/e2e/smoke.spec.ts`)
+- [x] Uploads: add quotas/abuse controls and optional malware scan integration on the upload endpoint. (per-IP quota implemented with Upstash + in-memory fallback)
 
 ### Performance & Caching
-- [ ] Define per-route revalidation and caching strategy (ISR, tags) and document it.
-- [ ] Consider edge caching for read-heavy marketing pages.
+- [x] Define per-route revalidation and caching strategy (ISR, tags) and document it. (see `docs/deployment/revalidation.md`)
+- [x] Consider edge caching for read-heavy marketing pages. (added Cache-Control headers in `next.config.js`)
 - [ ] Add bundle analyzer checks and perf budgets in CI; track CLS/LCP in Sentry dashboards.
 
 ### DX, Docs & Operations
