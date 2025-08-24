@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import PublicChrome from "../components/layout/PublicChrome";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import Script from "next/script";
 
 
 import { type Metadata } from "next";
@@ -23,18 +24,12 @@ const geist = Geist({
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {    
-  
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
         <body id="top" className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
           {/* Prevent theme flash on first paint */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html:
-                "(function(){try{var s=localStorage.getItem('theme');/* Force migrate to light once */if(s!=='light'){localStorage.setItem('theme','light');s='light';}if(s==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();",
-            }}
-          />
+          <Script src="/theme-init.js" strategy="beforeInteractive" />
           <ThemeProvider>
             <PublicChrome>{children}</PublicChrome>
             <Toaster richColors position="top-right" />

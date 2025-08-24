@@ -31,9 +31,8 @@ const coreConfig = {
       "default-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
-      // Allow Next/React hydration; keep 'unsafe-inline' temporarily until nonces/hashes are wired.
-      // TODO: Add nonces/hashes and remove 'unsafe-inline' from scripts.
-      "script-src 'self' 'unsafe-inline'",
+      // No inline scripts required — theme init moved to /public/theme-init.js
+      "script-src 'self'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",

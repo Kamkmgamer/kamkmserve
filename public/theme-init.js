@@ -1,0 +1,1 @@
+(function(){try{var s=localStorage.getItem('theme');/* Force migrate to light once */if(s!=='light'){localStorage.setItem('theme','light');s='light';}if(s==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();

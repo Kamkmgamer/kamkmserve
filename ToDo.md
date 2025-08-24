@@ -9,10 +9,10 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 
 ---
 ### High Impact / Low Effort (Weeks 0–1)
-- [ ] Harden CSP in `next.config.js`
+- [x] Harden CSP in `next.config.js`
   - [x] Remove `'unsafe-eval'`; minimize `'unsafe-inline'` for `script-src`/`style-src`
-  - [ ] Add nonces/hashes where inlining is required
-  - [ ] Add regression test to assert headers (`tests` or `vitest` server harness)
+  - [x] Add nonces/hashes where inlining is required (no longer needed after removing inline script; moved to `/public/theme-init.js`)
+  - [x] Add regression test to assert headers (`tests` or `vitest` server harness)
 - [x] Reduce Sentry tracing in production
   - [x] Gate `tracesSampleRate` via `NODE_ENV` in `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` (target 0.05–0.2)
   - [x] Optionally implement `tracesSampler`
