@@ -8,32 +8,51 @@ A comprehensive checklist to ensure your application is production-ready, secure
 A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the living source of truth for near-term work.
 
 ---
+### High Impact / Low Effort (Weeks 0–1)
+- [ ] Harden CSP in `next.config.js`
+  - [ ] Remove `'unsafe-eval'`; minimize `'unsafe-inline'` for `script-src`/`style-src`
+  - [ ] Add nonces/hashes where inlining is required
+  - [ ] Add regression test to assert headers (`tests` or `vitest` server harness)
+- [ ] Reduce Sentry tracing in production
+  - [ ] Gate `tracesSampleRate` via `NODE_ENV` in `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` (target 0.05–0.2)
+  - [ ] Optionally implement `tracesSampler`
+- [ ] Align Sentry DSN envs and docs
+  - [ ] Use `SENTRY_DSN` (server/edge) and `NEXT_PUBLIC_SENTRY_DSN` (client) consistently
+  - [ ] Update `.env.example`, `README.md`, Vercel envs
+- [ ] Configure Next Image remote sources
+  - [ ] Add `images.remotePatterns` for ImageKit and any CDN domains in `next.config.js`
 
-### Quick Wins (High Impact, Low Effort)
-- [x] Fix `getServiceById` cache key in `src/server/services.ts` to include `id` (use `["services:by-id", id]`).
-- [x] Add production guard to disable Admin Basic Auth bypass in `src/middleware.ts` and log with `logger.security` when enabled.
-- [x] Add CSP validation test to prevent drift in `next.config.js` security headers.
+### High Impact / Medium Effort (Weeks 1–3)
+- [ ] Expand tests and run Playwright in CI
+  - [ ] Middleware/auth tests: role checks, rate-limit behavior (`src/middleware.ts`)
+  - [ ] Admin API mutations: create/update/delete with positive/negative cases (`src/app/api/admin/*`)
+  - [ ] Security headers regression test (CSP, HSTS, XFO, no-sniff, referrer policy)
+  - [ ] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
+- [ ] Enforce dependency security posture
+  - [ ] Update `security.yml` to pnpm `10.13.1`
+  - [ ] Consider failing builds on high/critical vulns (remove `|| true` or gate with approvals)
+  - [ ] Add Renovate or Dependabot for automated updates
 
-### Security & Middleware
-- [x] Replace in-memory rate limiter in `src/middleware.ts` with Redis (Upstash) and emit `RateLimit-*` headers.
-- [x] Cache admin role determination (short-lived signed cookie or Clerk custom claim) to avoid DB lookup on every admin request.
-- [x] Add security event logging for auth bypass attempts and role check failures. (implemented in src/middleware.ts)
+### Medium Impact / Low Effort (Weeks 0–2)
+- [ ] Review postinstall script policy
+  - [ ] Revisit `vercel.json` `installCommand` (avoid `--config.ignore-scripts=false` if possible)
+  - [ ] Document any packages that require lifecycle scripts
+- [ ] Ensure `pgcrypto` availability for `gen_random_uuid()` across Postgres providers
+  - [ ] Add conditional migration or setup documentation
+- [ ] Consolidate env validation as single source of truth
+  - [ ] Confirm `@t3-oss/env-nextjs` is canonical; align `next.config.js` import `./src/env.js` and `~/env`
 
-### API & Testing
-- [x] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions). (added Vitest-based integration tests)
-- [x] Add e2e smoke tests (Playwright): sign-in, add to cart, submit order, mark payout paid. (scaffold added: `playwright.config.ts` and `tests/e2e/smoke.spec.ts`)
-- [x] Uploads: add quotas/abuse controls and optional malware scan integration on the upload endpoint. (per-IP quota implemented with Upstash + in-memory fallback)
+### Medium Impact / Medium Effort (Weeks 2–4)
+- [ ] Observability improvements
+  - [ ] Consider Sentry Replay with sampling caps
+  - [ ] Create dashboards/alerts for LCP/CLS/API latency
+- [ ] Performance tooling
+  - [ ] Add optional Next bundle analyzer script and PR artifact/reporting for large diffs
 
-### Performance & Caching
-- [x] Define per-route revalidation and caching strategy (ISR, tags) and document it. (see `docs/deployment/revalidation.md`)
-- [x] Consider edge caching for read-heavy marketing pages. (added Cache-Control headers in `next.config.js`)
-- [x] Add bundle analyzer checks and perf budgets in CI; track CLS/LCP in Sentry dashboards. (added `scripts/check-budgets.mjs`, CI step in `.github/workflows/ci.yml`, Sentry browser tracing in `instrumentation-client.ts`)
-
-### DX, Docs & Operations
-- [x] Add architectural diagram and “where to add features” guide to `README.md`. (see `README.md` Architecture + Where to add features)
-- [x] Add runbooks and deployment safety checklist; document role-lookup fallback behavior. (added `docs/operations/runbooks.md`, `docs/deployment/safety-checklist.md`)
-- [ ] Enable Dependabot/Renovate for dependency updates.
-- [x] Add a11y checks (axe) to CI and fix contrast/focus regressions. (added `test/a11y.home.test.tsx`, registered matchers in `test/setup.tsx`, CI step in `.github/workflows/ci.yml`)
+### Nice to Have (Backlog)
+- [ ] Terraform IaC: enable backend and minimal resources; codify secrets access policies
+- [ ] Multi-region strategy note: CDN, DB read replicas, and routing plans
+- [ ] Document DB connection strategy and pool tuning (Neon serverless)
 
 ---
 
