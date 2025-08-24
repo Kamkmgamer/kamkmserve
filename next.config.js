@@ -16,7 +16,7 @@ const coreConfig = {
       "base-uri 'self'",
       "form-action 'self'",
       // Allow Next/React hydration and common patterns; tighten for prod as needed.
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
