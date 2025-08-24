@@ -93,23 +93,23 @@ A comprehensive checklist to ensure your application is production-ready, secure
 
 - [x] Encrypt data at rest (databases, volumes, backups).
 - [x] Encrypt data in transit (TLS everywhere).
-- [ ] Set database access controls and roles.
-- [ ] Rotate database credentials regularly.
+- [x] Set database access controls and roles.
+- [x] Rotate database credentials regularly.
 - [x] Enable database query logging (sanitized).
-- [ ] Backup strategy tested and verified.
-- [ ] Retention policies applied to logs and backups.
+- [x] Backup strategy tested and verified.
+- [x] Retention policies applied to logs and backups.
 
 ---
 
 ## People & Processes
 
 - [x] Document runbooks for incident response.
-- [ ] Define on-call escalation procedures.
-- [ ] Ensure monitoring dashboards are up to date.
-- [ ] Review code and infrastructure changes via peer review.
-- [ ] Regularly train team on security and operations best practices.
-- [ ] Apply principle of least privilege to all accounts.
-- [ ] Enforce 2FA for all critical systems.
+- [x] Define on-call escalation procedures.
+- [x] Ensure monitoring dashboards are up to date.
+- [x] Review code and infrastructure changes via peer review.
+- [x] Regularly train team on security and operations best practices.
+- [x] Apply principle of least privilege to all accounts.
+- [x] Enforce 2FA for all critical systems.
 
 ---
 
