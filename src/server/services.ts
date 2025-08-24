@@ -32,27 +32,27 @@ export const getAllServices = cache(
   { revalidate: 300, tags: ["services"] }
 );
 
-export const getServiceById = cache(
-  async (id: string): Promise<Service | null> => {
-    const rows = await db
-      .select()
-      .from(servicesTable)
-      .where(eq(servicesTable.id, id))
-      .limit(1);
-    const r = rows[0];
-    if (!r) return null;
-    return {
-      id: r.id,
-      name: r.name,
-      description: r.description,
-      category: r.category,
-      price: Number(r.price),
-      features: r.features,
-      imageUrls: r.imageUrls,
-      thumbnailUrl: r.thumbnailUrl ?? null,
-    };
-  },
-  // Include id in key space
-  ["services:by-id"],
-  { revalidate: 300, tags: ["services"] }
-);
+export const getServiceById = async (id: string): Promise<Service | null> =>
+  cache(
+    async (): Promise<Service | null> => {
+      const rows = await db
+        .select()
+        .from(servicesTable)
+        .where(eq(servicesTable.id, id))
+        .limit(1);
+      const r = rows[0];
+      if (!r) return null;
+      return {
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        category: r.category,
+        price: Number(r.price),
+        features: r.features,
+        imageUrls: r.imageUrls,
+        thumbnailUrl: r.thumbnailUrl ?? null,
+      };
+    },
+    ["services:by-id", id],
+    { revalidate: 300, tags: ["services", `service:${id}`] }
+  )();

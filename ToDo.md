@@ -10,7 +10,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 ---
 
 ### Quick Wins (High Impact, Low Effort)
-- [ ] Fix `getServiceById` cache key in `src/server/services.ts` to include `id` (use `["services:by-id", id]`).
+- [x] Fix `getServiceById` cache key in `src/server/services.ts` to include `id` (use `["services:by-id", id]`).
 - [ ] Add production guard to disable Admin Basic Auth bypass in `src/middleware.ts` and log with `logger.security` when enabled.
 - [ ] Add CSP validation test to prevent drift in `next.config.js` security headers.
 
