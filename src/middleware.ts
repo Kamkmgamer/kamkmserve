@@ -1,4 +1,9 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { logger } from '~/lib/logger'
+import { NextResponse } from 'next/server'
+// Types for Upstash limiter result to avoid any
+type UpstashLimitResult = { success: boolean; limit: number; remaining: number; reset: number }
+type UpstashLimiter = { limit: (key: string) => Promise<UpstashLimitResult> }
 
 // Matchers for admin routes (pages and APIs)
 const isAdminRoute = createRouteMatcher([
@@ -23,43 +28,98 @@ export default clerkMiddleware(async (auth, req) => {
     // If redirect logic fails, continue request handling
   }
 
-  // Basic rate limiting for API routes (best-effort; for robust prod use a shared store like Redis)
+  // Rate limiting for API routes with Upstash Redis; fallback to in-memory map if not configured
   try {
     const { pathname } = new URL(req.url)
     if (pathname.startsWith('/api')) {
-      type RateRecord = { count: number; resetAt: number }
-      type RateStore = Map<string, RateRecord>
-      const g = globalThis as typeof globalThis & { __rateLimitStore?: RateStore }
-      const WINDOW_MS = 60_000 // 1 minute window
-      const MAX_REQS = 100 // per IP per window
-
-      const getStore = (): RateStore => {
-        g.__rateLimitStore ??= new Map<string, RateRecord>()
-        return g.__rateLimitStore
-      }
-      const store = getStore()
       const xff = req.headers.get('x-forwarded-for')
       const xri = req.headers.get('x-real-ip')
       const ip = (xff?.split(',')[0]?.trim() ?? xri ?? 'unknown')
-      const now = Date.now()
-      const rec = store.get(ip)
-      if (!rec || now > rec.resetAt) {
-        store.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-      } else {
-        const updated: RateRecord = { count: rec.count + 1, resetAt: rec.resetAt }
-        store.set(ip, updated)
-        if (updated.count > MAX_REQS) {
-          const retryAfter = Math.ceil((updated.resetAt - now) / 1000)
-          return new Response('Too Many Requests', {
-            status: 429,
-            headers: {
-              'Retry-After': String(Math.max(retryAfter, 1)),
-              'X-RateLimit-Limit': String(MAX_REQS),
-              'X-RateLimit-Remaining': '0',
-              'X-RateLimit-Reset': String(Math.floor(updated.resetAt / 1000)),
-            },
+      const WINDOW_MS = 60_000 // 1 minute window
+      const MAX_REQS = 100 // per IP per window
+
+      const hasUpstash = Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+
+      if (hasUpstash) {
+        // Use Upstash Redis-backed limiter
+        const g = globalThis as typeof globalThis & { __upstashLimiter?: UpstashLimiter }
+        let limiter = g.__upstashLimiter
+        if (!limiter) {
+          // Lazy init to avoid edge cold start overhead on non-API requests
+          // Dynamic imports are edge-compatible
+          const { Ratelimit } = await import('@upstash/ratelimit')
+          const { Redis } = await import('@upstash/redis')
+          const redis = Redis.fromEnv()
+          const rl = new Ratelimit({
+            redis,
+            limiter: Ratelimit.slidingWindow(MAX_REQS, '1 m'),
+            analytics: true,
+            prefix: 'rl:api',
           })
+          // Store a minimal, typed wrapper to avoid reliance on library types
+          g.__upstashLimiter = { limit: (key: string) => rl.limit(key) }
+          limiter = g.__upstashLimiter
         }
+        // Narrow: ensure limiter is defined before use (helps TS control flow)
+        if (!limiter) {
+          // Should not happen, but gracefully continue
+          return NextResponse.next()
+        }
+        const res = await limiter.limit(`ip:${ip}`)
+
+        const headers = new Headers()
+        headers.set('RateLimit-Limit', String(res.limit))
+        headers.set('RateLimit-Remaining', String(Math.max(res.remaining, 0)))
+        headers.set('RateLimit-Reset', String(Math.ceil(res.reset / 1000)))
+
+        if (!res.success) {
+          const retryAfter = Math.max(Math.ceil((res.reset - Date.now()) / 1000), 1)
+          headers.set('Retry-After', String(retryAfter))
+          return new Response('Too Many Requests', { status: 429, headers })
+        }
+
+        // Propagate headers to downstream response
+        const next = NextResponse.next()
+        headers.forEach((v, k) => next.headers.set(k, v))
+        return next
+      } else {
+        // Fallback to in-memory limiter (best-effort)
+        type RateRecord = { count: number; resetAt: number }
+        type RateStore = Map<string, RateRecord>
+        const g = globalThis as typeof globalThis & { __rateLimitStore?: RateStore }
+        const getStore = (): RateStore => {
+          g.__rateLimitStore ??= new Map<string, RateRecord>()
+          return g.__rateLimitStore
+        }
+        const store = getStore()
+        const now = Date.now()
+        const rec = store.get(ip)
+        if (!rec || now > rec.resetAt) {
+          store.set(ip, { count: 1, resetAt: now + WINDOW_MS })
+        } else {
+          const updated: RateRecord = { count: rec.count + 1, resetAt: rec.resetAt }
+          store.set(ip, updated)
+          if (updated.count > MAX_REQS) {
+            const retryAfter = Math.ceil((updated.resetAt - now) / 1000)
+            const headers = new Headers({
+              'Retry-After': String(Math.max(retryAfter, 1)),
+              'RateLimit-Limit': String(MAX_REQS),
+              'RateLimit-Remaining': '0',
+              'RateLimit-Reset': String(Math.floor(updated.resetAt / 1000)),
+            })
+            return new Response('Too Many Requests', { status: 429, headers })
+          }
+        }
+        const rec2 = store.get(ip)!
+        const remaining = Math.max(MAX_REQS - rec2.count, 0)
+        const headers = new Headers({
+          'RateLimit-Limit': String(MAX_REQS),
+          'RateLimit-Remaining': String(remaining),
+          'RateLimit-Reset': String(Math.floor(rec2.resetAt / 1000)),
+        })
+        const next = NextResponse.next()
+        headers.forEach((v, k) => next.headers.set(k, v))
+        return next
       }
     }
   } catch {
@@ -70,8 +130,10 @@ export default clerkMiddleware(async (auth, req) => {
   if (isAdminRoute(req)) {
     // 0) Optional: Allow Basic Auth specifically for admin routes (separate from Clerk)
     //    Set ADMIN_BASIC_USER and ADMIN_BASIC_PASS in your environment to enable this.
+    //    Additionally, set ADMIN_BASIC_BYPASS_ENABLED="true" to allow bypass, but never in production.
     let basicAuthed = false
     let haveBasicConfig = false
+    const bypassEnabled = process.env.NODE_ENV !== 'production' && process.env.ADMIN_BASIC_BYPASS_ENABLED === 'true'
     try {
       const envUser = process.env.ADMIN_BASIC_USER
       const envPass = process.env.ADMIN_BASIC_PASS
@@ -83,8 +145,14 @@ export default clerkMiddleware(async (auth, req) => {
         const user = sepIdx >= 0 ? decoded.slice(0, sepIdx) : decoded
         const pass = sepIdx >= 0 ? decoded.slice(sepIdx + 1) : ''
         if (envUser && envPass && user === envUser && pass === envPass) {
-          // Successful Basic Auth — bypass Clerk for admin route
-          basicAuthed = true
+          // Successful Basic Auth — only bypass Clerk when bypass is explicitly enabled and not in production
+          if (bypassEnabled) {
+            basicAuthed = true
+            logger.security('Admin Basic Auth bypass ENABLED', { feature: 'admin_basic_bypass', enabled: true, user }, req)
+          } else if (process.env.NODE_ENV === 'production') {
+            // In production, never allow bypass; log the attempt
+            logger.security('Admin Basic Auth bypass attempt blocked in production', { feature: 'admin_basic_bypass', enabled: false, user }, req)
+          }
         }
       }
     } catch {

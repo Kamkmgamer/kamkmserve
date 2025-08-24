@@ -11,11 +11,11 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 
 ### Quick Wins (High Impact, Low Effort)
 - [x] Fix `getServiceById` cache key in `src/server/services.ts` to include `id` (use `["services:by-id", id]`).
-- [ ] Add production guard to disable Admin Basic Auth bypass in `src/middleware.ts` and log with `logger.security` when enabled.
-- [ ] Add CSP validation test to prevent drift in `next.config.js` security headers.
+- [x] Add production guard to disable Admin Basic Auth bypass in `src/middleware.ts` and log with `logger.security` when enabled.
+- [x] Add CSP validation test to prevent drift in `next.config.js` security headers.
 
 ### Security & Middleware
-- [ ] Replace in-memory rate limiter in `src/middleware.ts` with Redis (Upstash) and emit `RateLimit-*` headers.
+- [x] Replace in-memory rate limiter in `src/middleware.ts` with Redis (Upstash) and emit `RateLimit-*` headers.
 - [ ] Cache admin role determination (short-lived signed cookie or Clerk custom claim) to avoid DB lookup on every admin request.
 - [ ] Add security event logging for auth bypass attempts and role check failures.
 
