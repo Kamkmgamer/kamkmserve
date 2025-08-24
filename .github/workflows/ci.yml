@@ -47,6 +47,17 @@ jobs:
       - name: Accessibility (axe)
         run: pnpm run test:a11y
 
+      - name: Install Playwright Browsers
+        run: pnpm run e2e:install
+
+      - name: E2E tests (Playwright)
+        env:
+          E2E_BASE_URL: http://localhost:3000
+        run: |
+          pnpm preview &
+          npx wait-on http://localhost:3000
+          pnpm run e2e:ci
+
       - name: Build (skip env validation)
         env:
           SKIP_ENV_VALIDATION: "true"
