@@ -2,6 +2,11 @@
 
 Admin-enabled Next.js app for selling services with referrals, commissions, and payouts. Includes a marketing site, protected admin CMS, Clerk auth, Drizzle ORM with PostgreSQL, and Sentry monitoring.
 
+## Target Audience & Problem
+
+- **Target Audience**: Solo founders, freelancers, small agencies, and early-stage SaaS teams who sell services or digital offerings and need lightweight admin tooling.
+- **Problem We Solve**: Provide a secure, production-ready foundation to manage service catalogs, orders, referrals/commissions, and payouts with role-based access—reducing time-to-market and ongoing ops overhead.
+
 ## Architecture
 
 ```mermaid
@@ -145,7 +150,7 @@ pnpm format:write # Prettier
 Admin endpoints live under `src/app/api/admin/*` (App Router route handlers). Typical resources:
 - `services`: list/create/update/delete services
 - `blogs`: list/create/update/delete posts
-- `coupons`: list/create/update/delete, toggle active
+- `coupons`: list/create/update, toggle active
 - `orders`: list, update status, refund/cancel
 - `referrals`: list/create/update
 - `commissions`: list/create/update

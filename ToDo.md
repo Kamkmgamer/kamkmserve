@@ -1,59 +1,106 @@
-# 🛡️ Production Hardening Checklist
+# SaaS Website TODO
 
-A comprehensive checklist to ensure your application is production-ready, secure, and resilient.
-
-
-## KamkmServe TODO Roadmap
-
-A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the living source of truth for near-term work.
-
----
-### High Impact / Low Effort (Weeks 0–1)
-- [x] Harden CSP in `next.config.js`
-  - [x] Remove `'unsafe-eval'`; minimize `'unsafe-inline'` for `script-src`/`style-src`
-  - [x] Add nonces/hashes where inlining is required (no longer needed after removing inline script; moved to `/public/theme-init.js`)
-  - [x] Add regression test to assert headers (`tests` or `vitest` server harness)
-- [x] Reduce Sentry tracing in production
-  - [x] Gate `tracesSampleRate` via `NODE_ENV` in `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts` (target 0.05–0.2)
-  - [x] Optionally implement `tracesSampler`
-- [x] Align Sentry DSN envs and docs
-  - [x] Use `SENTRY_DSN` (server/edge) and `NEXT_PUBLIC_SENTRY_DSN` (client) consistently
-  - [x] Update `.env.example`, `README.md`, Vercel envs
-- [x] Configure Next Image remote sources
-  - [x] Add `images.remotePatterns` for ImageKit and any CDN domains in `next.config.js`
-
-### High Impact / Medium Effort (Weeks 1–3)
-- [x] Expand tests and run Playwright in CI
-  - [x] Middleware/auth tests: role checks, rate-limit behavior (`src/middleware.ts`)
-  - [x] Admin API mutations: create/update/delete with positive/negative cases (`src/app/api/admin/*`)
-  - [x] Security headers regression test (CSP, HSTS, XFO, no-sniff, referrer policy)
-  - [x] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
-- [ ] Enforce dependency security posture
-  - [x] Update `security.yml` to pnpm `10.13.1`
-  - [x] Consider failing builds on high/critical vulns (remove `|| true` or gate with approvals)
-  - [x] Add Renovate or Dependabot for automated updates
-
-### Medium Impact / Low Effort (Weeks 0–2)
-- [ ] Review postinstall script policy
-  - [x] Revisit `vercel.json` `installCommand` (avoid `--config.ignore-scripts=false` if possible)
-  - [ ] Document any packages that require lifecycle scripts
-- [ ] Ensure `pgcrypto` availability for `gen_random_uuid()` across Postgres providers
-  - [x] Add conditional migration or setup documentation
-- [ ] Consolidate env validation as single source of truth
-  - [x] Confirm `@t3-oss/env-nextjs` is canonical; align `next.config.js` import `./src/env.js` and `~/env`
-
-### Medium Impact / Medium Effort (Weeks 2–4)
-- [ ] Observability improvements
-  - [x] Consider Sentry Replay with sampling caps
-  - [ ] Create dashboards/alerts for LCP/CLS/API latency
-- [ ] Performance tooling
-  - [x] Add optional Next bundle analyzer script and PR artifact/reporting for large diffs
-
-### Nice to Have (Backlog)
-- [ ] Terraform IaC: enable backend and minimal resources; codify secrets access policies
-- [ ] Multi-region strategy note: CDN, DB read replicas, and routing plans
-- [ ] Document DB connection strategy and pool tuning (Neon serverless)
+## 1. Planning & Research
+- [x] Define target audience and problem to solve
+- [ ] Research competitors
+- [ ] Decide SaaS model (subscription, freemium, usage-based, etc.)
+- [ ] List MVP features vs nice-to-have features
+- [ ] Define pricing strategy and tiers
 
 ---
 
-Ownership: Assign each item to an owner and milestone. Review weekly in triage. Update statuses as work progresses.
+## 2. Design & Branding
+- [ ] Choose brand name and domain
+- [ ] Create logo and brand style guide
+- [ ] Define color palette and typography
+- [ ] Wireframe core pages
+- [ ] Design responsive UI/UX (desktop + mobile)
+
+---
+
+## 3. Frontend Development
+- [ ] Set up project structure (React/Next.js/Vue/etc.)
+- [ ] Implement authentication pages (Sign Up, Login, Forgot Password)
+- [ ] Build marketing pages (Landing, About, Pricing, Contact)
+- [ ] Build dashboard layout (Sidebar, Navbar, Widgets)
+- [ ] Add state management & API integration
+- [ ] Ensure responsive and accessible UI
+
+---
+
+## 4. Backend Development
+- [ ] Choose backend stack (Node.js/Django/Laravel/etc.)
+- [ ] Implement user authentication & authorization (JWT/OAuth)
+- [ ] Design database schema (Users, Subscriptions, App Data)
+- [ ] Build REST/GraphQL APIs
+- [ ] Integrate payment gateway (Stripe/PayPal/etc.)
+- [ ] Add email service (Resend/Postmark/SendGrid)
+- [ ] Configure logging & monitoring (Sentry, LogRocket)
+
+---
+
+## 5. Core SaaS Features (MVP)
+- [ ] User dashboard with main functionality
+- [ ] Role-based access control (Admin, User, etc.)
+- [ ] Subscription management (Upgrade/Downgrade/Cancel)
+- [ ] Free trial or demo mode
+- [ ] Notifications (Email + In-app)
+- [ ] File storage/processing (if needed)
+
+---
+
+## 6. Security & Compliance
+- [x] Hash and salt passwords
+- [x] Enforce HTTPS (SSL certificates)
+- [x] Add rate limiting & anti-bot measures
+- [x] Ensure GDPR/CCPA compliance (Data export/delete)
+- [x] Plan backups & disaster recovery
+- [x] Enforce dependency security posture
+- [x] Review postinstall script policy
+- [x] Ensure pgcrypto availability
+- [x] Consolidate env validation
+
+---
+
+## 7. Testing
+- [ ] Write unit tests for core logic
+- [ ] Add integration tests (API + Frontend flows)
+- [ ] Add end-to-end tests (Sign-up → Subscription → Usage → Billing)
+- [ ] Conduct performance/load testing
+
+---
+
+## 8. Deployment & DevOps
+- [ ] Choose hosting (Vercel/AWS/DigitalOcean/etc.)
+- [ ] Configure CI/CD pipeline
+- [ ] Secure environment variables
+- [ ] Set up database hosting & migrations
+- [ ] Configure monitoring & error tracking
+- [ ] Enable automated backups
+
+---
+
+## 9. Launch Preparation
+- [ ] Create pricing page with checkout links
+- [ ] Add FAQ and support/contact page
+- [ ] Set up analytics (Google Analytics/PostHog/etc.)
+- [ ] Prepare documentation/knowledge base
+- [ ] Beta test with early users
+
+---
+
+## 10. Post-Launch & Growth
+- [ ] Track usage and gather customer feedback
+- [ ] Fix bugs and improve performance
+- [ ] Optimize onboarding flow
+- [ ] Run marketing campaigns (SEO, Content, Ads)
+- [ ] Add referral/affiliate program
+- [ ] Release new features & improvements
+
+README
+======
+
+Target Audience and Problem to Solve
+------------------------------------
+
+Our target audience is [insert target audience description]. The problem we aim to solve is [insert problem description]. This will be the foundation of our SaaS product and will guide our development and marketing efforts.
