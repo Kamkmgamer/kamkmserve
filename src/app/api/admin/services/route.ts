@@ -4,6 +4,7 @@ import { db } from "~/server/db";
 import { services } from "~/server/db/schema";
 import { desc, like, or } from "drizzle-orm";
 import { requireRole } from "~/server/auth/roles";
+import { getOrSet, memoryCache } from "~/server/cache";
 
 const ServiceSchema = z.object({
   name: z.string().min(1),
@@ -27,20 +28,31 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
     const q = parsed.data.q;
-    const rows = await db
-      .select()
-      .from(services)
-      .where(
-        q
-          ? or(
-              like(services.name, `%${q}%`),
-              like(services.category, `%${q}%`),
-              like(services.description, `%${q}%`)
-            )
-          : undefined
-      )
-      .orderBy(desc(services.createdAt));
-    return NextResponse.json({ data: rows });
+    const cacheKey = `admin:services:list:${q ?? "_all"}`;
+    const rows = await getOrSet(cacheKey, 60_000, async () => {
+      return db
+        .select()
+        .from(services)
+        .where(
+          q
+            ? or(
+                like(services.name, `%${q}%`),
+                like(services.category, `%${q}%`),
+                like(services.description, `%${q}%`)
+              )
+            : undefined
+        )
+        .orderBy(desc(services.createdAt));
+    });
+    return NextResponse.json(
+      { data: rows },
+      {
+        headers: {
+          // Private admin data: allow short client/proxy caching if any, primarily saves server work
+          "Cache-Control": "private, max-age=60, stale-while-revalidate=30",
+        },
+      }
+    );
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Failed to list services" }, { status: 500 });
@@ -68,6 +80,8 @@ export async function POST(req: Request) {
         imageUrls: parsed.data.imageUrls,
       })
       .returning();
+    // Invalidate admin list cache on mutation
+    memoryCache.clear();
     return NextResponse.json({ data: row }, { status: 201 });
   } catch (e) {
     console.error(e);
