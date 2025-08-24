@@ -93,6 +93,12 @@ Note: If your `.env.example` contains legacy `STACK_*` keys, replace them with t
 
 2) Env validation is loaded via `src/env.js` from `next.config.js`. You can set `SKIP_ENV_VALIDATION=1` for CI/Docker builds.
 
+3) Sentry DSNs
+
+- Use `SENTRY_DSN` for server and edge runtime reporting (used in `sentry.server.config.ts` and `sentry.edge.config.ts`).
+- Use `NEXT_PUBLIC_SENTRY_DSN` for client/browser reporting (used in `instrumentation-client.ts`).
+- Both keys are optional for local development, but recommended in staging/production.
+
 Database (Drizzle)
 - Configure schema: `src/server/db/schema.ts`
 - Drizzle config: `drizzle.config.ts`
@@ -157,7 +163,15 @@ Admin area
 - Source maps/upload configured in `next.config.js` via `withSentryConfig`.
 - Client tunnel route: `/sentry-tunnel` to avoid ad-blockers.
 
-Current DSN is configured directly in `sentry.*.config.ts`. Update to your project as needed.
+Environment variables
+
+- Server/Edge: `SENTRY_DSN`
+- Client: `NEXT_PUBLIC_SENTRY_DSN`
+
+Sampling
+
+- Non-production: 100% sampling for easier debugging.
+- Production: default `tracesSampleRate` 0.1 with a `tracesSampler` that drops noisy routes like `/_next/`, `/monitoring/health`, and `/sentry-tunnel`.
 
 ## Project Structure
 
@@ -174,6 +188,7 @@ Current DSN is configured directly in `sentry.*.config.ts`. Update to your proje
 
 Vercel checklist
 - Set `DATABASE_URL`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
+- Set Sentry DSNs if you use Sentry: `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`.
 - Optionally set `SKIP_ENV_VALIDATION=1` for build containers.
 - If using Sentry source map upload, keep org/project in `next.config.js` or set via env in CI.
 
