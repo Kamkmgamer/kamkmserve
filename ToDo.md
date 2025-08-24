@@ -23,10 +23,10 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
   - [x] Add `images.remotePatterns` for ImageKit and any CDN domains in `next.config.js`
 
 ### High Impact / Medium Effort (Weeks 1–3)
-- [ ] Expand tests and run Playwright in CI
-  - [ ] Middleware/auth tests: role checks, rate-limit behavior (`src/middleware.ts`)
-  - [ ] Admin API mutations: create/update/delete with positive/negative cases (`src/app/api/admin/*`)
-  - [ ] Security headers regression test (CSP, HSTS, XFO, no-sniff, referrer policy)
+- [x] Expand tests and run Playwright in CI
+  - [x] Middleware/auth tests: role checks, rate-limit behavior (`src/middleware.ts`)
+  - [x] Admin API mutations: create/update/delete with positive/negative cases (`src/app/api/admin/*`)
+  - [x] Security headers regression test (CSP, HSTS, XFO, no-sniff, referrer policy)
   - [x] Enable Playwright job in CI; add flows: sign-in, add to cart, place order, mark payout paid
 - [ ] Enforce dependency security posture
   - [x] Update `security.yml` to pnpm `10.13.1`
@@ -47,7 +47,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
   - [ ] Consider Sentry Replay with sampling caps
   - [ ] Create dashboards/alerts for LCP/CLS/API latency
 - [ ] Performance tooling
-  - [ ] Add optional Next bundle analyzer script and PR artifact/reporting for large diffs
+  - [x] Add optional Next bundle analyzer script and PR artifact/reporting for large diffs
 
 ### Nice to Have (Backlog)
 - [ ] Terraform IaC: enable backend and minimal resources; codify secrets access policies

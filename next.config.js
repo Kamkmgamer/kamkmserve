@@ -120,9 +120,14 @@ const coreConfig = {
 };
 
 import {withSentryConfig} from "@sentry/nextjs";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const config = withSentryConfig(
-  coreConfig,
+  withBundleAnalyzer(coreConfig),
   {
     // For all available options, see:
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
