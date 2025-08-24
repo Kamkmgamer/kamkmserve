@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import Container from "~/components/layout/Container";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Search, CalendarDays } from "lucide-react";
+import { Search, CalendarDays, X } from "lucide-react";
 import type { BlogPost } from "~/server/blogs";
 import { useNavLoading } from "~/contexts/NavLoadingContext";
 
@@ -89,6 +89,7 @@ const BlogCard: React.FC<{ post: BlogWithSlug }> = ({ post }) => {
 export default function BlogsClient({ initialPosts }: { initialPosts: BlogWithSlug[] }) {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, 220);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
@@ -96,7 +97,10 @@ export default function BlogsClient({ initialPosts }: { initialPosts: BlogWithSl
     return initialPosts.filter((p) => [p.title, p.summary].some((t) => t?.toLowerCase().includes(q)));
   }, [initialPosts, debouncedQuery]);
 
-  const onClear = React.useCallback(() => setQuery(""), []);
+  const onClear = React.useCallback(() => {
+    setQuery("");
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
@@ -118,17 +122,27 @@ export default function BlogsClient({ initialPosts }: { initialPosts: BlogWithSl
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                ref={inputRef}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape" && query) {
+                    e.preventDefault();
+                    setQuery("");
+                  }
+                }}
                 placeholder="Search articles..."
-                className="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-10 py-2 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900"
+                className="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-12 py-2 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900"
               />
 
               {query && (
                 <button
+                  type="button"
                   onClick={onClear}
                   aria-label="Clear search"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  title="Clear"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 grid h-7 w-7 place-items-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                  Clear
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Clear search</span>
                 </button>
               )}
             </div>
