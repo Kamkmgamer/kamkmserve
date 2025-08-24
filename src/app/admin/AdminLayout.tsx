@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode, type MouseEvent as ReactMouseEvent } from "react";
 import { Button } from "~/components/ui/button";
-import { Sun, Moon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sun, Moon, X, ChevronRight } from "lucide-react";
 import { useTheme } from "~/contexts/ThemeContext";
 
 const nav = [
@@ -103,17 +103,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className={`flex min-h-[70vh] gap-6 p-4 ${isResizing ? "select-none" : ""}`}>
-      <button
-        onClick={toggleCollapsed}
-        aria-label={isCollapsed ? "Open admin sidebar" : "Close admin sidebar"}
-        className="self-start rounded border border-slate-200 bg-white px-2 py-1 text-sm text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
-      >
-        {isCollapsed ? (
+      {isCollapsed && (
+        <button
+          onClick={toggleCollapsed}
+          aria-label="Open admin sidebar"
+          className="self-start rounded border border-slate-200 bg-white px-2 py-1 text-sm text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+        >
           <span className="inline-flex items-center gap-1"><ChevronRight className="h-4 w-4" /> Open</span>
-        ) : (
-          <span className="inline-flex items-center gap-1"><ChevronLeft className="h-4 w-4" /> Close</span>
-        )}
-      </button>
+        </button>
+      )}
       <aside
         ref={asideRef}
         className={`relative shrink-0 border-r transition-[width] duration-150 ease-in-out ${
@@ -121,6 +119,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         }`}
         style={isCollapsed ? undefined : { width: sidebarWidth }}
       >
+        {!isCollapsed && (
+          <button
+            onClick={toggleCollapsed}
+            aria-label="Close admin sidebar"
+            className="absolute right-2 top-2 inline-flex items-center justify-center rounded p-1.5 text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
         <div className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Admin
         </div>
