@@ -119,7 +119,8 @@ export default function BlogsClient({ initialPosts }: { initialPosts: BlogWithSl
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="blog-search"
-                type="search"
+                type="text"
+                inputMode="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 ref={inputRef}
@@ -139,7 +140,7 @@ export default function BlogsClient({ initialPosts }: { initialPosts: BlogWithSl
                   onClick={onClear}
                   aria-label="Clear search"
                   title="Clear"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 grid h-7 w-7 place-items-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   <X className="h-4 w-4" />
                   <span className="sr-only">Clear search</span>
