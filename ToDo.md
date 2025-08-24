@@ -85,14 +85,14 @@ A comprehensive checklist to ensure your application is production-ready, secure
 - [x] Use CDN for static assets.
 - [x] Enable caching layers (Redis, CDN, etc.).
 - [x] Configure graceful shutdown for services.
-- [ ] Ensure horizontal/vertical scaling strategy is in place.
+- [x] Ensure horizontal/vertical scaling strategy is in place.
 
 ---
 
 ## Data & Storage
 
 - [ ] Encrypt data at rest (databases, volumes, backups).
-- [ ] Encrypt data in transit (TLS everywhere).
+- [x] Encrypt data in transit (TLS everywhere).
 - [ ] Set database access controls and roles.
 - [ ] Rotate database credentials regularly.
 - [x] Enable database query logging (sanitized).
