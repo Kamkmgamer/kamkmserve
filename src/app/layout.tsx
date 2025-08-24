@@ -5,6 +5,8 @@ import PublicChrome from "../components/layout/PublicChrome";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import Script from "next/script";
 import { LoadingScreen } from "../components/layout/LoadingScreen"; // Import LoadingScreen
+import { NavLoadingProvider } from "../contexts/NavLoadingContext";
+import NavLoadingOverlay from "../components/layout/NavLoadingOverlay";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
@@ -31,10 +33,15 @@ export default function RootLayout({
           {/* Prevent theme flash on first paint */}
           <Script src="/theme-init.js" strategy="beforeInteractive" />
           <ThemeProvider>
-            <LoadingScreen> {/* Wrap content with LoadingScreen */}
-              <PublicChrome>{children}</PublicChrome>
-              <Toaster richColors position="top-right" />
-            </LoadingScreen>
+            <NavLoadingProvider>
+              {/* Initial app load splash */}
+              <LoadingScreen>
+                <PublicChrome>{children}</PublicChrome>
+                <Toaster richColors position="top-right" />
+              </LoadingScreen>
+              {/* Immediate overlay on navigations */}
+              <NavLoadingOverlay />
+            </NavLoadingProvider>
           </ThemeProvider>
         </body>
       </html>

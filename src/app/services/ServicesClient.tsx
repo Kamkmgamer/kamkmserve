@@ -6,6 +6,7 @@ import Container from "~/components/layout/Container";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Search, Tag } from "lucide-react";
 import type { Service } from "~/server/services";
+import { useNavLoading } from "~/contexts/NavLoadingContext";
 
 const slugify = (name: string) =>
   name
@@ -107,32 +108,42 @@ const itemVariants: Variants = {
   exit: { opacity: 0, y: 12, scale: 0.995, transition: { duration: 0.18, ease: [0.2, 0.8, 0.2, 1] } },
 };
 
-const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
-  <motion.div
-    layout
-    variants={itemVariants}
-    initial="initial"
-    animate="animate"
-    exit="exit"
-    className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
-  >
-    <Link href={`/services/${slugify(service.name)}`} className="block">
-      <motion.div layoutId={`service-image-${service.id}`}>
-        <PreviewImage service={service} />
-      </motion.div>
+const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+  const { start } = useNavLoading();
+  return (
+    <motion.div
+      layout
+      variants={itemVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+    >
+      <Link
+        href={`/services/${slugify(service.name)}`}
+        className="block"
+        onClick={() => {
+          // Show the navigation loading overlay immediately
+          start();
+        }}
+      >
+        <motion.div layoutId={`service-image-${service.id}`}>
+          <PreviewImage service={service} />
+        </motion.div>
 
-      <div className="p-5">
-        <div className="mb-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{service.category}</div>
-        <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-slate-900 dark:text-white">{service.name}</h3>
-        <p className="mb-4 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{service.description}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-base font-bold text-slate-900 dark:text-white">{formatPrice(service.price)}</span>
-          <span className="text-sm text-blue-600 group-hover:underline">View details →</span>
+        <div className="p-5">
+          <div className="mb-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{service.category}</div>
+          <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-slate-900 dark:text-white">{service.name}</h3>
+          <p className="mb-4 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{service.description}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-base font-bold text-slate-900 dark:text-white">{formatPrice(service.price)}</span>
+            <span className="text-sm text-blue-600 group-hover:underline">View details →</span>
+          </div>
         </div>
-      </div>
-    </Link>
-  </motion.div>
-);
+      </Link>
+    </motion.div>
+  );
+};
 
 export default function ServicesClient({ initialServices }: { initialServices: Service[] }) {
   const [services] = useState<Service[]>(initialServices);
