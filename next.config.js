@@ -25,6 +25,28 @@ const coreConfig = {
     ].join('; ')
 
     return [
+      // Long-lived immutable caching for Next.js build assets
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // Cache optimized images route
+      {
+        source: '/_next/image',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // Cache public images (adjust path if you store assets elsewhere under /public)
+      {
+        source: '/images/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
+        ],
+      },
+      // Default security headers for all routes
       {
         source: '/:path*',
         headers: [
