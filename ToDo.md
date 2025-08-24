@@ -18,6 +18,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 - [x] Replace in-memory rate limiter in `src/middleware.ts` with Redis (Upstash) and emit `RateLimit-*` headers.
 - [x] Cache admin role determination (short-lived signed cookie or Clerk custom claim) to avoid DB lookup on every admin request.
 - [ ] Add security event logging for auth bypass attempts and role check failures.
+- [x] Add security event logging for auth bypass attempts and role check failures. (implemented in src/middleware.ts)
 
 ### API & Testing
 - [ ] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions).
