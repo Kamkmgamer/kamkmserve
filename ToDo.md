@@ -22,6 +22,7 @@ A concise, actionable roadmap aligned with the 2025-08-24 audit. Use this as the
 
 ### API & Testing
 - [ ] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions).
+- [x] Add integration tests for representative admin routes in `src/app/api/admin/*` (orders, payouts, commissions). (added Vitest-based integration tests)
 - [ ] Add e2e smoke tests (Playwright): sign-in, add to cart, submit order, mark payout paid.
 - [ ] Uploads: add quotas/abuse controls and optional malware scan integration on the upload endpoint.
 
