@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <h1>Privacy Policy</h1>
       <p>
         Effective date: 25 August 2025. This Privacy Policy explains how KAMKM Serve
-        ("we", "our", or "us") collects, uses, and protects your personal
+        (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses, and protects your personal
         information when you use our website and services.
       </p>
 

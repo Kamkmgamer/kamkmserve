@@ -11,8 +11,8 @@ export default function TermsPage() {
 
       <h2>Acceptance of Terms</h2>
       <p>
-        By accessing or using KAMKM Serve (the "Service"), you agree to be bound by
-        these Terms of Service (the "Terms"). If you do not agree to the Terms, do not
+        By accessing or using KAMKM Serve (the &quot;Service&quot;), you agree to be bound by
+        these Terms of Service (the &quot;Terms&quot;). If you do not agree to the Terms, do not
         use the Service.
       </p>
 
@@ -48,7 +48,7 @@ export default function TermsPage() {
 
       <h2>Warranties and Disclaimers</h2>
       <p>
-        The Service is provided on an "AS IS" and "AS AVAILABLE" basis. To the
+        The Service is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. To the
         fullest extent permitted by law, we disclaim all warranties, express or
         implied, including merchantability, fitness for a particular purpose, and
         non-infringement.
