@@ -5,6 +5,8 @@ import * as Sentry from "@sentry/nextjs";
 // and https://docs.sentry.io/platforms/javascript/guides/nextjs/
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  // Route browser traffic through our tunnel to avoid ad blockers
+  tunnel: "/sentry-tunnel",
   // Capture Web Vitals (LCP/CLS/etc.) and navigation/interaction spans.
   integrations: [
     Sentry.browserTracingIntegration(),
@@ -29,4 +31,6 @@ Sentry.init({
   replaysSessionSampleRate: process.env.NODE_ENV === 'production' ? 0.01 : 0.0,
   // Always capture replays for sessions with an error.
   replaysOnErrorSampleRate: 1.0,
+  // Enable logs in dev only
+  enableLogs: process.env.NODE_ENV !== 'production',
 });

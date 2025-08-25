@@ -18,9 +18,14 @@ export async function POST(request: NextRequest) {
     const dsnValue: string = header.dsn; // narrowed to string by the check above
     const dsn = new URL(dsnValue);
     const projectId = dsn.pathname?.replace('/', '');
-
-    if (dsn.hostname !== 'o4509883844984832.ingest.de.sentry.io') {
-      throw new Error('Invalid DSN');
+    // Allow Sentry US and EU ingest domains. You can further restrict this by
+    // checking the org/project id if desired.
+    const hostname = dsn.hostname;
+    const allowedHost =
+      hostname.endsWith('ingest.sentry.io') || hostname.endsWith('ingest.de.sentry.io');
+    const validProject = typeof projectId === 'string' && /^[0-9]+$/.test(projectId);
+    if (!allowedHost || !validProject) {
+      return new Response('Bad Request', { status: 400 });
     }
 
     const upstreamSentryUrl = `https://${dsn.host}/api/${projectId}/envelope/`;
