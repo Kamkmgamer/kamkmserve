@@ -160,7 +160,7 @@ Hands-on experience upgrading and optimizing PCs and laptops (RAM, SSD, hardware
 - [ ] Per-page SEO metadata (title, description, OpenGraph/Twitter cards)
   - Done: Home (`/`), Services (`/services`)
   - Remaining: other key pages
-- [ ] `sitemap.xml` and `robots.txt`
+- [x] `sitemap.xml` and `robots.txt`
   - Add `src/app/sitemap.ts` (absolute URLs)
   - Add `src/app/robots.ts` (host, sitemap URL)
   - Add `NEXT_PUBLIC_SITE_URL` to `.env.example` for base URL
