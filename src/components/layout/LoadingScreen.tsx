@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTheme } from "~/contexts/ThemeContext";
 
 // Floating particle component
 const FloatingParticle = ({ delay = 0 }) => (
@@ -97,6 +98,26 @@ export function LoadingScreen({
 
   const loadingTexts = ["Initializing...", "Loading Assets...", "Almost Ready...", "Welcome!"];
 
+  // Theme-aware animated background sequence
+  const { theme } = useTheme();
+  const backgroundSequence = useMemo(
+    () =>
+      theme === "dark"
+        ? [
+            "linear-gradient(45deg, #0f0f23, #1a1a2e, #16213e)",
+            "linear-gradient(45deg, #1a1a2e, #16213e, #0f3460)",
+            "linear-gradient(45deg, #16213e, #0f3460, #533483)",
+            "linear-gradient(45deg, #0f3460, #533483, #1a1a2e)",
+          ]
+        : [
+            "linear-gradient(45deg, #f8fafc, #e2e8f0, #f1f5f9)", // slate-50, slate-200, slate-100
+            "linear-gradient(45deg, #e2e8f0, #f1f5f9, #eef2ff)", // slate-200, slate-100, indigo-50
+            "linear-gradient(45deg, #f1f5f9, #eef2ff, #e0f2fe)", // slate-100, indigo-50, sky-100
+            "linear-gradient(45deg, #eef2ff, #e0f2fe, #f8fafc)", // indigo-50, sky-100, slate-50
+          ],
+    [theme]
+  );
+
   useEffect(() => {
     if (durationMs === null) return;
 
@@ -169,12 +190,7 @@ export function LoadingScreen({
             {/* Animated gradient background */}
             <motion.div
               animate={{
-                background: [
-                  "linear-gradient(45deg, #0f0f23, #1a1a2e, #16213e)",
-                  "linear-gradient(45deg, #1a1a2e, #16213e, #0f3460)",
-                  "linear-gradient(45deg, #16213e, #0f3460, #533483)",
-                  "linear-gradient(45deg, #0f3460, #533483, #1a1a2e)"
-                ]
+                background: backgroundSequence
               }}
               transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
               className="absolute inset-0"
@@ -211,7 +227,7 @@ export function LoadingScreen({
                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                     className="w-20 h-20 border-4 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full p-1"
                   >
-                    <div className="w-full h-full bg-gray-900 rounded-full flex items-center justify-center">
+                    <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full flex items-center justify-center">
                       <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -244,7 +260,7 @@ export function LoadingScreen({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-white/70 text-lg font-medium mb-8"
+                className="text-gray-700 dark:text-white/70 text-lg font-medium mb-8"
               >
                 {Math.round(progress)}%
               </motion.div>
