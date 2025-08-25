@@ -43,13 +43,13 @@ const geist = Geist({
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {    
+}: Readonly<{ children: React.ReactNode }>){    
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
-        <body id="top" className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
-          {/* Prevent theme flash on first paint */}
-          <Script src="/theme-init.js" strategy="beforeInteractive" />
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
+      <body id="top" className="font-sans bg-[var(--color-bg)] text-[var(--color-text)]">
+        {/* Prevent theme flash on first paint */}
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
+        <ClerkProvider>
           <ThemeProvider>
             <NavLoadingProvider>
               <PublicChrome>{children}</PublicChrome>
@@ -60,8 +60,9 @@ export default function RootLayout({
               <CookieConsent />
             </NavLoadingProvider>
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
+
