@@ -6,6 +6,7 @@ import { ThemeProvider } from "../contexts/ThemeContext";
 import Script from "next/script";
 import { NavLoadingProvider } from "../contexts/NavLoadingContext";
 import NavLoadingOverlay from "../components/layout/NavLoadingOverlay";
+import CookieConsent from "../components/layout/CookieConsent";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
@@ -37,6 +38,8 @@ export default function RootLayout({
               <Toaster richColors position="top-right" />
               {/* Immediate overlay on navigations */}
               <NavLoadingOverlay />
+              {/* Cookie banner & preferences */}
+              <CookieConsent />
             </NavLoadingProvider>
           </ThemeProvider>
         </body>
