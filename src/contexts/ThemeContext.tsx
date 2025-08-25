@@ -14,6 +14,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState<Theme>('light');
+  const [initialized, setInitialized] = useState(false);
 
   // Establish initial theme on mount to avoid SSR window/localStorage access
   useEffect(() => {
@@ -22,6 +23,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       // Ignore system preference; default to light if nothing saved
       const initial: Theme = saved === 'light' || saved === 'dark' ? (saved as Theme) : 'light';
       setTheme(initial);
+      setInitialized(true);
     } catch {
       // noop
     }
@@ -29,7 +31,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Apply class to html element and persist
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined' || !initialized) return;
     const root = document.documentElement;
     if (theme === 'dark') root.classList.add('dark');
     else root.classList.remove('dark');
@@ -38,7 +40,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } catch {
       // noop
     }
-  }, [theme]);
+  }, [theme, initialized]);
 
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
 
