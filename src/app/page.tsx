@@ -1,4 +1,5 @@
 import React from "react";
+import { type Metadata } from "next";
 import Hero from "../components/home/Hero";
 import TechMarquee from "../components/home/TechMarquee";
 import CTA from "../components/home/CTA";
@@ -10,6 +11,24 @@ import Testimonials from "../components/home/Testimonials";
 import SectionWrapper from "../components/layout/SectionWrapper";
 import Container from "../components/layout/Container";
 import SecretDailyTips from "../components/secret/SecretDailyTips";
+
+export const metadata: Metadata = {
+  title: "KAMKM Serve — Modern Web Development & Design",
+  description:
+    "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+  openGraph: {
+    title: "KAMKM Serve — Modern Web Development & Design",
+    description:
+      "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KAMKM Serve — Modern Web Development & Design",
+    description:
+      "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+  },
+};
 
 export default function HomePage() {
   return (
