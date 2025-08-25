@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type Consent = {
   necessary: true;
@@ -40,6 +41,8 @@ function writeConsent(c: Consent) {
 export default function CookieConsent() {
   const [open, setOpen] = useState(false);
   const [analytics, setAnalytics] = useState(false);
+  const pathname = usePathname();
+  const showManageButton = pathname === "/privacy";
 
   useEffect(() => {
     const existing = readConsent();
@@ -51,6 +54,19 @@ export default function CookieConsent() {
     } else {
       setOpen(true);
     }
+  }, []);
+
+  // Allow other components to open the modal via a custom event
+  useEffect(() => {
+    const onOpen = (_e: Event) => setOpen(true);
+    if (typeof window !== "undefined") {
+      window.addEventListener("cookie-consent:open", onOpen as EventListener);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("cookie-consent:open", onOpen as EventListener);
+      }
+    };
   }, []);
 
   const acceptAll = () => {
@@ -75,15 +91,17 @@ export default function CookieConsent() {
 
   return (
     <>
-      {/* Manage button (always visible) */}
-      <button
-        type="button"
-        aria-label="Cookie preferences"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-4 left-4 z-40 rounded-full bg-neutral-800/80 px-3 py-2 text-sm text-white shadow hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-white/50"
-      >
-        Cookie Preferences
-      </button>
+      {/* Manage button (only on Privacy Policy page) */}
+      {showManageButton && (
+        <button
+          type="button"
+          aria-label="Cookie preferences"
+          onClick={() => setOpen(true)}
+          className="fixed bottom-4 left-4 z-40 rounded-full bg-neutral-800/80 px-3 py-2 text-sm text-white shadow hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-white/50"
+        >
+          Cookie Preferences
+        </button>
+      )}
 
       {/* Banner / Modal */}
       {open && (

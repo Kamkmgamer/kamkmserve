@@ -122,6 +122,20 @@ export default function Navbar() {
               >
                 Cart
               </Link>
+              {/* Cookie preferences (mobile only) */}
+              <button
+                type="button"
+                aria-label="Cookie preferences"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new Event('cookie-consent:open'));
+                  }
+                  setOpen(false);
+                }}
+                className="rounded-lg px-3 py-2 text-left text-sm text-black/80 transition hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10"
+              >
+                Cookie preferences
+              </button>
               <div className="mt-1 flex items-center gap-2">
                 <SignedOut>
                   <Link
