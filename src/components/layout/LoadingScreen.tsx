@@ -187,7 +187,7 @@ export function LoadingScreen({
               filter: "blur(10px)",
               transition: { duration: 0.8, ease: "easeInOut" }
             }}
-            className={(fullscreen ? "fixed" : "absolute") + " inset-0 z-50 overflow-hidden"}
+            className={(fullscreen ? "fixed z-50" : "absolute z-10") + " inset-0 overflow-hidden"}
           >
             {/* Animated gradient background */}
             <motion.div
@@ -291,7 +291,7 @@ export function LoadingScreen({
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 >
                   <motion.div
                     initial={{ scale: 0 }}
