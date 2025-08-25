@@ -106,7 +106,10 @@ export function LoadingScreen({
         const newProgress = Math.min(prev + Math.random() * 15, 100);
         if (newProgress >= 100) {
           clearInterval(progressInterval);
-          setTimeout(() => setShowExit(true), 500);
+          // Show completion checkmark, then trigger exit shortly after
+          setShowExit(true);
+          setTimeout(() => setIsLoading(false), 500);
+          return 100;
         }
         return newProgress;
       });
@@ -122,6 +125,27 @@ export function LoadingScreen({
       clearInterval(stageInterval);
     };
   }, [durationMs, loadingTexts.length]);
+
+  // Dismiss on full window load for initial splash only (avoid affecting nav overlay)
+  useEffect(() => {
+    if (durationMs === null) return;
+    const handleWindowLoad = () => {
+      setProgress(100);
+      setShowExit(true);
+      // Begin exit shortly after showing the checkmark
+      setTimeout(() => setIsLoading(false), 300);
+    };
+
+    if (typeof document !== "undefined" && document.readyState === "complete") {
+      handleWindowLoad();
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("load", handleWindowLoad);
+      return () => window.removeEventListener("load", handleWindowLoad);
+    }
+  }, [durationMs]);
 
   const handleExitComplete = () => {
     setIsLoading(false);
