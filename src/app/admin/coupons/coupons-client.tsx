@@ -6,6 +6,7 @@ import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
 import { toast } from "sonner";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
 
 export type Coupon = {
   id: string;
@@ -27,6 +28,16 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
   const [editing, setEditing] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
+  // list vs cards view (cards enforced on small screens via CSS)
+  const [view, setView] = useState<"list" | "cards">(() => {
+    if (typeof window === "undefined") return "list";
+    return (window.localStorage.getItem("admin_coupons_view") as "list" | "cards") || "list";
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("admin_coupons_view", view);
+    }
+  }, [view]);
   const abortRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState({
     code: "",
@@ -174,6 +185,27 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Coupons</h1>
         <div className="flex-1" />
+        {/* View toggle (effective on md+; small screens always show cards) */}
+        <div className="hidden items-center gap-1 md:flex" role="group" aria-label="View mode">
+          <Button
+            variant={view === "list" ? "primary" : "ghost"}
+            size="sm"
+            aria-pressed={view === "list"}
+            onClick={() => setView("list")}
+            title="List view"
+          >
+            <ListIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={view === "cards" ? "primary" : "ghost"}
+            size="sm"
+            aria-pressed={view === "cards"}
+            onClick={() => setView("cards")}
+            title="Card view"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
         <Input
           placeholder="Search code or type..."
           value={q}
@@ -183,8 +215,10 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
         <Button onClick={openCreate}>Add Coupon</Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <Table>
+      {/* Table (desktop list view only) */}
+      <div className={view === "list" ? "hidden md:block" : "hidden"}>
+        <div className="overflow-x-auto">
+          <Table>
           <THead>
             <TR>
               <TH>Code</TH>
@@ -220,7 +254,44 @@ export default function CouponsClient({ initialData }: { initialData: Coupon[] }
               </TR>
             ))}
           </TBody>
-        </Table>
+          </Table>
+        </div>
+      </div>
+
+      {/* Cards (always visible on small; on md+ only when cards selected) */}
+      <div className={view === "list" ? "grid grid-cols-1 gap-4 md:hidden sm:grid-cols-2" : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+        {items.map((c) => (
+          <div key={c.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-semibold">{c.code}</h3>
+                <p className="text-xs text-slate-500">{c.type === "percent" ? `${c.value}% off` : `$${c.value} off`}</p>
+              </div>
+              <div className="text-right text-xs text-slate-500">
+                <div>
+                  Uses: {c.currentUses}
+                  {c.maxUses !== null ? ` / ${c.maxUses}` : ""}
+                </div>
+                <div className={c.active ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                  {c.active ? "Active" : "Inactive"}
+                </div>
+              </div>
+            </div>
+            {c.expiresAt ? (
+              <p className="mt-2 text-xs text-slate-500">Expires {new Date(c.expiresAt).toLocaleDateString()}</p>
+            ) : (
+              <p className="mt-2 text-xs text-slate-500">No expiration</p>
+            )}
+            <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+              <span>Created {new Date(c.createdAt).toLocaleDateString()}</span>
+              <div className="space-x-2">
+                <Button variant="secondary" size="sm" onClick={() => openEdit(c)}>Edit</Button>
+                <Button variant="ghost" size="sm" onClick={() => onDelete(c.id)}>Delete</Button>
+                <Button variant="ghost" size="sm" onClick={() => onToggleActive(c)}>{c.active ? "Disable" : "Enable"}</Button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <Modal

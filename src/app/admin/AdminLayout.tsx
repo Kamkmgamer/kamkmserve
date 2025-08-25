@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef, useState, type ReactNode, type MouseEvent as ReactMouseEvent, type TouchEvent as ReactTouchEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { Sun, Moon, X, ChevronRight } from "lucide-react";
 import { useTheme } from "~/contexts/ThemeContext";
@@ -23,6 +23,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   const MIN_WIDTH = 180; // px
   const MAX_WIDTH = 480; // px
+  const MOBILE_BREAKPOINT = 768; // px
 
   const initialWidth = () => {
     if (typeof window !== "undefined") {
@@ -45,6 +46,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [prevWidth, setPrevWidth] = useState<number>(224);
   const asideRef = useRef<HTMLDivElement | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // Detect small screens and auto-collapse sidebar
+  useEffect(() => {
+    const compute = () => setIsMobile(typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT);
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) setIsCollapsed(true);
+  }, [isMobile]);
 
   useEffect(() => {
     if (!isCollapsed) setPrevWidth(sidebarWidth);
@@ -101,9 +115,64 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     setIsResizing(true);
   };
 
+  // Edge swipe/drag to open on mobile
+  const touchStartXRef = useRef<number | null>(null);
+  const mouseDownXRef = useRef<number | null>(null);
+  const OPEN_THRESHOLD = 40;
+
+  const onEdgeTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!isMobile) return;
+    touchStartXRef.current = e.touches[0]?.clientX ?? null;
+  };
+  const onEdgeTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!isMobile) return;
+    const start = touchStartXRef.current;
+    if (start == null) return;
+    const dx = (e.touches[0]?.clientX ?? start) - start;
+    if (dx > OPEN_THRESHOLD) {
+      setIsCollapsed(false);
+      touchStartXRef.current = null;
+    }
+  };
+  const onEdgeTouchEnd = () => {
+    touchStartXRef.current = null;
+  };
+  const onEdgeMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!isMobile) return;
+    mouseDownXRef.current = e.clientX;
+    const onMove = (ev: MouseEvent) => {
+      const base = mouseDownXRef.current ?? ev.clientX;
+      const dx = ev.clientX - base;
+      if (dx > OPEN_THRESHOLD) {
+        setIsCollapsed(false);
+        cleanup();
+      }
+    };
+    const onUp = () => cleanup();
+    const cleanup = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      mouseDownXRef.current = null;
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
   return (
     <div className={`flex min-h-[70vh] gap-6 p-4 ${isResizing ? "select-none" : ""}`}>
-      {isCollapsed && (
+      {/* Edge sensor for swipe/drag open on mobile */}
+      {isMobile && (
+        <div
+          className="fixed left-0 top-0 z-20 h-full w-3"
+          onTouchStart={onEdgeTouchStart}
+          onTouchMove={onEdgeTouchMove}
+          onTouchEnd={onEdgeTouchEnd}
+          onMouseDown={onEdgeMouseDown}
+          aria-hidden
+        />
+      )}
+
+      {isCollapsed && !isMobile && (
         <button
           onClick={toggleCollapsed}
           aria-label="Open admin sidebar"
@@ -112,12 +181,23 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <span className="inline-flex items-center gap-1"><ChevronRight className="h-4 w-4" /> Open</span>
         </button>
       )}
+      {/* Backdrop when sidebar is open on mobile */}
+      {isMobile && !isCollapsed && (
+        <div className="fixed inset-0 z-30 bg-black/40" onClick={() => setIsCollapsed(true)} />
+      )}
+
       <aside
         ref={asideRef}
-        className={`relative shrink-0 border-r transition-[width] duration-150 ease-in-out ${
-          isCollapsed ? "w-0 overflow-hidden border-transparent pr-0" : "pr-3 border-slate-200 dark:border-slate-800"
-        }`}
-        style={isCollapsed ? undefined : { width: sidebarWidth }}
+        className={
+          isMobile
+            ? `fixed top-0 left-0 z-40 h-full border-r border-slate-200 bg-white shadow-lg transition-transform duration-200 ease-out dark:border-slate-800 dark:bg-slate-950 ${
+                isCollapsed ? "-translate-x-full" : "translate-x-0"
+              } w-[80vw] max-w-[320px]`
+            : `relative shrink-0 border-r transition-[width] duration-150 ease-in-out ${
+                isCollapsed ? "w-0 overflow-hidden border-transparent pr-0" : "pr-3 border-slate-200 dark:border-slate-800"
+              }`
+        }
+        style={!isMobile && !isCollapsed ? { width: sidebarWidth } : undefined}
       >
         {!isCollapsed && (
           <button
@@ -158,7 +238,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        {!isCollapsed && (
+        {!isCollapsed && !isMobile && (
           <div
             onMouseDown={startResizing}
             role="separator"

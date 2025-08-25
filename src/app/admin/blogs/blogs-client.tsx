@@ -6,6 +6,7 @@ import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import { Modal } from "~/components/ui/modal";
 import { Input } from "~/components/ui/input";
 import { toast } from "sonner";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
 
 export type Blog = {
   id: string;
@@ -25,6 +26,16 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
   const [editing, setEditing] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
+  // list vs cards view (cards enforced on small screens via CSS)
+  const [view, setView] = useState<"list" | "cards">(() => {
+    if (typeof window === "undefined") return "list";
+    return (window.localStorage.getItem("admin_blogs_view") as "list" | "cards") || "list";
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("admin_blogs_view", view);
+    }
+  }, [view]);
   const abortRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState({
     title: "",
@@ -151,6 +162,27 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Blogs</h1>
         <div className="flex-1" />
+        {/* View toggle (effective on md+; small screens always show cards) */}
+        <div className="hidden items-center gap-1 md:flex" role="group" aria-label="View mode">
+          <Button
+            variant={view === "list" ? "primary" : "ghost"}
+            size="sm"
+            aria-pressed={view === "list"}
+            onClick={() => setView("list")}
+            title="List view"
+          >
+            <ListIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={view === "cards" ? "primary" : "ghost"}
+            size="sm"
+            aria-pressed={view === "cards"}
+            onClick={() => setView("cards")}
+            title="Card view"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
         <Input
           placeholder="Search title, summary, content, or author..."
           value={q}
@@ -160,36 +192,68 @@ export default function BlogsClient({ initialData }: { initialData: Blog[] }) {
         <Button onClick={openCreate}>New Post</Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <Table>
-          <THead>
-            <TR>
-              <TH>Title</TH>
-              <TH>Summary</TH>
-              <TH>Author</TH>
-              <TH>Created</TH>
-              <TH className="text-right">Actions</TH>
-            </TR>
-          </THead>
-          <TBody>
-            {posts.map((p) => (
-              <TR key={p.id}>
-                <TD>{p.title}</TD>
-                <TD className="max-w-[420px] truncate">{p.summary}</TD>
-                <TD>{p.author}</TD>
-                <TD>{new Date(p.createdAt).toLocaleString()}</TD>
-                <TD className="text-right space-x-2">
-                  <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>
-                    Edit
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => onDelete(p.id)}>
-                    Delete
-                  </Button>
-                </TD>
+      {/* Table (desktop list view only) */}
+      <div className={view === "list" ? "hidden md:block" : "hidden"}>
+        <div className="overflow-x-auto">
+          <Table>
+            <THead>
+              <TR>
+                <TH>Title</TH>
+                <TH>Summary</TH>
+                <TH>Author</TH>
+                <TH>Created</TH>
+                <TH className="text-right">Actions</TH>
               </TR>
-            ))}
-          </TBody>
-        </Table>
+            </THead>
+            <TBody>
+              {posts.map((p) => (
+                <TR key={p.id}>
+                  <TD>{p.title}</TD>
+                  <TD className="max-w-[420px] truncate">{p.summary}</TD>
+                  <TD>{p.author}</TD>
+                  <TD>{new Date(p.createdAt).toLocaleString()}</TD>
+                  <TD className="text-right space-x-2">
+                    <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>
+                      Edit
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => onDelete(p.id)}>
+                      Delete
+                    </Button>
+                  </TD>
+                </TR>
+              ))}
+            </TBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Cards (always visible on small; on md+ only when cards selected) */}
+      <div className={view === "list" ? "grid grid-cols-1 gap-4 md:hidden sm:grid-cols-2" : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+        {posts.map((p) => (
+          <div key={p.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-semibold">{p.title}</h3>
+                <p className="text-xs text-slate-500">by {p.author}</p>
+              </div>
+              <div className="text-right text-xs text-slate-500">{new Date(p.createdAt).toLocaleDateString()}</div>
+            </div>
+            {p.thumbnailUrl ? (
+              <div className="mt-3 overflow-hidden rounded-md">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.thumbnailUrl} alt={p.title} className="h-36 w-full object-cover" />
+              </div>
+            ) : null}
+            <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">{p.summary}</p>
+            <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+              <span>Updated {new Date(p.updatedAt).toLocaleDateString()}</span>
+              <div className="space-x-2">
+                <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>Edit</Button>
+                <Button variant="ghost" size="sm" onClick={() => onDelete(p.id)}>Delete</Button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <Modal
