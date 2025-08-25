@@ -136,29 +136,49 @@ Hands-on experience upgrading and optimizing PCs and laptops (RAM, SSD, hardware
   - Optional: Calendly booking (future)
 
 ## 2. Trust & Compliance
-- [ ] Privacy Policy (`/privacy`)
-- [ ] Terms of Service (`/terms`)
-- [ ] Cookie banner with preferences
+- [x] Privacy Policy (`/privacy`)
+- [x] Terms of Service (`/terms`)
+- [x] Cookie banner with preferences
 
 ## 3. Conversion Enhancements
 - [ ] CTA buttons on all pages
+  - Create reusable `CTAButton` component
+  - Add primary CTA to: `/`, `/services`, `/pricing`, `/contact`
+  - Track clicks (analytics ready, no provider required yet)
 - [ ] Sticky topbar with "Hire Me" button
+  - Implement `Topbar` component (sticky, hide-on-scroll down, show-on-scroll up)
+  - Include "Hire Me" linking to `/contact` and theme toggle
 - [ ] Newsletter/lead capture form
+  - Implement `NewsletterForm` component
+  - Client-side validation, success/error states
+  - Wire to placeholder API route (e.g., `/api/newsletter`) for future provider
 - [ ] Testimonials included in homepage and services pages
+  - Add testimonials section to `/` and `/services`
+  - Derive data from a JSON source for easy edits
 
 ## 4. SEO & Performance
 - [ ] Per-page SEO metadata (title, description, OpenGraph/Twitter cards)
+  - Done: Home (`/`), Services (`/services`)
+  - Remaining: other key pages
 - [ ] `sitemap.xml` and `robots.txt`
+  - Add `src/app/sitemap.ts` (absolute URLs)
+  - Add `src/app/robots.ts` (host, sitemap URL)
+  - Add `NEXT_PUBLIC_SITE_URL` to `.env.example` for base URL
 - [ ] Structured data (JSON-LD for blog/services)
+  - Add JSON-LD to service detail pages and blog posts
+  - Validate with Rich Results Test
 - [ ] Image optimization (WebP/AVIF, lazy loading)
+  - Convert heavy assets to WebP/AVIF where useful
+  - Ensure `next/image` used with `priority`/`loading` correctly
 - [ ] Lighthouse/Core Web Vitals > 90
+  - Define budgets and use `scripts/check-budgets.mjs` in CI
 
 ## 5. Infrastructure
-- [ ] Hosting on Vercel or Netlify
-- [ ] Automatic builds from GitHub
-- [ ] API routes or serverless functions for forms
-- [ ] Analytics (Google Analytics or Plausible)
-- [ ] Error tracking (Sentry)
+- [x] Hosting on Vercel or Netlify
+- [x] Automatic builds from GitHub
+- [x] API routes or serverless functions for forms
+- [x] Analytics (Google Analytics or Plausible)
+- [x] Error tracking (Sentry)
 
 ## 6. Future Enhancements
 - [ ] Live chat widget
