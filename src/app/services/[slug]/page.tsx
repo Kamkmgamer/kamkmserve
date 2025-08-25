@@ -39,7 +39,6 @@ export default async function ServiceDetailBySlugPage({ params }: Props) {
       <ServiceDetailClient service={service} related={related} />
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
     </>

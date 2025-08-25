@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
-import Link from "next/link";
+import Link, { type LinkProps } from "next/link";
 import Button, { type ButtonProps } from "~/components/ui/button";
 import { trackEvent } from "~/lib/analytics";
 
 export type CTAButtonProps = {
   children?: React.ReactNode;
-  href?: string;
+  href?: LinkProps["href"];
   size?: ButtonProps["size"];
   variant?: ButtonProps["variant"];
   className?: string;
-  target?: string;
-  rel?: string;
+  target?: React.AnchorHTMLAttributes<HTMLAnchorElement>["target"];
+  rel?: React.AnchorHTMLAttributes<HTMLAnchorElement>["rel"];
   title?: string;
-  onClick?: (e: any) => void;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
   eventName?: string;
   eventProps?: Record<string, unknown>;
 };
@@ -33,28 +33,30 @@ export default function CTAButton(props: CTAButtonProps) {
     onClick,
   } = props;
 
-  const finalHref = (href ?? "/contact") as any;
-  const finalSize = (size ?? "lg") as ButtonProps["size"];
-  const finalVariant = (variant ?? "primary") as ButtonProps["variant"];
+  const finalHref: LinkProps["href"] = href ?? "/contact";
+  const finalSize: ButtonProps["size"] = size ?? "lg";
+  const finalVariant: ButtonProps["variant"] = variant ?? "primary";
+
+  const handleClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+    trackEvent(eventName, {
+      href: typeof finalHref === "string" ? finalHref : undefined,
+      label: typeof children === "string" ? children : undefined,
+      ...eventProps,
+    });
+    onClick?.(e);
+  };
 
   return (
     <Button
       as={Link}
-      href={finalHref as any}
+      href={finalHref}
       size={finalSize}
       variant={finalVariant}
       className={className}
-      target={target as any}
+      target={target}
       rel={rel}
       title={title}
-      onClick={(e: any) => {
-        trackEvent(eventName, {
-          href: typeof finalHref === "string" ? finalHref : undefined,
-          label: typeof children === "string" ? children : undefined,
-          ...eventProps,
-        });
-        onClick?.(e);
-      }}
+      onClick={handleClick}
     >
       {children ?? "Get Started"}
     </Button>

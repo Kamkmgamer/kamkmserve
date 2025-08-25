@@ -68,7 +68,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <BlogDetailClient post={post} />
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
     </>

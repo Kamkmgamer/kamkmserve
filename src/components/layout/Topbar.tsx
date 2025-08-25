@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import CTAButton from "~/components/ui/CTAButton";
-import { useTheme } from "~/contexts/ThemeContext";
 
 export default function Topbar() {
-  const { theme, toggleTheme } = useTheme();
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
 
