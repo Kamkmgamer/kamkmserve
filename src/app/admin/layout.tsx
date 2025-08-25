@@ -7,10 +7,11 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return 
-  <AdminLayout>
-    <LoadingScreen>
-      {children}
-    </LoadingScreen>
-  </AdminLayout>;
+  return (
+    <AdminLayout>
+      <LoadingScreen>
+        {children}
+      </LoadingScreen>
+    </AdminLayout>
+  );
 }
