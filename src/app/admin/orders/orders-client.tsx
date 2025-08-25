@@ -115,6 +115,8 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
   }, [q, statusFilter]);
 
   async function onChangeStatus(id: string, status: OrderRow["status"]) {
+    // Prevent concurrent updates for the same row
+    if (savingId === id) return;
     setSavingId(id);
     try {
       const res = await fetch(`/api/admin/orders/${id}`, {
@@ -203,7 +205,6 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
                     className="border rounded px-2 py-1"
                     value={o.status}
                     onChange={(e) => onChangeStatus(o.id, e.target.value as OrderRow["status"]) }
-                    disabled={savingId === o.id}
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>{s}</option>
@@ -242,7 +243,6 @@ export default function OrdersClient({ initialData }: { initialData: OrderRow[] 
                   className="border rounded px-2 py-1"
                   value={o.status}
                   onChange={(e) => onChangeStatus(o.id, e.target.value as OrderRow["status"]) }
-                  disabled={savingId === o.id}
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>{s}</option>
