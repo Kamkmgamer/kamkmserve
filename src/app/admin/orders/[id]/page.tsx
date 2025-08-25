@@ -2,42 +2,76 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "~/components/ui/table";
 import OrderActions from "~/app/admin/orders/[id]/order-actions";
+import { db } from "~/server/db";
+import { coupons, orderLineItems, orders, referrals, services, users } from "~/server/db/schema";
+import { eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 async function getOrder(id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/admin/orders/${id}`, {
-    // Make sure this works both on server and client during SSR
-    cache: "no-store",
-    next: { revalidate: 0 },
-  });
-  if (!res.ok) return null;
-  const json = (await res.json()) as {
-    data?: {
-      id: string;
-      userEmail: string;
-      totalAmount: number;
-      status: string;
-      couponCode: string | null;
-      createdAt: string;
-      updatedAt: string;
-      requirements: string;
-      suggestions: string | null;
-      preferences: string | null;
-      questions: string | null;
-      currency: string;
-      referralCode: string | null;
-      lineItems: Array<{
-        id: string;
-        serviceId: string;
-        serviceName: string;
-        unitPrice: number;
-        quantity: number;
-        totalPrice: number;
-      }>;
-    };
+  // Load the order header/details
+  const [orderRow] = await db
+    .select({
+      id: orders.id,
+      userEmail: users.email,
+      totalAmount: orders.totalAmount,
+      status: orders.status,
+      couponCode: coupons.code,
+      createdAt: orders.createdAt,
+      updatedAt: orders.updatedAt,
+      requirements: orders.requirements,
+      suggestions: orders.suggestions,
+      preferences: orders.preferences,
+      questions: orders.questions,
+      currency: orders.currency,
+      referralCode: referrals.code,
+    })
+    .from(orders)
+    .leftJoin(users, eq(users.id, orders.userId))
+    .leftJoin(coupons, eq(coupons.id, orders.couponId))
+    .leftJoin(referrals, eq(referrals.id, orders.referralId))
+    .where(eq(orders.id, id))
+    .limit(1);
+
+  if (!orderRow) return null;
+
+  // Load line items
+  const items = await db
+    .select({
+      id: orderLineItems.id,
+      serviceId: orderLineItems.serviceId,
+      serviceName: services.name,
+      unitPrice: orderLineItems.unitPrice,
+      quantity: orderLineItems.quantity,
+      totalPrice: orderLineItems.totalPrice,
+    })
+    .from(orderLineItems)
+    .leftJoin(services, eq(services.id, orderLineItems.serviceId))
+    .where(eq(orderLineItems.orderId, id));
+
+  return {
+    id: orderRow.id,
+    userEmail: orderRow.userEmail ?? "—",
+    totalAmount: orderRow.totalAmount,
+    status: orderRow.status,
+    couponCode: orderRow.couponCode ?? null,
+    createdAt: orderRow.createdAt instanceof Date ? orderRow.createdAt.toISOString() : String(orderRow.createdAt),
+    updatedAt: orderRow.updatedAt instanceof Date ? orderRow.updatedAt.toISOString() : String(orderRow.updatedAt),
+    requirements: orderRow.requirements,
+    suggestions: orderRow.suggestions ?? null,
+    preferences: orderRow.preferences ?? null,
+    questions: orderRow.questions ?? null,
+    currency: orderRow.currency,
+    referralCode: orderRow.referralCode ?? null,
+    lineItems: items.map((li) => ({
+      id: li.id,
+      serviceId: li.serviceId,
+      serviceName: li.serviceName ?? "—",
+      unitPrice: li.unitPrice,
+      quantity: li.quantity,
+      totalPrice: li.totalPrice,
+    })),
   };
-  return json.data ?? null;
 }
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
