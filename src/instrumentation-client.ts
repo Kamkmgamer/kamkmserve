@@ -20,7 +20,12 @@ Sentry.init({
   tracesSampler: (samplingContext) => {
     const isProd = process.env.NODE_ENV === 'production'
     if (!isProd) return 1.0
-    const url = samplingContext.location?.href || samplingContext.request?.url || ''
+    // Narrow types safely to satisfy ESLint "any" checks
+    const loc = (samplingContext as { location?: { href?: unknown } }).location
+    const req = (samplingContext as { request?: { url?: unknown } }).request
+    const href = typeof loc?.href === 'string' ? loc.href : undefined
+    const reqUrl = typeof req?.url === 'string' ? req.url : undefined
+    const url: string = href ?? reqUrl ?? ''
     if (url.includes('/_next/') || url.includes('/monitoring/health') || url.includes('/sentry-tunnel')) return 0.0
     return 0.1
   },

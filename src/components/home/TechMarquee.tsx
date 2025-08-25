@@ -46,14 +46,17 @@ const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20, direction = "left
 
   const handleCopy = useCallback(
     (label: string, index: number) => {
-      navigator.clipboard.writeText(label);
+      // Ensure we handle the promise to satisfy no-floating-promises
+      navigator.clipboard.writeText(label).catch(() => {
+        // noop – best effort clipboard
+      });
       toast("Copied!", {
         description: `${label} copied to clipboard.`,
         duration: 2000,
       });
       itemRefs.current[index]?.focus();
     },
-    [toast]
+    []
   );
 
   return (
