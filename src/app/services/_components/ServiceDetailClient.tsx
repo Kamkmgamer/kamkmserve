@@ -232,8 +232,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((s) => (
                 <Link key={s.id} href={`/services/${slugify(s.name)}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
-                  <div className="relative h-36 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                   <div className="relative h-36 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                     {s.thumbnailUrl ? (
                       <img src={s.thumbnailUrl} alt={s.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     ) : (

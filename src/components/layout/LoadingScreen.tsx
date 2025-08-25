@@ -121,7 +121,7 @@ export function LoadingScreen({
       clearInterval(progressInterval);
       clearInterval(stageInterval);
     };
-  }, [durationMs]);
+  }, [durationMs, loadingTexts.length]);
 
   const handleExitComplete = () => {
     setIsLoading(false);
@@ -158,7 +158,7 @@ export function LoadingScreen({
 
             {/* Floating particles */}
             <div className="absolute inset-0 overflow-hidden">
-              {[...Array(20)].map((_, i) => (
+              {Array.from({ length: 20 }, (_, i) => i).map((i) => (
                 <FloatingParticle key={i} delay={i * 0.2} />
               ))}
             </div>
@@ -166,7 +166,7 @@ export function LoadingScreen({
             {/* Glowing orbs */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-32 h-32">
-                {[...Array(3)].map((_, i) => (
+                {Array.from({ length: 3 }, (_, i) => i).map((i) => (
                   <GlowingOrb key={i} index={i} />
                 ))}
               </div>
@@ -227,7 +227,7 @@ export function LoadingScreen({
 
               {/* Animated dots */}
               <div className="flex space-x-2">
-                {[...Array(3)].map((_, i) => (
+                {Array.from({ length: 3 }, (_, i) => i).map((i) => (
                   <motion.div
                     key={i}
                     animate={{
