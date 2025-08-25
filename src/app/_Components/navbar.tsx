@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import AnimatedLogo from '~/components/AnimatedLogo';
-import { Sun, Moon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Menu, X, ShoppingCart } from 'lucide-react';
 import { useTheme } from '~/contexts/ThemeContext';
 
 export default function Navbar() {
@@ -62,6 +62,14 @@ export default function Navbar() {
               <Moon className="h-5 w-5 text-black/70 dark:text-white/70" />
             )}
           </button>
+          {/* Cart */}
+          <Link
+            href="/cart"
+            aria-label="Cart"
+            className="rounded-full p-2 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <ShoppingCart className="h-5 w-5 text-black/70 dark:text-white/70" />
+          </Link>
           <SignedOut>
             <Link
               href="/sign-up"
@@ -106,6 +114,13 @@ export default function Navbar() {
                 className="rounded-lg px-3 py-2 text-sm text-black/80 transition hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10"
               >
                 Services
+              </Link>
+              <Link
+                href="/cart"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2 text-sm text-black/80 transition hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10"
+              >
+                Cart
               </Link>
               <div className="mt-1 flex items-center gap-2">
                 <SignedOut>
