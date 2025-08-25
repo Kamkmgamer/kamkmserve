@@ -4,7 +4,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import PublicChrome from "../components/layout/PublicChrome";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import Script from "next/script";
-import { LoadingScreen } from "../components/layout/LoadingScreen"; // Import LoadingScreen
 import { NavLoadingProvider } from "../contexts/NavLoadingContext";
 import NavLoadingOverlay from "../components/layout/NavLoadingOverlay";
 
@@ -34,11 +33,8 @@ export default function RootLayout({
           <Script src="/theme-init.js" strategy="beforeInteractive" />
           <ThemeProvider>
             <NavLoadingProvider>
-              {/* Initial app load splash */}
-              <LoadingScreen>
-                <PublicChrome>{children}</PublicChrome>
-                <Toaster richColors position="top-right" />
-              </LoadingScreen>
+              <PublicChrome>{children}</PublicChrome>
+              <Toaster richColors position="top-right" />
               {/* Immediate overlay on navigations */}
               <NavLoadingOverlay />
             </NavLoadingProvider>

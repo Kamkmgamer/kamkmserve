@@ -87,9 +87,11 @@ const TypewriterText = ({ text, isVisible }: { text: string; isVisible: boolean 
 export function LoadingScreen({
   children,
   durationMs = 1500,
+  fullscreen = true,
 }: {
   children?: React.ReactNode;
   durationMs?: number | null;
+  fullscreen?: boolean;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -173,7 +175,7 @@ export function LoadingScreen({
   };
 
   return (
-    <>
+    <div className={fullscreen ? undefined : "relative min-h-[60vh]"}>
       <AnimatePresence onExitComplete={handleExitComplete}>
         {isLoading && (
           <motion.div
@@ -185,7 +187,7 @@ export function LoadingScreen({
               filter: "blur(10px)",
               transition: { duration: 0.8, ease: "easeInOut" }
             }}
-            className="fixed inset-0 z-50 overflow-hidden"
+            className={(fullscreen ? "fixed" : "absolute") + " inset-0 z-50 overflow-hidden"}
           >
             {/* Animated gradient background */}
             <motion.div
@@ -333,6 +335,6 @@ export function LoadingScreen({
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
