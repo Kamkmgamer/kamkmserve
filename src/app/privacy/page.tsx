@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           Cookies and similar technologies that help remember preferences, improve
-          the site, and—if you consent—enable analytics/marketing.
+          the site, and&mdash;if you consent&mdash;enable analytics/marketing.
         </li>
       </ul>
 

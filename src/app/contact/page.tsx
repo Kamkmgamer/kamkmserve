@@ -87,7 +87,7 @@ export default function ContactPage() {
                   <Clock className="size-5 text-blue-600" />
                   <div>
                     <p className="text-sm font-medium">Hours</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">Mon–Fri, 9am–6pm</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Mon&ndash;Fri, 9am&ndash;6pm</p>
                   </div>
                 </div>
               </div>

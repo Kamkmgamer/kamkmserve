@@ -99,7 +99,7 @@ export default function CookieConsent() {
               <div className="flex items-start gap-3">
                 <input id="consent-necessary" type="checkbox" checked disabled className="mt-1" />
                 <label htmlFor="consent-necessary" className="text-sm">
-                  <span className="font-medium">Necessary</span> — required for core functionality and security.
+                  <span className="font-medium">Necessary</span> &mdash; required for core functionality and security.
                 </label>
               </div>
               <div className="flex items-start gap-3">
@@ -111,7 +111,7 @@ export default function CookieConsent() {
                   className="mt-1"
                 />
                 <label htmlFor="consent-analytics" className="text-sm">
-                  <span className="font-medium">Analytics</span> — helps us understand usage and improve the experience.
+                  <span className="font-medium">Analytics</span> &mdash; helps us understand usage and improve the experience.
                 </label>
               </div>
             </div>

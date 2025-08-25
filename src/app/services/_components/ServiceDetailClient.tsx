@@ -98,7 +98,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
       <div className="bg-gradient-to-b from-blue-50/70 to-transparent py-6 dark:from-slate-900/40">
         <Container className="px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
           <Link href="/services" className="text-blue-600 hover:underline dark:text-blue-400">
-            ← Back to Services
+            &larr; Back to Services
           </Link>
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm text-blue-700 ring-1 ring-blue-200 dark:bg-slate-900 dark:text-blue-200 dark:ring-slate-700">
             <Sparkles className="h-4 w-4" />
@@ -184,7 +184,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
             </div>
 
             <div className="mb-8">
-              <h3 className="mb-3 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">What’s Included</h3>
+              <h3 className="mb-3 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">What&rsquo;s Included</h3>
               <ul className="space-y-2">
                 {features.map((f, i) => (
                   <li key={i} className="flex items-start">
@@ -222,7 +222,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
 
         <div className="mt-12 text-center">
           <Link href="/services" className="text-blue-600 hover:underline">
-            ← Back to Services
+            &larr; Back to Services
           </Link>
         </div>
 
@@ -261,7 +261,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
             className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
           >
             Looking for something tailored? I can customize features, integrate third-party APIs, or build internal tools that suit your workflow.
-            <Link href="/contact" className="text-blue-600 hover:underline"> Start a conversation →</Link>
+            <Link href="/contact" className="text-blue-600 hover:underline"> Start a conversation &rarr;</Link>
           </motion.div>
         </AnimatePresence>
       </Container>

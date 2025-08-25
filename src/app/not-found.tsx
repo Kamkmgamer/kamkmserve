@@ -306,7 +306,7 @@ export default function NotFound() {
 
       <section className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 py-16 text-center sm:py-20 md:py-28">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/60 px-3 py-1 text-xs shadow-sm backdrop-blur dark:bg-white/10">
-          <Shield /> 404 — Lost in the cosmos
+          <Shield /> 404 &mdash; Lost in the cosmos
         </div>
 
         <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm dark:text-white sm:text-6xl md:text-7xl">

@@ -46,7 +46,7 @@ export default function BlogDetailClient({ post }: { post: BlogWithSlug }) {
       <div className="bg-gradient-to-b from-blue-50/70 to-transparent py-6 dark:from-slate-900/40">
         <Container className="px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
           <Link href="/blog" className="text-blue-600 hover:underline dark:text-blue-400">
-            ← Back to Blog
+            &larr; Back to Blog
           </Link>
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-700">
             <CalendarDays className="h-4 w-4" />
@@ -111,7 +111,7 @@ export default function BlogDetailClient({ post }: { post: BlogWithSlug }) {
             className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
           >
             Enjoyed this article? Share your thoughts or ask a question.
-            <Link href="/contact" className="text-blue-600 hover:underline"> Get in touch →</Link>
+            <Link href="/contact" className="text-blue-600 hover:underline"> Get in touch &rarr;</Link>
           </motion.div>
         </AnimatePresence>
       </Container>

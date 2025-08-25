@@ -79,7 +79,7 @@ const BlogCard: React.FC<{ post: BlogWithSlug }> = ({ post }) => {
           </div>
           <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-slate-900 dark:text-white">{post.title}</h3>
           <p className="line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{post.summary}</p>
-          <div className="mt-4 text-sm text-blue-600 group-hover:underline">Read more →</div>
+          <div className="mt-4 text-sm text-blue-600 group-hover:underline">Read more &rarr;</div>
         </div>
       </Link>
     </motion.div>

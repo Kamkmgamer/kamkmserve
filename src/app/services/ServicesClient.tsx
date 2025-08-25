@@ -138,7 +138,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
           <p className="mb-4 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{service.description}</p>
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-slate-900 dark:text-white">{formatPrice(service.price)}</span>
-            <span className="text-sm text-blue-600 group-hover:underline">View details →</span>
+            <span className="text-sm text-blue-600 group-hover:underline">View details &rarr;</span>
           </div>
         </div>
       </Link>

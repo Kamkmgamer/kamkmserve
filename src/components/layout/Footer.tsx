@@ -202,7 +202,7 @@ const Footer: React.FC = () => {
 				<div className="my-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-slate-800" />
 
 				<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-					<p className="text-sm text-slate-600 dark:text-slate-400">© {year} DevServe. All rights reserved.</p>
+					<p className="text-sm text-slate-600 dark:text-slate-400">&copy; {year} DevServe. All rights reserved.</p>
 
 					<div className="flex items-center gap-4">
 						<Link
@@ -227,7 +227,7 @@ const Footer: React.FC = () => {
 					</div>
 				</div>
 
-				<p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-500">Built in GMT+3 • v1.0 • Made with ❤️ by Kamkmgamer</p>
+				<p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-500">Built in GMT+3 • v1.0 • Made with &hearts; by Kamkmgamer</p>
 			</Container>
 		</footer>
 	);
