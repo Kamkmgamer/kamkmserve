@@ -1,36 +1,59 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { TOKENS, useReducedMotionPref, useInViewOnce } from "../tokens";
-import { Code, Database, Cloud, Zap } from "lucide-react"; // Replace w/ brand icons
+import React, { useMemo, useState, useCallback, useRef } from "react";
+import { motion, useReducedMotion, useInView } from "framer-motion";
+import { Code, Database, Cloud, Zap, Palette, ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
+import { TOKENS } from "../tokens";
 
-interface TechMarqueeProps {
-  speed?: number; // base speed in seconds per loop
+interface TechItem {
+  label: string;
+  icon: React.ReactNode;
+  category: "frontend" | "backend" | "cms" | "ecommerce" | "ai" | "server";
 }
 
-const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20 }) => {
-  const reduce = useReducedMotionPref();
-  const [wrapRef, inView] = useInViewOnce<HTMLDivElement>();
-  const [paused, setPaused] = useState(false);
+interface TechMarqueeProps {
+  speed?: number; // Animation speed in seconds per loop
+  direction?: "left" | "right"; // Marquee direction
+}
 
-  const items = useMemo(
+const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20, direction = "left" }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const [paused, setPaused] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(wrapRef, { amount: 0.1 });
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const techItems = useMemo<TechItem[]>(
     () => [
-      { label: "React", icon: <Code size={16} /> },
-      { label: "TypeScript", icon: <Code size={16} /> },
-      { label: "Next.js", icon: <Zap size={16} /> },
-      { label: "Node.js", icon: <Code size={16} /> },
-      { label: "Tailwind CSS", icon: <Zap size={16} /> },
-      { label: "Framer Motion", icon: <Zap size={16} /> },
-      { label: "PostgreSQL", icon: <Database size={16} /> },
-      { label: "Prisma", icon: <Database size={16} /> },
-      { label: "AWS", icon: <Cloud size={16} /> },
-      { label: "Vercel", icon: <Cloud size={16} /> },
-      { label: "Vite", icon: <Zap size={16} /> },
-      { label: "Turborepo", icon: <Zap size={16} /> },
-      { label: "Playwright", icon: <Code size={16} /> },
-      { label: "Vitest", icon: <Code size={16} /> },
+      { label: "Webflow", icon: <Palette size={18} />, category: "cms" },
+      { label: "Odoo", icon: <Database size={18} />, category: "backend" },
+      { label: "WordPress", icon: <Code size={18} />, category: "cms" },
+      { label: "HTML5", icon: <Code size={18} />, category: "frontend" },
+      { label: "CSS3", icon: <Code size={18} />, category: "frontend" },
+      { label: "TypeScript", icon: <Code size={18} />, category: "frontend" },
+      { label: "React", icon: <Code size={18} />, category: "frontend" },
+      { label: "Next.js", icon: <Zap size={18} />, category: "frontend" },
+      { label: "Node.js", icon: <Code size={18} />, category: "backend" },
+      { label: "Tailwind CSS", icon: <Palette size={18} />, category: "frontend" },
+      { label: "Framer Motion", icon: <Zap size={18} />, category: "frontend" },
+      { label: "PostgreSQL", icon: <Database size={18} />, category: "backend" },
+      { label: "AWS", icon: <Cloud size={18} />, category: "server" },
+      { label: "Shopify", icon: <ShoppingCart size={18} />, category: "ecommerce" },
+      { label: "AI Integration", icon: <Zap size={18} />, category: "ai" },
     ],
     []
+  );
+
+  const handleCopy = useCallback(
+    (label: string, index: number) => {
+      navigator.clipboard.writeText(label);
+      toast("Copied!", {
+        description: `${label} copied to clipboard.`,
+        duration: 2000,
+      });
+      itemRefs.current[index]?.focus();
+    },
+    [toast]
   );
 
   return (
@@ -38,93 +61,101 @@ const TechMarquee: React.FC<TechMarqueeProps> = ({ speed = 20 }) => {
       ref={wrapRef}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className={`relative overflow-hidden ${TOKENS.surfaceGlass} ${TOKENS.radius.xl} p-6 shadow-lg`}
+      className={`relative overflow-hidden ${TOKENS.surfaceGlass} ${TOKENS.radius.xl} p-4 sm:p-6 md:p-8 shadow-2xl border border-white/10 backdrop-blur-md`}
       role="region"
-      aria-label="Technologies used"
+      aria-label="Khalil's Technology Stack"
     >
-      {/* Fade overlays for depth */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-20 md:w-24 bg-gradient-to-r from-white/90 to-transparent dark:from-slate-900/90" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-20 md:w-24 bg-gradient-to-l from-white/90 to-transparent dark:from-slate-900/90" />
+      {/* Gradient overlays for visual depth */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-16 md:w-24 bg-gradient-to-r from-white/95 dark:from-slate-950/95 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-16 md:w-24 bg-gradient-to-l from-white/95 dark:from-slate-950/95 to-transparent" />
 
-      {reduce ? (
-        // Reduced motion grid
+      {shouldReduceMotion ? (
+        // Static grid for reduced motion
         <motion.div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5 justify-items-center"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 justify-items-center"
           initial="hidden"
           animate="visible"
           variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.08 } },
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
           }}
         >
-          {items.map((item, i) => (
-            <motion.span
+          {techItems.map((item, i) => (
+            <motion.button
               key={i}
+              ref={(el) => { itemRefs.current[i] = el; }}
+              onClick={() => handleCopy(item.label, i)}
               variants={{
-                hidden: { opacity: 0, y: 10 },
-                visible: { opacity: 1, y: 0 },
+                hidden: { opacity: 0, y: 15 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
               }}
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-100 dark:text-slate-200 bg-gradient-to-r from-indigo-500/80 to-purple-500/80 backdrop-blur-lg border border-white/20 shadow-sm"
+              className="flex items-center gap-2 rounded-full px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 backdrop-blur-lg border border-white/20 shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+              aria-label={`Copy ${item.label} to clipboard`}
             >
               {item.icon}
-              {item.label}
-            </motion.span>
+              <span>{item.label}</span>
+              <span className="sr-only">{item.category}</span>
+            </motion.button>
           ))}
         </motion.div>
       ) : (
-        // Marquee (disabled on small screens for usability)
+        // Marquee animation for non-reduced motion
         <motion.div
-          className="hidden sm:flex w-max gap-6 md:gap-8 whitespace-nowrap will-change-transform"
+          className="flex w-max gap-4 sm:gap-6 md:gap-8 whitespace-nowrap will-change-transform"
           style={{
-            animation:
-              inView && !paused
-                ? `marquee calc(${speed}s * var(--marquee-speed)) linear infinite`
-                : "none",
+            animation: inView && !paused ? `marquee ${speed}s linear infinite ${direction === "right" ? "reverse" : ""}` : "none",
           }}
           aria-hidden="true"
         >
           {[0, 1].map((track) => (
-            <div className="flex gap-6 md:gap-8" key={track}>
-              {items.map((item, i) => (
-                <motion.span
+            <div className="flex gap-4 sm:gap-6 md:gap-8" key={track}>
+              {techItems.map((item, i) => (
+                <motion.button
                   key={`${track}-${i}`}
-                  animate={{ y: [0, -6, 0] }}
+                  ref={(el) => { itemRefs.current[track * techItems.length + i] = el; }}
+                  onClick={() => handleCopy(item.label, track * techItems.length + i)}
+                  animate={{ y: [0, -8, 0] }}
                   transition={{
-                    duration: 1.8,
+                    duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut",
-                    delay: i * 0.12,
+                    delay: i * 0.15,
                   }}
                   whileHover={{
-                    scale: 1.15,
-                    rotate: [0, -6, 6, 0],
-                    transition: { duration: 0.35 },
+                    scale: 1.1,
+                    rotate: [0, -4, 4, 0],
+                    transition: { duration: 0.3 },
                   }}
-                  className="group flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-100 dark:text-slate-200 bg-gradient-to-r from-indigo-500/80 to-purple-500/80 backdrop-blur-lg border border-white/20 shadow-md cursor-pointer relative"
+                  whileFocus={{
+                    scale: 1.1,
+                    transition: { duration: 0.3 },
+                  }}
+                  className="group flex items-center gap-2 rounded-full px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 backdrop-blur-lg border border-white/20 shadow-lg cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                  aria-label={`Copy ${item.label} to clipboard`}
                 >
                   {item.icon}
-                  {item.label}
-                  <span className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition text-xs bg-black/80 text-white px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                    {item.label}
+                  <span>{item.label}</span>
+                  <span className="sr-only">{item.category}</span>
+                  <span className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 text-xs bg-black/90 text-white px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+                    {item.label} ({item.category})
                   </span>
-                </motion.span>
+                </motion.button>
               ))}
             </div>
           ))}
         </motion.div>
       )}
 
-      {/* Keyframes + Responsive speed */}
+      {/* CSS for marquee animation and responsive speeds */}
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        /* Responsive marquee speeds */
-        .sm\\:flex { --marquee-speed: 1.5; } /* slower on tablets */
-        @media (min-width: 1024px) {
-          .sm\\:flex { --marquee-speed: 1; } /* normal on desktop */
-        }
+        .flex { --marquee-speed: 1.8; } /* Mobile */
+        @media (min-width: 640px) { .flex { --marquee-speed: 1.5; } } /* Tablet */
+        @media (min-width: 1024px) { .flex { --marquee-speed: 1; } } /* Desktop */
+        @media (min-width: 1280px) { .flex { --marquee-speed: 0.8; } } /* Large Desktop */
       `}</style>
     </div>
   );
