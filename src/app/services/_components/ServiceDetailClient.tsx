@@ -37,6 +37,7 @@ export default function ServiceDetailClient({ service, related = [] }: { service
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   const images = useMemo(() => {
     const list = parseJsonArray(service.imageUrls).filter((u) => typeof u === "string" && u.trim().length > 0);
@@ -72,6 +73,14 @@ export default function ServiceDetailClient({ service, related = [] }: { service
     setCanShare(typeof nav.share === "function");
   }, []);
 
+  const getErrorMessage = useCallback((body: unknown, fallback: string): string => {
+    if (typeof body === "object" && body !== null && "error" in body) {
+      const err = (body as { error?: unknown }).error;
+      if (typeof err === "string") return err;
+    }
+    return fallback;
+  }, []);
+
   const handleShare = useCallback(async () => {
     const url = window.location.href;
     if (canShare) {
@@ -92,6 +101,24 @@ export default function ServiceDetailClient({ service, related = [] }: { service
   }, [service.name, service.description, canShare]);
 
   const mainImage = images[currentImageIndex];
+
+  const handleAddToCart = useCallback(async () => {
+    try {
+      setAdding(true);
+      const res = await fetch("/api/cart/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceId: service.id, quantity: 1 }),
+      });
+      const body: unknown = await res.json();
+      if (!res.ok) throw new Error(getErrorMessage(body, "Failed to add to cart"));
+      toast.success("Added to cart");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to add to cart");
+    } finally {
+      setAdding(false);
+    }
+  }, [service.id]);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950">
@@ -201,9 +228,9 @@ export default function ServiceDetailClient({ service, related = [] }: { service
                   <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{formatPrice(service.price)}</span>
                     <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                      <Button className="flex items-center gap-2" onClick={() => toast.info("Cart not implemented yet")}>
+                      <Button className="flex items-center gap-2" onClick={handleAddToCart} disabled={adding}>
                         <ShoppingCart className="h-5 w-5" />
-                        Add to Cart
+                        {adding ? "Adding..." : "Add to Cart"}
                       </Button>
                       <Link
                         href="/contact"
