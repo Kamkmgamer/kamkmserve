@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { Calendar } from "lucide-react";
 import Button from "~/components/ui/button";
+import CTAButton from "~/components/ui/CTAButton";
 import { TOKENS } from "../tokens";
 
 const fadeUp: Variants = {
@@ -53,7 +54,7 @@ const CTA: React.FC = () => {
             custom={1}
             className={`${TOKENS.textBody} mb-10 text-base sm:text-lg`}
           >
-            Let’s bring your vision to life with clean code, thoughtful design, and a seamless experience from start to finish.
+            Let&rsquo;s bring your vision to life with clean code, thoughtful design, and a seamless experience from start to finish.
           </motion.p>
 
           <motion.div
@@ -61,9 +62,9 @@ const CTA: React.FC = () => {
             custom={2}
             className="flex flex-col justify-center gap-4 sm:flex-row"
           >
-            <Button href="/contact" variant="primary" size="lg">
+            <CTAButton href="/contact#contact-form" variant="primary" size="lg" eventName="home_cta_primary" eventProps={{ location: "home_cta" }}>
               Get Started Today
-            </Button>
+            </CTAButton>
 
             <Button
               href="https://calendly.com"

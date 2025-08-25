@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import Navbar from "~/app/_Components/navbar";
 import Footer from "~/components/layout/Footer";
+import Topbar from "~/components/layout/Topbar";
 
 export default function PublicChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function PublicChrome({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <Topbar />
       <Navbar />
       {children}
       <Footer />

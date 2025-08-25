@@ -7,6 +7,7 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Search, Tag } from "lucide-react";
 import type { Service } from "~/server/services";
 import { useNavLoading } from "~/contexts/NavLoadingContext";
+import CTAButton from "~/components/ui/CTAButton";
 
 const slugify = (name: string) =>
   name
@@ -211,14 +212,21 @@ export default function ServicesClient({ initialServices }: { initialServices: S
                 </button>
               )}
             </div>
+            <div className="sm:ml-auto">
+              <CTAButton href="/contact" size="md" variant="primary" eventName="services_primary_cta" eventProps={{ location: "services_header" }}>
+                Book a Free Consultation
+              </CTAButton>
+            </div>
           </div>
 
           {filtered.length === 0 ? (
             <div className="rounded-xl border border-slate-200 bg-white p-10 text-center dark:border-slate-800 dark:bg-slate-900">
               <p className="text-slate-600 dark:text-slate-300">No services found. Try a different category or search term.</p>
-              <Link href="/contact" className="mt-4 inline-block">
-                <span className="text-blue-600 hover:underline">Need something custom?</span>
-              </Link>
+              <div className="mt-4">
+                <CTAButton href="/contact" size="md" variant="secondary" eventName="services_empty_state_cta" eventProps={{ location: "services_empty" }}>
+                  Need something custom?
+                </CTAButton>
+              </div>
             </div>
           ) : (
             <motion.div layout variants={listVariants} initial={false} animate="animate">

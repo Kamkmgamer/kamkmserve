@@ -1,11 +1,24 @@
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
+import CTAButton from "~/components/ui/CTAButton";
+import type { Metadata } from "next";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export const metadata = {
-  title: "Pricing | KAMKM Serve",
+export const metadata: Metadata = {
+  title: "Pricing",
   description: "Plans and pricing for KAMKM Serve",
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    type: "website",
+    url: "/pricing",
+    title: "Pricing | KAMKM Serve",
+    description: "Plans and pricing for KAMKM Serve",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing | KAMKM Serve",
+    description: "Plans and pricing for KAMKM Serve",
+  },
 };
 
 type Tier = {
@@ -136,13 +149,16 @@ export default async function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button
+              <CTAButton
                 className="w-full mt-2"
                 size="lg"
                 variant={tier.highlighted ? "primary" : "secondary"}
+                href="/contact"
+                eventName="pricing_tier_cta"
+                eventProps={{ tier: tier.name }}
               >
                 {tier.name === "Enterprise" ? "Contact Sales" : "Get Started"}
-              </Button>
+              </CTAButton>
             </CardFooter>
           </Card>
         ))}

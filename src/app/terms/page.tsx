@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Terms of Service | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
   description: "The rules and guidelines for using KAMKM Serve",
+  alternates: { canonical: "/terms" },
+  openGraph: {
+    type: "website",
+    url: "/terms",
+    title: "Terms of Service | KAMKM Serve",
+    description: "The rules and guidelines for using KAMKM Serve",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service | KAMKM Serve",
+    description: "The rules and guidelines for using KAMKM Serve",
+  },
 };
 
 export default function TermsPage() {

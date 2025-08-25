@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CTAButton from "~/components/ui/CTAButton";
 import { toast } from "sonner";
 import {
   Mail,
@@ -61,8 +62,14 @@ export default function ContactPage() {
               Contact our team
             </h1>
             <p className="mt-3 text-balance text-slate-600 dark:text-slate-400">
-              Questions, feedback, or need a hand? Send us a message and we’ll respond quickly.
+              Questions, feedback, or need a hand? Send us a message and we&rsquo;ll respond quickly.
             </p>
+
+            <div className="mt-4">
+              <CTAButton href="#contact-form" size="md" variant="primary" eventName="contact_jump_to_form" eventProps={{ location: "contact_intro" }}>
+                Jump to form
+              </CTAButton>
+            </div>
 
             {/* Quick contact cards */}
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -116,7 +123,7 @@ export default function ContactPage() {
           <div>
             <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 via-transparent to-purple-600/20 p-[1px]">
               <div className="rounded-2xl border border-slate-200/60 bg-white/80 p-6 shadow-lg backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/70">
-                <form onSubmit={onSubmit} className="space-y-5" aria-live="polite">
+                <form id="contact-form" onSubmit={onSubmit} className="space-y-5" aria-live="polite">
                   <div>
                     <label className="block text-sm font-medium">Name</label>
                     <div className="relative mt-1">

@@ -12,9 +12,27 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "sonner";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "KAMKM Serve",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "KAMKM Serve",
+    template: "%s | KAMKM Serve",
+  },
   description: "KAMKM Serve",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: "KAMKM Serve",
+    description: "KAMKM Serve",
+    siteName: "KAMKM Serve",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KAMKM Serve",
+    description: "KAMKM Serve",
+  },
   icons: [{ rel: "icon", url: "https://ik.imagekit.io/gtnmxyt2d/servises%20store/favicon.png" }],
 };
 

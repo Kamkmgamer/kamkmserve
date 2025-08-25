@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Careers | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Careers",
   description: "Join the team",
+  alternates: { canonical: "/careers" },
+  openGraph: {
+    type: "website",
+    url: "/careers",
+    title: "Careers | KAMKM Serve",
+    description: "Join the team",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers | KAMKM Serve",
+    description: "Join the team",
+  },
 };
 
 export default function CareersPage() {

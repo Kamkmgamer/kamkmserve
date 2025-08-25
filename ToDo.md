@@ -147,7 +147,7 @@ Hands-on experience upgrading and optimizing PCs and laptops (RAM, SSD, hardware
   - Track clicks (analytics ready, no provider required yet)
 - [ ] Sticky topbar with "Hire Me" button
   - Implement `Topbar` component (sticky, hide-on-scroll down, show-on-scroll up)
-  - Include "Hire Me" linking to `/contact` and theme toggle
+  - Include "Hire Me" linking to `/contact`
 - [ ] Newsletter/lead capture form
   - Implement `NewsletterForm` component
   - Client-side validation, success/error states
@@ -157,14 +157,14 @@ Hands-on experience upgrading and optimizing PCs and laptops (RAM, SSD, hardware
   - Derive data from a JSON source for easy edits
 
 ## 4. SEO & Performance
-- [ ] Per-page SEO metadata (title, description, OpenGraph/Twitter cards)
-  - Done: Home (`/`), Services (`/services`)
-  - Remaining: other key pages
+- [x] Per-page SEO metadata (title, description, OpenGraph/Twitter cards)
+  - Done: Home (`/`), Services (`/services`), Pricing (`/pricing`), Blog (`/blog`), Blog posts (`/blog/[slug]`), Contact (`/contact`), About (`/about`), Careers (`/careers`), Changelog (`/changelog`), Community (`/community`), Docs (`/docs`), Guides (`/guides`), Roadmap (`/roadmap`), Privacy (`/privacy`), Terms (`/terms`)
+  - Note: Portfolio (`/portfolio`) and Testimonials (`/testimonials`) are external redirects; page metadata not applicable.
 - [x] `sitemap.xml` and `robots.txt`
   - Add `src/app/sitemap.ts` (absolute URLs)
   - Add `src/app/robots.ts` (host, sitemap URL)
   - Add `NEXT_PUBLIC_SITE_URL` to `.env.example` for base URL
-- [ ] Structured data (JSON-LD for blog/services)
+- [x] Structured data (JSON-LD for blog/services)
   - Add JSON-LD to service detail pages and blog posts
   - Validate with Rich Results Test
 - [ ] Image optimization (WebP/AVIF, lazy loading)

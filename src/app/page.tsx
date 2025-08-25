@@ -13,20 +13,20 @@ import Container from "../components/layout/Container";
 import SecretDailyTips from "../components/secret/SecretDailyTips";
 
 export const metadata: Metadata = {
-  title: "KAMKM Serve — Modern Web Development & Design",
+  title: "KAMKM Serve \u2014 Modern Web Development & Design",
   description:
-    "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+    "Full\u2011stack web development, UI/UX design, and consulting. High\u2011quality sites and apps with performance, accessibility, and great UX.",
   openGraph: {
-    title: "KAMKM Serve — Modern Web Development & Design",
+    title: "KAMKM Serve \u2014 Modern Web Development & Design",
     description:
-      "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+      "Full\u2011stack web development, UI/UX design, and consulting. High\u2011quality sites and apps with performance, accessibility, and great UX.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KAMKM Serve — Modern Web Development & Design",
+    title: "KAMKM Serve \u2014 Modern Web Development & Design",
     description:
-      "Full‑stack web development, UI/UX design, and consulting. High‑quality sites and apps with performance, accessibility, and great UX.",
+      "Full\u2011stack web development, UI/UX design, and consulting. High\u2011quality sites and apps with performance, accessibility, and great UX.",
   },
 };
 

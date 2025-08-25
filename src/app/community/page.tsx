@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Community | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Community",
   description: "Join our community",
+  alternates: { canonical: "/community" },
+  openGraph: {
+    type: "website",
+    url: "/community",
+    title: "Community | KAMKM Serve",
+    description: "Join our community",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Community | KAMKM Serve",
+    description: "Join our community",
+  },
 };
 
 export default function CommunityPage() {

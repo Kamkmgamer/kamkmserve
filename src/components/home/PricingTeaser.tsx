@@ -8,14 +8,14 @@ import { TOKENS } from "../tokens";
 const plans = [
   {
     name: "Starter",
-    price: "2–4 weeks",
+    price: "2\u20134 weeks",
     pitch: "Perfect for landing pages or MVPs.",
     bullets: ["Design + Build", "Basic SEO", "Analytics setup"],
     cta: "/contact",
   },
   {
     name: "Growth",
-    price: "4–8 weeks",
+    price: "4\u20138 weeks",
     pitch: "For apps, dashboards, and integrations.",
     bullets: ["Design system", "API & DB", "Performance budget"],
     cta: "/contact",

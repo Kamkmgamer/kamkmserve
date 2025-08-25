@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Docs | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Docs",
   description: "Documentation",
+  alternates: { canonical: "/docs" },
+  openGraph: {
+    type: "website",
+    url: "/docs",
+    title: "Docs | KAMKM Serve",
+    description: "Documentation",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Docs | KAMKM Serve",
+    description: "Documentation",
+  },
 };
 
 export default function DocsPage() {

@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Guides | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Guides",
   description: "How-to guides and tutorials",
+  alternates: { canonical: "/guides" },
+  openGraph: {
+    type: "website",
+    url: "/guides",
+    title: "Guides | KAMKM Serve",
+    description: "How-to guides and tutorials",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Guides | KAMKM Serve",
+    description: "How-to guides and tutorials",
+  },
 };
 
 export default function GuidesPage() {

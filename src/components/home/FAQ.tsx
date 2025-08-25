@@ -7,7 +7,7 @@ import { TOKENS } from "../tokens";
 const faqs = [
   {
     q: "What stack do you use?",
-    a: "React, TypeScript, Node, Tailwind, Postgres/Prisma, Next/Vite — chosen per project needs.",
+    a: "React, TypeScript, Node, Tailwind, Postgres/Prisma, Next/Vite \u2014 chosen per project needs.",
   },
   {
     q: "How do we collaborate?",
@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "Do you handle deployments?",
-    a: "Yes — CI/CD, observability, and production readiness (Vercel/AWS).",
+    a: "Yes \u2014 CI/CD, observability, and production readiness (Vercel/AWS).",
   },
   {
     q: "What about accessibility?",

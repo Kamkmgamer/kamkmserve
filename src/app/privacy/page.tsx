@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Privacy Policy | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
   description: "Our commitment to your privacy",
+  alternates: { canonical: "/privacy" },
+  openGraph: {
+    type: "website",
+    url: "/privacy",
+    title: "Privacy Policy | KAMKM Serve",
+    description: "Our commitment to your privacy",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | KAMKM Serve",
+    description: "Our commitment to your privacy",
+  },
 };
 
 export default function PrivacyPage() {

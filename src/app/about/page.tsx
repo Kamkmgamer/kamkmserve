@@ -1,6 +1,22 @@
-export const metadata = {
-  title: "About | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
   description: "Personal story, mission, experience, and skills of Khalil Abd El-Majid (KAMKM Serve)",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    type: "website",
+    url: "/about",
+    title: "About | KAMKM Serve",
+    description:
+      "Personal story, mission, experience, and skills of Khalil Abd El-Majid (KAMKM Serve)",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | KAMKM Serve",
+    description:
+      "Personal story, mission, experience, and skills of Khalil Abd El-Majid (KAMKM Serve)",
+  },
 };
 
 export default function AboutPage() {
@@ -16,14 +32,14 @@ export default function AboutPage() {
       <section aria-labelledby="story" className="prose prose-slate dark:prose-invert">
         <h2 id="story">Personal Story</h2>
         <p>
-          I’m Khalil Abd El-Majid, a Sudanese web developer and designer currently based in Egypt. My journey started
+          I&rsquo;m Khalil Abd El-Majeed, a Sudanese web developer and designer currently based in Egypt. My journey started
           with a strong background in Electrical Engineering at SUST, where I completed three semesters before the war
           disrupted my studies. Despite the challenges of displacement, I leaned into my passion for technology and
           creativity, turning my skills in web development into both a livelihood and a way to help others.
         </p>
         <p>
-          I’ve built a path that bridges resilience and innovation — from upgrading my own computers piece by piece, to
-          designing and developing websites that empower businesses and educational platforms. Along the way, I’ve grown
+          I&rsquo;ve built a path that bridges resilience and innovation &mdash; from upgrading my own computers piece by piece, to
+          designing and developing websites that empower businesses and educational platforms. Along the way, I&rsquo;ve grown
           from someone who loved experimenting with tech into a professional who delivers results-driven digital
           solutions.
         </p>
@@ -35,8 +51,8 @@ export default function AboutPage() {
           empowering, not overwhelming.
         </p>
         <p>
-          At the same time, I want to use my skills and story to inspire others — especially young people from difficult
-          circumstances — to see that creativity, persistence, and learning can open new doors no matter where you start.
+          At the same time, I want to use my skills and story to inspire others &mdash; especially young people from difficult
+          circumstances &mdash; to see that creativity, persistence, and learning can open new doors no matter where you start.
         </p>
 
         <h3>Experience</h3>
@@ -95,9 +111,9 @@ export default function AboutPage() {
             </ul>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-            <h3 className="text-lg font-semibold">E‑Commerce &amp; Business Tools</h3>
+            <h3 className="text-lg font-semibold">E&#8209;Commerce &amp; Business Tools</h3>
             <ul className="mt-3 list-disc pl-5 text-slate-700 dark:text-slate-300">
-              <li>E‑Shop Development: React + TypeScript + Tailwind</li>
+              <li>E&#8209;Shop Development: React + TypeScript + Tailwind</li>
               <li>CMS &amp; Dynamic Content: Webflow CMS, WordPress CMS, Odoo CMS modules</li>
               <li>ERP Systems: Odoo customizations (training management, HR modules, data migration)</li>
             </ul>
@@ -131,8 +147,8 @@ export default function AboutPage() {
 
       <section className="mt-12 flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
         <div>
-          <h2 className="text-xl font-semibold">Let’s build something great</h2>
-          <p className="mt-1 text-slate-600 dark:text-slate-300">Have a project in mind? I’d love to hear about it.</p>
+          <h2 className="text-xl font-semibold">Let&rsquo;s build something great</h2>
+          <p className="mt-1 text-slate-600 dark:text-slate-300">Have a project in mind? I&rsquo;d love to hear about it.</p>
         </div>
         <a
           href="/contact"

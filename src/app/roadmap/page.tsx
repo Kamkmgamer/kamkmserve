@@ -1,6 +1,20 @@
-export const metadata = {
-  title: "Roadmap | KAMKM Serve",
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Roadmap",
   description: "Our upcoming features and milestones",
+  alternates: { canonical: "/roadmap" },
+  openGraph: {
+    type: "website",
+    url: "/roadmap",
+    title: "Roadmap | KAMKM Serve",
+    description: "Our upcoming features and milestones",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Roadmap | KAMKM Serve",
+    description: "Our upcoming features and milestones",
+  },
 };
 
 export default function RoadmapPage() {
