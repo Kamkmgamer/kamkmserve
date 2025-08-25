@@ -57,6 +57,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
   
   async function downloadCsv(url: string, filename: string) {
     try {
+      toast("Exporting CSV...");
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to download CSV (${res.status})`);
       const blob = await res.blob();
@@ -68,6 +69,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       a.click();
       a.remove();
       URL.revokeObjectURL(href);
+      toast.success("CSV downloaded");
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : String(err));
@@ -82,6 +84,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
   const openCreate = () => {
     resetForm();
     setOpen(true);
+    toast("New payout");
   };
 
   // Debounced server-side search + filters
@@ -101,6 +104,9 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
           const json = raw as { data: Payout[]; error?: unknown };
           if (!res.ok) throw new Error(json.error ? fmtError(json.error) : "Failed to load payouts");
           setItems(json.data);
+          if (q || statusFilter) {
+            toast(`Found ${json.data.length} payout${json.data.length === 1 ? "" : "s"}`);
+          }
         } catch (err) {
           if (err instanceof Error && err.name === "AbortError") return;
           console.error(err);
@@ -121,6 +127,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
       payoutDate: p.payoutDate ? String(p.payoutDate) : "",
     });
     setOpen(true);
+    toast(`Editing payout #${p.id.slice(0, 8)}`);
   };
 
   async function onSubmit() {
@@ -212,7 +219,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
             variant={view === "list" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "list"}
-            onClick={() => setView("list")}
+            onClick={() => { setView("list"); toast("List view"); }}
             title="List view"
           >
             <ListIcon className="h-4 w-4" />
@@ -221,7 +228,7 @@ export default function PayoutsClient({ initialData }: { initialData: Payout[] }
             variant={view === "cards" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "cards"}
-            onClick={() => setView("cards")}
+            onClick={() => { setView("cards"); toast("Card view"); }}
             title="Card view"
           >
             <LayoutGrid className="h-4 w-4" />

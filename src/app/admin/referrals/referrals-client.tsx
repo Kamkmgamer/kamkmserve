@@ -57,11 +57,12 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
     setEditing(null);
   };
 
-  const openCreate = () => { resetForm(); setOpen(true); };
+  const openCreate = () => { resetForm(); setOpen(true); toast("New referral"); };
   const openEdit = (r: Referral) => {
     setEditing(r);
     setForm({ userId: r.userId, code: r.code, commissionRate: String(r.commissionRate) });
     setOpen(true);
+    toast(`Editing ${r.userEmail}`);
   };
 
   // Debounced fetch on search
@@ -78,9 +79,13 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
           const json = raw as { data: Referral[]; error?: unknown };
           if (!res.ok) throw new Error(typeof json.error === "string" ? json.error : "Failed to load referrals");
           setItems(json.data);
+          if (q) {
+            toast(`Found ${json.data.length} referral${json.data.length === 1 ? "" : "s"}`);
+          }
         } catch (err) {
           if (err instanceof Error && err.name === "AbortError") return;
           console.error(err);
+          toast.error(fmtError(err));
         }
       })();
     }, 250);
@@ -109,6 +114,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
         const json = raw as { data: Referral; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to update referral");
         setItems((prev) => prev.map((p) => (p.id === editing.id ? json.data : p)));
+        toast.success("Referral updated");
       } else {
         const res = await fetch(`/api/admin/referrals`, {
           method: "POST",
@@ -119,6 +125,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
         const json = raw as { data: Referral; error?: unknown };
         if (!res.ok) throw new Error(fmtError(json.error) || "Failed to create referral");
         setItems((prev) => [json.data, ...prev]);
+        toast.success("Referral created");
       }
       setOpen(false);
       resetForm();
@@ -136,6 +143,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
       const json = raw as { error?: unknown };
       if (!res.ok) throw new Error(fmtError(json.error) || "Failed to delete referral");
       setItems((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Referral deleted");
     } catch (err) {
       console.error(err);
       toast.error(fmtError(err));
@@ -153,7 +161,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
             variant={view === "list" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "list"}
-            onClick={() => setView("list")}
+            onClick={() => { setView("list"); toast("List view"); }}
             title="List view"
           >
             <ListIcon className="h-4 w-4" />
@@ -162,7 +170,7 @@ export default function ReferralsClient({ initialData }: { initialData: Referral
             variant={view === "cards" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "cards"}
-            onClick={() => setView("cards")}
+            onClick={() => { setView("cards"); toast("Card view"); }}
             title="Card view"
           >
             <LayoutGrid className="h-4 w-4" />

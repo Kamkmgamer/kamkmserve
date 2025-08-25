@@ -69,9 +69,13 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
           const json = raw as { data: Commission[]; error?: unknown };
           if (!res.ok) throw new Error(fmtError(json.error) || "Failed to load commissions");
           setItems(json.data);
+          if (q) {
+            toast(`Found ${json.data.length} commission${json.data.length === 1 ? "" : "s"}`);
+          }
         } catch (err) {
           if (err instanceof Error && err.name === "AbortError") return;
           console.error(err);
+          toast.error(fmtError(err));
         }
       })();
     }, 250);
@@ -86,11 +90,12 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
     setEditing(null);
   };
 
-  const openCreate = () => { resetForm(); setOpen(true); };
+  const openCreate = () => { resetForm(); setOpen(true); toast("New commission"); };
   const openEdit = (c: Commission) => {
     setEditing(c);
     setForm({ orderId: c.orderId, referralId: c.referralId, amount: String(c.amount), status: c.status });
     setOpen(true);
+    toast(`Editing commission #${c.id.slice(0, 8)}`);
   };
 
   async function onSubmit() {
@@ -135,6 +140,7 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
       const json = raw as { error?: unknown };
       if (!res.ok) throw new Error(fmtError(json.error) || "Failed to delete commission");
       setItems((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Commission deleted");
     } catch (err) {
       console.error(err);
       toast.error(fmtError(err));
@@ -152,7 +158,7 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
             variant={view === "list" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "list"}
-            onClick={() => setView("list")}
+            onClick={() => { setView("list"); toast("List view"); }}
             title="List view"
           >
             <ListIcon className="h-4 w-4" />
@@ -161,7 +167,7 @@ export default function CommissionsClient({ initialData }: { initialData: Commis
             variant={view === "cards" ? "primary" : "ghost"}
             size="sm"
             aria-pressed={view === "cards"}
-            onClick={() => setView("cards")}
+            onClick={() => { setView("cards"); toast("Card view"); }}
             title="Card view"
           >
             <LayoutGrid className="h-4 w-4" />
