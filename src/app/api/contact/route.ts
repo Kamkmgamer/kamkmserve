@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { Resend } from "resend";
+import { Resend, type CreateEmailOptions } from "resend";
 import { env } from "~/env.js";
 
 export const runtime = "nodejs";
@@ -52,14 +52,16 @@ ${message}`;
     `;
 
     try {
-      const { error } = await resend.emails.send({
+      const mailOptions: CreateEmailOptions = {
         from: "KAMKM Serve <onboarding@resend.dev>",
         to,
         subject,
         text,
         html,
-        reply_to: email,
-      } as any);
+        replyTo: email,
+      };
+
+      const { error } = await resend.emails.send(mailOptions);
 
       if (error) {
         console.error("Resend error:", error);
